@@ -1,0 +1,23 @@
+name: Sync to public repo
+on:
+  push:
+    branches:
+      - main
+jobs:
+  copy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Copycat
+        uses: andstor/copycat-action@v3
+        with:
+          personal_token: ${{ secrets.SYNC_GH_PAT }}
+          src_path: /.
+          dst_path: /ui/
+          dst_owner: a55tronaut
+          dst_repo_name: race2uranus
+          dst_branch: main
+          src_branch: main
+          clean: true
+          commit_message: ui update
+          username: a55tronaut
+          email: a55tronaut@users.noreply.github.com

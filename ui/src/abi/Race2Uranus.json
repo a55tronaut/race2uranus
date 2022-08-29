@@ -1,0 +1,1367 @@
+[
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "previousAdmin",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "newAdmin",
+        "type": "address"
+      }
+    ],
+    "name": "AdminChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "beacon",
+        "type": "address"
+      }
+    ],
+    "name": "BeaconUpgraded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "raceId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "rocketId",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "booster",
+        "type": "address"
+      }
+    ],
+    "name": "BoostApplied",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "version",
+        "type": "uint8"
+      }
+    ],
+    "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "raceId",
+        "type": "uint256"
+      }
+    ],
+    "name": "RaceCreated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "raceId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "rocketId",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "rocketeer",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "nft",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "nftId",
+        "type": "uint256"
+      }
+    ],
+    "name": "RaceEntered",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "raceId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "winningRocketId",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "nft",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "nftId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "rocketeer",
+        "type": "address"
+      }
+    ],
+    "name": "RaceFinished",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "raceId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "revealBlockNumber",
+        "type": "uint256"
+      }
+    ],
+    "name": "RaceStarted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "raceId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "rocketeer",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "RocketeerRewardClaimed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "raceId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "staker",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "StakeRewardClaimed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "raceId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "rocketId",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "staker",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "StakedOnRocket",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "implementation",
+        "type": "address"
+      }
+    ],
+    "name": "Upgraded",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_currentTimestamp",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint32[]",
+        "name": "_blastOffTimes",
+        "type": "uint32[]"
+      },
+      {
+        "internalType": "uint8",
+        "name": "_revealDelayMinutes",
+        "type": "uint8"
+      }
+    ],
+    "name": "_calcRevealTimestamp",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "revealTimestamp",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "raceId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint8",
+        "name": "rocketId",
+        "type": "uint8"
+      }
+    ],
+    "name": "applyBoost",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "autoCreateNextRace",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "beneficiary",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "raceId",
+        "type": "uint256"
+      }
+    ],
+    "name": "calcClaimableAmount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "calcClaimableAmountAll",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "raceIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "calcClaimableAmountMulti",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "raceId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "rocketeer",
+        "type": "address"
+      }
+    ],
+    "name": "calcRocketeerReward",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool[]",
+        "name": "",
+        "type": "bool[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "raceId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "staker",
+        "type": "address"
+      }
+    ],
+    "name": "calcStakeReward",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "raceId",
+        "type": "uint256"
+      }
+    ],
+    "name": "claim",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "claimAll",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "raceIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "claimMulti",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "createRace",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "raceId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "nft",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "nftId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "enterRace",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "raceId",
+        "type": "uint256"
+      }
+    ],
+    "name": "finishRace",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getActiveRaceIds",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getBlockNumber",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "n",
+        "type": "uint256"
+      }
+    ],
+    "name": "getBlockhash",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "n",
+        "type": "uint256"
+      }
+    ],
+    "name": "getBlockhashUint",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "raceId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getRace",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint8",
+                "name": "maxRockets",
+                "type": "uint8"
+              },
+              {
+                "internalType": "uint256",
+                "name": "minStakeAmount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "maxStakeAmount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "revealBounty",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "boostPrice",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint8",
+                "name": "boostAmount",
+                "type": "uint8"
+              },
+              {
+                "internalType": "uint8",
+                "name": "rocketsSharePercent",
+                "type": "uint8"
+              },
+              {
+                "internalType": "uint8",
+                "name": "winningRocketSharePercent",
+                "type": "uint8"
+              },
+              {
+                "internalType": "uint8",
+                "name": "devFeePercent",
+                "type": "uint8"
+              },
+              {
+                "internalType": "address[]",
+                "name": "whitelistedNfts",
+                "type": "address[]"
+              }
+            ],
+            "internalType": "struct Race2Uranus.RaceConfig",
+            "name": "configSnapshot",
+            "type": "tuple"
+          },
+          {
+            "internalType": "bool",
+            "name": "started",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "finished",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "revealBlock",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint8",
+                "name": "id",
+                "type": "uint8"
+              },
+              {
+                "internalType": "address",
+                "name": "rocketeer",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "nft",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "nftId",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "totalStake",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint8",
+                "name": "totalBoosts",
+                "type": "uint8"
+              },
+              {
+                "internalType": "bool",
+                "name": "rocketeerRewardClaimed",
+                "type": "bool"
+              }
+            ],
+            "internalType": "struct Race2Uranus.Rocket[]",
+            "name": "rockets",
+            "type": "tuple[]"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rewardPool",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint8",
+            "name": "winner",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rewardPerShare",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "winningRocketShare",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "otherRocketsShare",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct Race2Uranus.Race",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getRaceConfig",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint8",
+            "name": "maxRockets",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint256",
+            "name": "minStakeAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxStakeAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "revealBounty",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "boostPrice",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint8",
+            "name": "boostAmount",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "rocketsSharePercent",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "winningRocketSharePercent",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "devFeePercent",
+            "type": "uint8"
+          },
+          {
+            "internalType": "address[]",
+            "name": "whitelistedNfts",
+            "type": "address[]"
+          }
+        ],
+        "internalType": "struct Race2Uranus.RaceConfig",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getRaceCount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "raceId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint8",
+        "name": "rocketId",
+        "type": "uint8"
+      }
+    ],
+    "name": "getRocketForRace",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint8",
+            "name": "id",
+            "type": "uint8"
+          },
+          {
+            "internalType": "address",
+            "name": "rocketeer",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "nft",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "nftId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalStake",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint8",
+            "name": "totalBoosts",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bool",
+            "name": "rocketeerRewardClaimed",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct Race2Uranus.Rocket",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "raceId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getRocketsForRace",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint8",
+            "name": "id",
+            "type": "uint8"
+          },
+          {
+            "internalType": "address",
+            "name": "rocketeer",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "nft",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "nftId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalStake",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint8",
+            "name": "totalBoosts",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bool",
+            "name": "rocketeerRewardClaimed",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct Race2Uranus.Rocket[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "raceId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint8",
+        "name": "rocketId",
+        "type": "uint8"
+      },
+      {
+        "internalType": "address",
+        "name": "staker",
+        "type": "address"
+      }
+    ],
+    "name": "getStakeAmountForStaker",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getTimeParams",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint32[]",
+            "name": "blastOffTimes",
+            "type": "uint32[]"
+          },
+          {
+            "internalType": "uint8",
+            "name": "revealDelayMinutes",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint32",
+            "name": "blockTimeMillis",
+            "type": "uint32"
+          }
+        ],
+        "internalType": "struct Race2Uranus.TimeParams",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getWhitelistedNfts",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_magicAddr",
+        "type": "address"
+      },
+      {
+        "internalType": "address[]",
+        "name": "_whitelistedNfts",
+        "type": "address[]"
+      },
+      {
+        "internalType": "address",
+        "name": "_beneficiary",
+        "type": "address"
+      }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "magic",
+    "outputs": [
+      {
+        "internalType": "contract IERC20",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "maxBoostsPerRocket",
+    "outputs": [
+      {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "proxiableUUID",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "raceId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint8",
+        "name": "rocketCount",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "boostCount",
+        "type": "uint8"
+      }
+    ],
+    "name": "revealBoosts",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bool",
+        "name": "_autoCreateNextRace",
+        "type": "bool"
+      }
+    ],
+    "name": "setAutoCreateNextRace",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_beneficiary",
+        "type": "address"
+      }
+    ],
+    "name": "setBeneficiary",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint8",
+            "name": "maxRockets",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint256",
+            "name": "minStakeAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxStakeAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "revealBounty",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "boostPrice",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint8",
+            "name": "boostAmount",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "rocketsSharePercent",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "winningRocketSharePercent",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "devFeePercent",
+            "type": "uint8"
+          },
+          {
+            "internalType": "address[]",
+            "name": "whitelistedNfts",
+            "type": "address[]"
+          }
+        ],
+        "internalType": "struct Race2Uranus.RaceConfig",
+        "name": "_raceConfig",
+        "type": "tuple"
+      }
+    ],
+    "name": "setRaceConfig",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint32[]",
+            "name": "blastOffTimes",
+            "type": "uint32[]"
+          },
+          {
+            "internalType": "uint8",
+            "name": "revealDelayMinutes",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint32",
+            "name": "blockTimeMillis",
+            "type": "uint32"
+          }
+        ],
+        "internalType": "struct Race2Uranus.TimeParams",
+        "name": "_timeParams",
+        "type": "tuple"
+      }
+    ],
+    "name": "setTimeParams",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "raceId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint8",
+        "name": "rocketId",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "stakeOnRocket",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "raceId",
+        "type": "uint256"
+      }
+    ],
+    "name": "startRace",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newImplementation",
+        "type": "address"
+      }
+    ],
+    "name": "upgradeTo",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newImplementation",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "upgradeToAndCall",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  }
+]
