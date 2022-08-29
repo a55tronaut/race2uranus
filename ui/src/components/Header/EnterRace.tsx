@@ -1,201 +1,192 @@
 import { useParams } from 'react-router-dom';
-import { useEthers } from '@usedapp/core';
 import { useCallback, useState } from 'react';
-import { Button, Typography, Modal, Select, Input, Divider, Form, Alert } from 'antd';
+import { Button, Typography, Modal, Select, Input, Divider, Form, Alert, notification } from 'antd';
 import styled from 'styled-components';
-import { BigNumber } from 'ethers';
+import { BigNumber, Contract, ethers } from 'ethers';
 
-import { useRace, useNftsForUser } from '../../hooks';
-
-interface INftsForUser {
-  [key: string]: BigNumber[];
-}
+import { useRace, useNftsForUser, useRaceContract } from '../../hooks';
+import { useEthersSigner } from '../../hooks/useEthersSigner';
+import NftImage from '../NftImage';
+import ERC721ABI from '../../abi/ERC721.json';
 
 const { Option } = Select;
 
 function EnterRace() {
   const { raceId } = useParams();
-  const { account } = useEthers();
   const race = useRace(raceId!);
   const { configSnapshot, rockets } = useRace(BigNumber.from(0));
 
+  const { signer } = useEthersSigner();
+  const { contract } = useRaceContract();
+
   const addresses = configSnapshot?.whitelistedNfts;
-  const add = ['0x46becf6735d3ef798307035ad91cb709970bf321', '0x0cdd4ab6a82d8b4efcab7eee8f6722b20df61592'];
-  const { nfts, loading, error } = useNftsForUser(addresses!);
+  const { nfts } = useNftsForUser(addresses!);
 
-  const rocketsStaked = race.rockets!;
-
-  if (account && addresses) {
-    // calcAvalibleNFTsToStake(rocketsStaked, nfts, account);
-  }
-
-  // console.log('nfts: ' + JSON.stringify(nfts) + '  ' + Object.keys(nfts));
-  // console.log('stk: ' + rockets!.length);
+  const [stakeAmount, setStakeAmount] = useState('');
+  const [enterRaceNft, setEnterRaceNft] = useState('');
+  const [enterRaceId, setEnterRaceId] = useState('');
 
   const [showEnterRaceModal, setShowEnterRaceModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const [nftPath, setNftPath] = useState('/assets/NFT/smolbrain.png');
+
+  const [userNft, setuserNft] = useState<{ address: string; contractName: string; id: string; display: boolean }[]>([]);
+  const [rocketNftName, setrocketNftName] = useState('');
 
   const infoMes =
     "You're only proving that you own this NFT. It will never leave your wallet nor it will be edited in any way.";
-  const { Title, Text } = Typography;
-  const { Option } = Select;
 
-  function EnterRace() {
-    const [showEnterRaceModal, setShowEnterRaceModal] = useState(false);
-    const [loadEnterRaceModal, setloadEnterRaceModal] = useState(false);
-    const [nftPath, setNftPath] = useState('/assets/NFT/smolbrain.png');
+  const displayEnterRaceModal = useCallback(() => {
+    setShowEnterRaceModal(true);
 
-    const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+    Object.keys(nfts).forEach((contractAddress) =>
+      nfts[contractAddress].forEach((id) => {
+        let disabled = false;
+        if (rockets!.find((rocket) => rocket.nft === contractAddress && rocket.nftId.eq(id))) {
+          disabled = true;
+        }
 
-    const displayEnterRaceModal = useCallback(() => {
-      setShowEnterRaceModal(true);
-    }, []);
+        getContractName(contractAddress);
+        let newData = { address: contractAddress, contractName: rocketNftName, id: id, display: disabled };
+        setuserNft((userNft) => [...userNft, newData]);
+      })
+    );
 
-    const handleCancel = () => {
-      setShowEnterRaceModal(false);
-      setShowWelcomeModal(false);
-    };
+    async function getContractName(address: string) {
+      const SimpleNft: any = new Contract(address, ERC721ABI, signer);
+      const contractName = await SimpleNft!.functions.name();
+      setrocketNftName(contractName);
+    }
+  }, [nfts, rockets, signer, rocketNftName]);
 
-    const handleEnterRace = useCallback(() => {
+  const handleCancel = () => {
+    setShowEnterRaceModal(false);
+    setShowWelcomeModal(false);
+  };
+
+  const handleEnterRace = useCallback(async () => {
+    setLoading(true);
+    const ethersToWei = ethers.utils.parseUnits(stakeAmount, 'ether');
+    try {
+      await contract.functions?.enterRace(race.id!, enterRaceNft, Number(enterRaceId), ethersToWei);
+
+      notification.success({
+        message: (
+          <span>
+            Enterred the Race with {enterRaceNft} #{enterRaceId}
+          </span>
+        ),
+      });
+    } catch (e) {
+      console.error(e);
+      const error = (e as any)?.message || 'Error';
+      notification.error({ message: error });
+    } finally {
+      setLoading(false);
       setShowEnterRaceModal(false);
       setShowWelcomeModal(true);
-    }, []);
+    }
+  }, [contract.functions, enterRaceId, enterRaceNft, race.id, stakeAmount]);
 
-    const handleChange = (value: string) => {
-      setNftPath('/assets/NFT/' + value + '.png');
-    };
+  const handleChange = (value: string) => {
+    setEnterRaceNft(value.split('/')[0]);
+    setEnterRaceId(value.split('/')[1]);
+    //  setNftPath('/assets/NFT/' + value + '.png');
+  };
 
-    const handleStakeAmountChange = useCallback((e: any) => {
-      //(e.target.value);
-    }, []);
+  const handleStakeAmountChange = useCallback((e: any) => {
+    setStakeAmount(e.target.value);
+  }, []);
 
-    return (
-      <>
-        <Button type="primary" size="large" ghost onClick={() => displayEnterRaceModal()}>
-          Enter Race
-        </Button>
-        <Form layout="vertical">
-          <Modal centered visible={showEnterRaceModal} width={650} onCancel={handleCancel} footer={null}>
-            <ModalContent>
-              <div className="grid">
-                <div>
-                  <img width={200} src={nftPath} alt="NFTrocketImg" />
-                </div>
-                <div>
-                  <Typography.Title level={4} className="title">
-                    Enter Race
-                  </Typography.Title>
-
-                  <p className="text">Choose NFT</p>
-                  <Select defaultValue="smolbrain" onChange={handleChange} className="dropdown">
-                    <Option value="smolbrain">SMOL BRAIN #7581</Option>
-                    <Option value="toe">TALES OF ELLARIA #1234</Option>
-                    <Option value="smolcars">SMOL CARS #0234 </Option>
-                  </Select>
-
-                  <p className="text">Stake $MAGIC </p>
-                  <Form.Item
-                    name="stakeAmount"
-                    rules={[
-                      { required: true, message: 'Stake amount is required' },
-                      // { validator: (_, value) => validateAmount(value) },
-                    ]}
-                  >
-                    <Input
-                      type="number"
-                      size="large"
-                      placeholder="Magic amount to stake"
-                      // initialValue={minStakeAmount}
-                      addonAfter="Magic"
-                      onChange={handleStakeAmountChange}
-                    />
-                  </Form.Item>
-                </div>
+  return (
+    <>
+      <Button type="primary" size="large" ghost onClick={() => displayEnterRaceModal()}>
+        Enter Race
+      </Button>
+      <Form layout="vertical">
+        <Modal centered visible={showEnterRaceModal} width={650} onCancel={handleCancel} footer={null}>
+          <ModalContent>
+            <div className="grid">
+              <div>
+                <img width={200} src={nftPath} alt="NFTrocketImg" />
               </div>
-              <Alert message={infoMes} type="info" showIcon />
-              <div className="footer">
-                <Divider />
-                <div className="enterBtn">
-                  <Button key="enter" onClick={handleEnterRace} type="primary" size="large" ghost>
-                    ENTER
-                  </Button>
-                </div>
-              </div>
-            </ModalContent>
-          </Modal>
-        </Form>
-        {/*
-  <Modal centered visible={showWelcomeModal} onCancel={handleCancel} footer={null} width={700}>
-=======
-      <Modal centered visible={showEnterRaceModal} onCancel={handleCancel} footer={null} width={700}>
-        <ModalContent>
-          <div className="grid">
-            <div>
-              <img width={300} src={nftPath} alt="NFTrocketImg" />
-            </div>
-            <div>
-              <Typography.Title level={3} className="title">
-                Enter Race
-              </Typography.Title>
+              <div>
+                <Typography.Title level={4} className="title">
+                  Enter Race
+                </Typography.Title>
 
-              <p className="text">Choose NFT</p>
-              <Select defaultValue="smolbrain" onChange={handleChange}>
-                <Option value="smolbrain">SMOL BRAIN #7581</Option>
-                <Option value="toe">TALES OF ELLARIA #1234</Option>
-                <Option value="smolcars">SMOL CARS #0234 </Option>
-              </Select>
+                <p className="text">Choose NFT</p>
+                <Select onChange={handleChange} className="dropdown">
+                  {userNft.map((emp, index) => (
+                    <Option value={emp.address + '/' + emp.id} key={emp.address + emp.id} disabled={emp.display}>
+                      {emp.contractName}
+                    </Option>
+                  ))}
+                </Select>
 
-              <p className="text">Stake $MAGIC </p>
-              <Input placeholder="" />
-            </div>
-          </div>
-          <Divider />
-          <div className="enterBtn">
-            <Button key="enter" onClick={handleEnterRace} type="primary" size="large" ghost>
-              ENTER
-            </Button>
-          </div>
-        </ModalContent>
-      </Modal>
-      <Modal centered visible={showWelcomeModal} onCancel={handleCancel} footer={null} width={700}>
->>>>>>> main
-        <ModalContent>
-          <div className="grid">
-            <div>
-              <img width={300} src={nftPath} alt="NFTrocketImg" />
-            </div>
-            <div>
-              <Typography.Title level={3} className="title">
-                Welcome Aboard!
-              </Typography.Title>
-
-              <p>Smol Brains #7581</p>
-              <p>Owned by 0x9178...5e34</p>
-
-              <div className="flex">
-                <p className="text2">Staked</p>
-                <img width={30} src={'../assets/magic.svg'} alt="magiclogo" />
-                <p className="text2">520</p>
+                <p className="text">Stake $MAGIC </p>
+                <Form.Item name="stakeAmount" rules={[{ required: true, message: 'Stake amount is required' }]}>
+                  <Input
+                    type="number"
+                    size="large"
+                    placeholder="Magic amount to stake"
+                    // initialValue={minStakeAmount}
+                    addonAfter="Magic"
+                    onChange={handleStakeAmountChange}
+                  />
+                </Form.Item>
               </div>
             </div>
-          </div>
-          <p className="text">
-            Hey Smol Brains holders, I have entered my Smol Brain into RACE TO URANUS! Check out the race here and cheer
-            me on or place a side bet on me to win!
-          </p>
-          <Divider />
-          <div className="enterBtn">
-            <Button key="enter" onClick={handleEnterRace} type="primary" size="large" ghost>
-              SHARE LINK
-            </Button>
-          </div>
-        </ModalContent>
-      </Modal>
-<<<<<<< HEAD
-                */}
-      </>
-    );
-  }
+            <Alert message={infoMes} type="info" showIcon />
+            <div className="footer">
+              <Divider />
+              <div className="enterBtn">
+                <Button key="enter" loading={loading} onClick={handleEnterRace} type="primary" size="large" ghost>
+                  ENTER
+                </Button>
+              </div>
+            </div>
+          </ModalContent>
+        </Modal>
+      </Form>
+      {
+        <Modal centered visible={showWelcomeModal} onCancel={handleCancel} footer={null} width={700}>
+          <ModalContent>
+            <div className="grid">
+              <div>
+                <img width={300} src={nftPath} alt="NFTrocketImg" />
+              </div>
+              <div>
+                <Typography.Title level={3} className="title">
+                  Welcome Aboard!
+                </Typography.Title>
+
+                <p>Smol Brains #7581</p>
+                <p>Owned by 0x9178...5e34</p>
+
+                <div className="flex">
+                  <p className="text2">Staked</p>
+                  <img width={30} src={'../assets/magic.svg'} alt="magiclogo" />
+                  <p className="text2">520</p>
+                </div>
+              </div>
+            </div>
+            <p className="text">
+              Hey Smol Brains holders, I have entered my Smol Brain into RACE TO URANUS! Check out the race here and
+              cheer me on or place a side bet on me to win!
+            </p>
+            <Divider />
+            <div className="enterBtn">
+              <Button key="enter" onClick={handleEnterRace} type="primary" size="large" ghost>
+                SHARE LINK
+              </Button>
+            </div>
+          </ModalContent>
+        </Modal>
+      }
+    </>
+  );
 }
 
 const ModalContent = styled.div`
@@ -231,25 +222,5 @@ const ModalContent = styled.div`
     margin-right: 5px;
   }
 `;
-function calcAvalibleNFTsToStake(stakedRockets: any, userWlNFTs: any, account: any) {
-  const res: INftsForUser = {};
-  for (let i = 0; i < stakedRockets.length; i++) {
-    if (stakedRockets[i].rocketeer === account) {
-      res[stakedRockets[i].nft] = stakedRockets[i].nftId;
-    }
-  }
-
-  console.log('alreadyStaked: ' + JSON.stringify(res));
-  console.log('userWlNFTs: ' + JSON.stringify(userWlNFTs));
-
-  const stakedNftCount = Object.keys(res).length;
-  for (let i = 0; i < stakedNftCount; i++) {
-    const address = Object.keys(res)[i];
-    const id = res[address];
-    const ids = userWlNFTs[address];
-    // console.log(address + ' , ' + id);
-    // console.log(Object.keys(ids)); // 0 , 1 ,2
-  }
-}
 
 export default EnterRace;
