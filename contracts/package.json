@@ -1,0 +1,31 @@
+{
+  "name": "race2uranus-contracts",
+  "scripts": {
+    "test": "npx hardhat compile && npx hardhat test",
+    "compile": "npx hardhat compile",
+    "estimateGas": "npx hardhat run scripts/estimateGas.ts --network arb",
+    "deploy:arbrin": "npx hardhat run scripts/deploy.ts --network arbrin",
+    "verify:arbrin": "npx hardhat verify --network arbrin",
+    "deploy:arbgor": "npx hardhat run scripts/deploy.ts --network arbgor",
+    "verify:arbgor": "npx hardhat verify --network arbgor",
+    "deploy:arb": "npx hardhat run scripts/deploy.ts --network arb",
+    "verify:arb": "npx hardhat verify --network arb",
+    "//": "pass network to these like -- --network <name>",
+    "setTimeParams": "npx hardhat run scripts/setTimeParams.ts",
+    "setRaceConfig": "npx hardhat run scripts/setRaceConfig.ts"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^1.0.1",
+    "@nomiclabs/hardhat-ethers": "^2.1.0",
+    "@nomiclabs/hardhat-etherscan": "^3.1.0",
+    "@openzeppelin/contracts": "^4.7.0",
+    "@openzeppelin/contracts-upgradeable": "^4.7.0",
+    "@openzeppelin/hardhat-upgrades": "^1.19.0",
+    "dotenv": "^16.0.1",
+    "ethers": "^5.6.9",
+    "hardhat": "^2.10.0",
+    "moment-timezone": "^0.5.34",
+    "prettier": "^2.7.1",
+    "prettier-plugin-solidity": "^1.0.0-dev.22"
+  }
+}
