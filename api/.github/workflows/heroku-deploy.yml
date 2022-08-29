@@ -1,0 +1,25 @@
+name: Deploy to Heroku
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: race2uranus-api
+    steps:
+      - uses: actions/checkout@v2
+      - uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_app_name: race2uranus-api
+          heroku_email: ${{secrets.HEROKU_EMAIL}}
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          buildpack: https://github.com/heroku/heroku-buildpack-nodejs.git
+        env:
+          HD_PORT: ${{secrets.PORT}}
+          HD_LOG_LEVEL: ${{secrets.LOG_LEVEL}}
+          HD_DB_URI: ${{secrets.DB_URI}}
+          HD_CHAIN_ID: ${{secrets.CHAIN_ID}}
+          HD_RPC_URL: ${{secrets.RPC_URL}}
+          HD_GAME_ADDRESS: ${{secrets.GAME_ADDRESS}}
+          HD_SIGNER_PK: ${{secrets.SIGNER_PK}}
