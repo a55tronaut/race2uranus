@@ -203,12 +203,17 @@ async function updateUserLeaderboard(raceId: BigNumberish, session: ClientSessio
 
 async function updateNftLeaderboard(raceId: BigNumberish, session: ClientSession) {
   const [race] = await race2Uranus.functions.getRace(raceId);
+  const winningRocket = race.rockets[race.winner];
   const devFee = race.rewardPool.mul(race.configSnapshot.devFeePercent).div(100);
-  const rewardPool = race.rewardPool.sub(devFee);
+  const rewardPool = race.rewardPool.sub(race.configSnapshot.revealBounty).sub(devFee);
+
   const rocketsShare = rewardPool.mul(race.configSnapshot.rocketsSharePercent).div(100);
   const winningRocketShare = rocketsShare.mul(race.configSnapshot.winningRocketSharePercent).div(100);
-  const winnings = Number(ethers.utils.formatEther(winningRocketShare));
-  const winningRocket = race.rockets[race.winner];
+  const poolRemainder = rewardPool.sub(rocketsShare);
+
+  const totalRewards = winningRocketShare.add(poolRemainder);
+  const winnings = Number(ethers.utils.formatEther(totalRewards));
+
   const { nft, nftId } = winningRocket;
 
   await UserLeaderboard.findOneAndUpdate(

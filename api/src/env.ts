@@ -9,6 +9,7 @@ console.log('LOG LEVEL:', LOG_LEVEL);
 
 export const PORT = requiredNumber('PORT');
 export const DB_URI = requiredString('DB_URI');
+export const UI_URL = requiredString('UI_URL');
 
 export const CHAIN_ID = requiredNumber('CHAIN_ID');
 export const RPC_URL = requiredString('RPC_URL');

@@ -7,12 +7,10 @@
     "test": "jest",
     "build": "tsc",
     "postinstall": "npm run build",
-    "predev": "npm run buildHerokuDeployYml",
     "dev": "ts-node ./src/server.ts",
     "start": "nodemon ./dist/server.js",
     "lint": "tslint --project .",
-    "ngrok": "npx ngrok http 3001",
-    "buildHerokuDeployYml": "node ./buildHerokuDeployYml.js"
+    "ngrok": "npx ngrok http 3001"
   },
   "license": "ISC",
   "dependencies": {
@@ -40,6 +38,7 @@
     "@types/lru-cache": "^7.10.9",
     "@types/memory-cache": "^0.2.2",
     "@types/mongoose": "^5.11.96",
+    "@types/serve-static": "^1.13.9",
     "@types/winston": "^2.4.4",
     "husky": "^8.0.1",
     "jest": "^28.1.3",
