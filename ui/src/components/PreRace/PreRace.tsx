@@ -100,7 +100,7 @@ function PreRace() {
         </Typography.Title>
         <Paragraph className="text">
           You are about to enter the <Text strong> Race of Uranus. </Text> Choose an empty space <br />
-          vehicle to be able to participate. <br /> You can also stake on any rocket and boost it's propulsion system{' '}
+          vehicle to be able to participate. <br /> You can also stake on any rocket and boost its propulsion system{' '}
           <br /> with your <Text strong> $MAGIC</Text>.
         </Paragraph>
         <Typography.Title level={5} className="prizeHeader">

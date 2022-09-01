@@ -35,7 +35,7 @@ function EnterRace() {
   const [rocketNftName, setrocketNftName] = useState('');
 
   const infoMes =
-    "You're only proving that you own this NFT. It will never leave your wallet nor it will be edited in any way.";
+    "By executing this transaction you're only proving that you own this NFT. It will never leave your wallet.";
 
   const displayEnterRaceModal = useCallback(() => {
     setShowEnterRaceModal(true);
