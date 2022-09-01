@@ -36,6 +36,8 @@ function App() {
           <Route path="/race/:raceId" element={<Game />} />
           <Route path="/lore" element={<Lore />} />
           <Route path="/about" element={<About />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </Suspense>
@@ -59,6 +61,8 @@ const LoaderWrapper = styled.div`
 `;
 
 const NotFoundWrapper = styled.div`
+  width: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
