@@ -14,12 +14,11 @@ const { Option } = Select;
 function EnterRace() {
   const { raceId } = useParams();
   const race = useRace(raceId!);
-  const { configSnapshot, rockets } = useRace(BigNumber.from(0));
 
   const { signer } = useEthersSigner();
   const { contract } = useRaceContract();
 
-  const addresses = configSnapshot?.whitelistedNfts;
+  const addresses = race.configSnapshot?.whitelistedNfts;
   const { nfts } = useNftsForUser(addresses!);
 
   const [stakeAmount, setStakeAmount] = useState('');
@@ -43,7 +42,7 @@ function EnterRace() {
     Object.keys(nfts).forEach((contractAddress) =>
       nfts[contractAddress].forEach((id) => {
         let disabled = false;
-        if (rockets!.find((rocket) => rocket.nft === contractAddress && rocket.nftId.eq(id))) {
+        if (race.rockets!.find((rocket) => rocket.nft === contractAddress && rocket.nftId.eq(id))) {
           disabled = true;
         }
 
@@ -58,7 +57,7 @@ function EnterRace() {
       const contractName = await SimpleNft!.functions.name();
       setrocketNftName(contractName);
     }
-  }, [nfts, rockets, signer, rocketNftName]);
+  }, [nfts, race.rockets, signer, rocketNftName]);
 
   const handleCancel = () => {
     setShowEnterRaceModal(false);
