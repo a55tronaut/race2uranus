@@ -1,5 +1,6 @@
-import { BigNumber, BigNumberish, ethers, utils } from 'ethers';
-import { parseUrl } from 'query-string';
+import { BigNumber, BigNumberish, utils } from 'ethers';
+import { supportedNfts } from './constants';
+import { NFT_MAPPINGS } from './env';
 
 export function randomHeight(minHeight: number, maxHeight: number) {
   return Math.floor(Math.random() * maxHeight) + minHeight;
@@ -113,4 +114,11 @@ export function convertSeconds(seconds: number): string {
 
 export function bigNumberishToString(bnish: BigNumberish): string {
   return BigNumber.from(bnish).toString();
+}
+
+export function mapNftAddress(address: string) {
+  const normalizedAddress = address.toLowerCase();
+  const mappedAddress = NFT_MAPPINGS[normalizedAddress];
+  const supportedNftData = supportedNfts.find((nft) => nft.address.toLowerCase() === mappedAddress)!;
+  return supportedNftData;
 }

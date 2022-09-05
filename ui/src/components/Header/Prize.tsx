@@ -1,7 +1,8 @@
 import { useParams } from 'react-router-dom';
+
 import { Typography } from 'antd';
 import styled from 'styled-components';
-
+import { ethers } from 'ethers';
 import { useRace } from '../../hooks';
 
 const { Title, Text } = Typography;
@@ -9,13 +10,13 @@ const { Title, Text } = Typography;
 function Prize() {
   const { raceId } = useParams();
   const race = useRace(raceId!);
-  const rewardAmount = race.rewardPool!;
+  const raceReward = race.rewardPool;
 
   return (
     <PrizeMagic>
       <Text>Prize</Text>
       <Title className="magic" level={4}>
-        2550
+        {raceReward && <div className="number">{ethers.utils.formatEther(raceReward!)}</div>}
       </Title>
     </PrizeMagic>
   );
@@ -38,6 +39,10 @@ const PrizeMagic = styled.div`
     height: 20px;
     float: left;
     margin: 2px 6px 0 0;
+  }
+
+  .number {
+    width: 120px;
   }
 `;
 export default Prize;

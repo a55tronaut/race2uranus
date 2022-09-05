@@ -24,13 +24,14 @@ export function useMagicToken(): IMagicTokenHook {
   const storeState = useMagicTokenStore();
 
   useEffect(() => {
-    const { contract: prevContract } = useMagicTokenStore.getState();
-    if (prevContract?.removeAllListeners!) {
-      prevContract.removeAllListeners();
+    if (signer) {
+      const { contract: prevContract } = useMagicTokenStore.getState();
+      if (prevContract?.removeAllListeners!) {
+        prevContract.removeAllListeners();
+      }
+      const contract: any = new Contract(MAGIC_ADDRESS, ERC20ABI, signer);
+      useMagicTokenStore.setState({ contract });
     }
-
-    const contract: any = new Contract(MAGIC_ADDRESS, ERC20ABI, signer);
-    useMagicTokenStore.setState({ contract });
   }, [signer]);
 
   return storeState;

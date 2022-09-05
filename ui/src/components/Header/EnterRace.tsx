@@ -1,63 +1,104 @@
+import { useEthers } from '@usedapp/core';
 import { useParams } from 'react-router-dom';
 import { useCallback, useState } from 'react';
-import { Button, Typography, Modal, Select, Input, Divider, Form, Alert, notification } from 'antd';
 import styled from 'styled-components';
-import { BigNumber, Contract, ethers } from 'ethers';
+import { ethers } from 'ethers';
+import { Button, Typography, Modal, Select, Input, Divider, Form, Alert, notification, List, Avatar } from 'antd';
 
-import { useRace, useNftsForUser, useRaceContract } from '../../hooks';
-import { useEthersSigner } from '../../hooks/useEthersSigner';
+import { useRace, useNftsForUser, useRaceContract, useEnsureMagicApproval } from '../../hooks';
+import { shortAddress, mapNftAddress } from '../../utils';
+import { INftList, IUserWlNfts } from '../../types';
+import { UserNftState } from '../../constants';
 import NftImage from '../NftImage';
-import ERC721ABI from '../../abi/ERC721.json';
 
 const { Option } = Select;
 
 function EnterRace() {
+  const { account } = useEthers();
   const { raceId } = useParams();
   const race = useRace(raceId!);
 
-  const { signer } = useEthersSigner();
   const { contract } = useRaceContract();
+  const { ensureApproval } = useEnsureMagicApproval();
+
+  const rocketsStaked = race.rockets!;
+  const maxRockets = race.configSnapshot?.maxRockets!;
 
   const addresses = race.configSnapshot?.whitelistedNfts;
-  const { nfts } = useNftsForUser(addresses!);
+  const { nfts, loading: nftLoading } = useNftsForUser(addresses!);
 
+  const [enterRaceForm] = Form.useForm();
+
+  const [stakeNft, setStakeNft] = useState('');
+  const [stakeNftId, setStakeNftId] = useState('');
   const [stakeAmount, setStakeAmount] = useState('');
-  const [enterRaceNft, setEnterRaceNft] = useState('');
-  const [enterRaceId, setEnterRaceId] = useState('');
 
-  const [showEnterRaceModal, setShowEnterRaceModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [enterRaceBtnDisable, setEnterRaceBtnDisable] = useState(false);
+  const [selectLoading, setSelectLoading] = useState(true);
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
-  const [nftPath, setNftPath] = useState('/assets/NFT/smolbrain.png');
+  const [showEnterRaceModal, setShowEnterRaceModal] = useState(false);
 
-  const [userNft, setuserNft] = useState<{ address: string; contractName: string; id: string; display: boolean }[]>([]);
-  const [rocketNftName, setrocketNftName] = useState('');
+  const [userNfts, setUserNfts] = useState<IUserWlNfts[]>([]);
+  const [userHasNft, setUserHasNft] = useState(UserNftState.NO_WL_NFTS);
+  const [nftAddress, setNftAddress] = useState('');
+  const [nftContractName, setNftContractName] = useState('');
 
   const infoMes =
     "By executing this transaction you're only proving that you own this NFT. It will never leave your wallet.";
 
+  let wlNfts: INftList[] = [];
+
+  const disableEnterRaceBtn = (rocketsStaked: number, maxRockets: number) => {
+    if (rocketsStaked === maxRockets) {
+      setEnterRaceBtnDisable(true);
+    }
+  };
+
+  if (addresses) {
+    addresses.forEach((address) => wlNfts.push(mapNftAddress(address)));
+    disableEnterRaceBtn(rocketsStaked.length, maxRockets);
+  }
+
+  const checkUserNfts = useCallback((displayArray: boolean[]) => {
+    if (displayArray.includes(false)) {
+      setUserHasNft(UserNftState.HAVE_WL_NFTS_TO_STAKE);
+    } else {
+      setUserHasNft(UserNftState.ALL_WL_NFTS_STAKED);
+    }
+  }, []);
+
   const displayEnterRaceModal = useCallback(() => {
     setShowEnterRaceModal(true);
 
+    setSelectLoading(true);
+
+    setUserNfts([]);
+    let displayArray: boolean[] = [];
+
     Object.keys(nfts).forEach((contractAddress) =>
-      nfts[contractAddress].forEach((id) => {
+      nfts[contractAddress].forEach(async (id) => {
         let disabled = false;
-        if (race.rockets!.find((rocket) => rocket.nft === contractAddress && rocket.nftId.eq(id))) {
+        if (
+          race.rockets!.find(
+            (rocket) => rocket.nft.toLowerCase() === contractAddress.toLowerCase() && rocket.nftId.eq(id)
+          )
+        ) {
           disabled = true;
         }
+        displayArray.push(disabled);
 
-        getContractName(contractAddress);
-        let newData = { address: contractAddress, contractName: rocketNftName, id: id, display: disabled };
-        setuserNft((userNft) => [...userNft, newData]);
+        const conName = mapNftAddress(contractAddress).title;
+
+        const nftData = { address: contractAddress, contractName: conName, id: id, display: disabled };
+        setUserNfts((userNfts) => [...userNfts, nftData]);
       })
     );
 
-    async function getContractName(address: string) {
-      const SimpleNft: any = new Contract(address, ERC721ABI, signer);
-      const contractName = await SimpleNft!.functions.name();
-      setrocketNftName(contractName);
-    }
-  }, [nfts, race.rockets, signer, rocketNftName]);
+    checkUserNfts(displayArray);
+
+    setSelectLoading(false);
+  }, [nfts, race.rockets, checkUserNfts, setUserNfts]);
 
   const handleCancel = () => {
     setShowEnterRaceModal(false);
@@ -66,32 +107,39 @@ function EnterRace() {
 
   const handleEnterRace = useCallback(async () => {
     setLoading(true);
+
     const ethersToWei = ethers.utils.parseUnits(stakeAmount, 'ether');
     try {
-      await contract.functions?.enterRace(race.id!, enterRaceNft, Number(enterRaceId), ethersToWei);
+      await enterRaceForm.validateFields();
+
+      await ensureApproval(ethersToWei);
+
+      await contract.functions?.enterRace(race.id!, stakeNft, Number(stakeNftId), ethersToWei);
 
       notification.success({
         message: (
           <span>
-            Enterred the Race with {enterRaceNft} #{enterRaceId}
+            Entered the Race with {stakeNft} #{stakeNftId}
           </span>
         ),
       });
+
+      setShowEnterRaceModal(false);
+      setShowWelcomeModal(true);
     } catch (e) {
       console.error(e);
       const error = (e as any)?.message || 'Error';
       notification.error({ message: error });
     } finally {
       setLoading(false);
-      setShowEnterRaceModal(false);
-      setShowWelcomeModal(true);
     }
-  }, [contract.functions, enterRaceId, enterRaceNft, race.id, stakeAmount]);
+  }, [stakeAmount, enterRaceForm, ensureApproval, contract.functions, race.id, stakeNft, stakeNftId]);
 
-  const handleChange = (value: string) => {
-    setEnterRaceNft(value.split('/')[0]);
-    setEnterRaceId(value.split('/')[1]);
-    //  setNftPath('/assets/NFT/' + value + '.png');
+  const handleChange = (value: number) => {
+    setStakeNft(userNfts[value].address);
+    setNftAddress(wlNfts[value].address);
+    setStakeNftId(userNfts[value].id);
+    setNftContractName(userNfts[value].contractName);
   };
 
   const handleStakeAmountChange = useCallback((e: any) => {
@@ -100,90 +148,180 @@ function EnterRace() {
 
   return (
     <>
-      <Button type="primary" size="large" ghost onClick={() => displayEnterRaceModal()}>
+      <Button
+        type="primary"
+        size="large"
+        disabled={enterRaceBtnDisable}
+        loading={nftLoading}
+        ghost
+        onClick={() => displayEnterRaceModal()}
+      >
         Enter Race
       </Button>
-      <Form layout="vertical">
-        <Modal centered visible={showEnterRaceModal} width={650} onCancel={handleCancel} footer={null}>
-          <ModalContent>
-            <div className="grid">
-              <div>
-                <img width={200} src={nftPath} alt="NFTrocketImg" />
-              </div>
-              <div>
-                <Typography.Title level={4} className="title">
-                  Enter Race
-                </Typography.Title>
+      {race && (
+        <div>
+          <Form layout="vertical" form={enterRaceForm}>
+            <Modal centered visible={showEnterRaceModal} width={650} onCancel={handleCancel} footer={null}>
+              <ModalContent>
+                {userHasNft === UserNftState.HAVE_WL_NFTS_TO_STAKE && (
+                  <>
+                    <div className="grid">
+                      <NftImage className="NFTimg" address={nftAddress} id={1} />
+                      <div>
+                        <Typography.Title level={4} className="title">
+                          Enter Race
+                        </Typography.Title>
+                        <p className="text">Choose NFT</p>
+                        <Select
+                          onChange={handleChange}
+                          placeholder="Select a rocket to enter race"
+                          className="dropdown"
+                          loading={selectLoading}
+                        >
+                          {userNfts.map((nft, index) => (
+                            <Option value={index} key={nft.address + nft.id} disabled={nft.display}>
+                              {nft.contractName + ' #' + nft.id}
+                            </Option>
+                          ))}
+                        </Select>
 
-                <p className="text">Choose NFT</p>
-                <Select onChange={handleChange} className="dropdown">
-                  {userNft.map((emp, index) => (
-                    <Option value={emp.address + '/' + emp.id} key={emp.address + emp.id} disabled={emp.display}>
-                      {emp.contractName}
-                    </Option>
-                  ))}
-                </Select>
+                        <p className="text">Stake $MAGIC </p>
+                        <Form.Item name="stakeAmount" rules={[{ required: true, message: 'Stake amount is required' }]}>
+                          <Input
+                            type="number"
+                            size="large"
+                            placeholder="Magic amount to stake"
+                            addonAfter="Magic"
+                            onChange={handleStakeAmountChange}
+                          />
+                        </Form.Item>
+                      </div>
+                    </div>
+                    <Alert message={infoMes} type="info" showIcon />
+                    <div className="footer">
+                      <Divider />
+                      <div className="enterBtn">
+                        <Button
+                          key="enter"
+                          loading={loading}
+                          onClick={handleEnterRace}
+                          type="primary"
+                          size="large"
+                          ghost
+                        >
+                          ENTER
+                        </Button>
+                      </div>
+                    </div>
+                  </>
+                )}
+                {userHasNft === UserNftState.ALL_WL_NFTS_STAKED && (
+                  <>
+                    <Alert
+                      message={
+                        'You have already used all of your NFTs to enter this race. You can get more from here: '
+                      }
+                      type="info"
+                      showIcon
+                      description={
+                        <List
+                          size="small"
+                          itemLayout="horizontal"
+                          dataSource={wlNfts}
+                          renderItem={(item) => (
+                            <List.Item>
+                              <List.Item.Meta
+                                avatar={<Avatar src={item.href} />}
+                                title={
+                                  <a href={item.url}>
+                                    <h6>{item.title}</h6>
+                                  </a>
+                                }
+                              />
+                            </List.Item>
+                          )}
+                        />
+                      }
+                    />
+                  </>
+                )}
+                {userHasNft === UserNftState.NO_WL_NFTS && (
+                  <>
+                    <Alert
+                      message={
+                        'You dont have any eligible NFTs to enter the race. You can only use below NFTs from collections,'
+                      }
+                      type="info"
+                      showIcon
+                      description={
+                        <List
+                          size="small"
+                          itemLayout="horizontal"
+                          dataSource={wlNfts}
+                          renderItem={(item) => (
+                            <List.Item>
+                              <List.Item.Meta
+                                avatar={<Avatar src={item.href} />}
+                                title={
+                                  <a href={item.url}>
+                                    <h6>{item.title}</h6>
+                                  </a>
+                                }
+                              />
+                            </List.Item>
+                          )}
+                        />
+                      }
+                    />
+                  </>
+                )}
+              </ModalContent>
+            </Modal>
+          </Form>
 
-                <p className="text">Stake $MAGIC </p>
-                <Form.Item name="stakeAmount" rules={[{ required: true, message: 'Stake amount is required' }]}>
-                  <Input
-                    type="number"
-                    size="large"
-                    placeholder="Magic amount to stake"
-                    // initialValue={minStakeAmount}
-                    addonAfter="Magic"
-                    onChange={handleStakeAmountChange}
-                  />
-                </Form.Item>
-              </div>
-            </div>
-            <Alert message={infoMes} type="info" showIcon />
-            <div className="footer">
-              <Divider />
-              <div className="enterBtn">
-                <Button key="enter" loading={loading} onClick={handleEnterRace} type="primary" size="large" ghost>
-                  ENTER
-                </Button>
-              </div>
-            </div>
-          </ModalContent>
-        </Modal>
-      </Form>
-      {
-        <Modal centered visible={showWelcomeModal} onCancel={handleCancel} footer={null} width={700}>
-          <ModalContent>
-            <div className="grid">
-              <div>
-                <img width={300} src={nftPath} alt="NFTrocketImg" />
-              </div>
-              <div>
-                <Typography.Title level={3} className="title">
-                  Welcome Aboard!
-                </Typography.Title>
-
-                <p>Smol Brains #7581</p>
-                <p>Owned by 0x9178...5e34</p>
-
-                <div className="flex">
-                  <p className="text2">Staked</p>
-                  <img width={30} src={'../assets/magic.svg'} alt="magiclogo" />
-                  <p className="text2">520</p>
+          <Modal centered visible={showWelcomeModal} onCancel={handleCancel} footer={null} width={700}>
+            <ModalContent>
+              <div className="grid">
+                <div>
+                  <NftImage className="NFTimg" address={nftAddress} id={stakeNftId} />
+                </div>
+                <div>
+                  <Typography.Title level={3} className="title">
+                    Welcome Aboard!
+                  </Typography.Title>
+                  <Typography.Text>
+                    {nftContractName}{' '}
+                    <Typography.Title level={4} className="text2">
+                      #{stakeNftId}
+                    </Typography.Title>
+                    <br />
+                    Owned by{' '}
+                    <Typography.Title level={4} className="text2">
+                      {shortAddress(account)}
+                    </Typography.Title>
+                    <br />
+                    Staked{' '}
+                    <Typography.Title level={4} className="text2">
+                      <img width={30} src={'../assets/magic.svg'} alt="magiclogo" />
+                      {stakeAmount}
+                    </Typography.Title>
+                  </Typography.Text>
                 </div>
               </div>
-            </div>
-            <p className="text">
-              Hey Smol Brains holders, I have entered my Smol Brain into RACE TO URANUS! Check out the race here and
-              cheer me on or place a side bet on me to win!
-            </p>
-            <Divider />
-            <div className="enterBtn">
-              <Button key="enter" onClick={handleEnterRace} type="primary" size="large" ghost>
-                SHARE LINK
-              </Button>
-            </div>
-          </ModalContent>
-        </Modal>
-      }
+              <Typography.Title level={5} className="text2">
+                Hey {nftContractName} holders, I have entered my {nftContractName} into RACE TO URANUS! Check out the
+                race here and cheer me on or place a side bet on me to win!
+              </Typography.Title>
+              <Divider />
+              <div className="enterBtn">
+                <Button key="enter" onClick={handleEnterRace} type="primary" size="large" ghost>
+                  SHARE LINK
+                </Button>
+              </div>
+            </ModalContent>
+          </Modal>
+        </div>
+      )}
     </>
   );
 }
@@ -210,15 +348,20 @@ const ModalContent = styled.div`
     margin-top: 25px;
   }
   .dropdown {
+    display: inline-block;
+    margin-top: 15px;
+    margin-bottom: 15px;
     width: 100%;
   }
-
-  .flex {
-    display: flex;
-  }
   .text2 {
+    display: inline;
     margin-left: 5px;
     margin-right: 5px;
+  }
+
+  .nftImg {
+    padding: 0 10px;
+    margin-top: 15px;
   }
 `;
 

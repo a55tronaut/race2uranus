@@ -5,4 +5,5 @@ export * from './useRaceContract';
 export * from './useNftImageUrl';
 export * from './useEnsureMagicApproval';
 export * from './useNftsForUser';
+export * from './useNftContract';
 export * from './useNftDominantColor';

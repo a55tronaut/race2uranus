@@ -4,8 +4,10 @@ import { Button, Typography, Modal, Select, Input, Divider, notification, Form }
 import styled from 'styled-components';
 import { ethers } from 'ethers';
 
-import { useRaceContract, useRace } from '../../hooks';
-import { rockets } from '../PreRace/rocketsData';
+import { useRaceContract, useRace, useEnsureMagicApproval } from '../../hooks';
+import { mapNftAddress } from '../../utils';
+import { IUserWlNfts } from '../../types';
+import NftImage from '../NftImage';
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -14,16 +16,22 @@ function StakeButton() {
   const { raceId } = useParams();
   const race = useRace(raceId!);
   const rocketsStaked = race.rockets!;
-  const stakedRocketsAmount = rocketsStaked?.length;
 
   const { contract } = useRaceContract();
+  const { ensureApproval } = useEnsureMagicApproval();
 
   const [stakeForm] = Form.useForm();
 
   const [showStakeModal, setShowStakeModal] = useState(false);
-  const [stakeRocket, setStakeRocket] = useState('');
+  const [stakeRocketId, setStakeRocketId] = useState(-1);
   const [stakeAmount, setStakeAmount] = useState('');
+
+  const [userWlNfts, setUserWlNfts] = useState<IUserWlNfts[]>([]);
+
   const [loading, setLoading] = useState(false);
+  const [selectedNftId, setSelectedNftId] = useState('');
+  const [selectLoading, setSelectLoading] = useState(true);
+  const [selectedNftAdddress, setSelectedNftAdddress] = useState('');
 
   const handleStake = useCallback(async () => {
     const ethersToWei = ethers.utils.parseUnits(stakeAmount, 'ether');
@@ -32,12 +40,14 @@ function StakeButton() {
 
       await stakeForm.validateFields();
 
-      await contract.functions?.stakeOnRocket(race.id!, Number(stakeRocket), ethersToWei);
+      await ensureApproval(ethersToWei);
+
+      await contract.functions?.stakeOnRocket(race.id!, Number(stakeRocketId), ethersToWei);
 
       notification.success({
         message: (
           <span>
-            Succesfully staked on rocket #{stakeRocket} for {stakeAmount} MAGIC.
+            Successfully staked on rocket #{stakeRocketId} for {stakeAmount} MAGIC.
           </span>
         ),
       });
@@ -48,18 +58,36 @@ function StakeButton() {
     } finally {
       setLoading(false);
     }
-  }, [contract.functions, stakeForm, stakeRocket, race.id, stakeAmount]);
+  }, [stakeAmount, stakeForm, ensureApproval, contract.functions, race.id, stakeRocketId]);
 
   const displayStakeModal = useCallback(() => {
     setShowStakeModal(true);
-  }, []);
+
+    setSelectLoading(true);
+
+    setUserWlNfts([]);
+
+    rocketsStaked.forEach(async (rocket) => {
+      const rocketNftAddr = rocket.nft;
+      const rocketNftId = rocket.nftId.toString();
+
+      const rocketNftName = mapNftAddress(rocket.nft).title;
+
+      const nftData = { address: rocketNftAddr, id: rocketNftId, contractName: rocketNftName };
+      setUserWlNfts((userWlNfts) => [...userWlNfts, nftData]);
+    });
+
+    setSelectLoading(false);
+  }, [rocketsStaked]);
 
   const handleCancel = () => {
     setShowStakeModal(false);
   };
 
-  const handleChange = (value: string) => {
-    setStakeRocket(value);
+  const handleChange = (value: number) => {
+    setSelectedNftAdddress(userWlNfts[value].address);
+    setSelectedNftId(userWlNfts[value].id);
+    setStakeRocketId(value + 1);
   };
 
   const handleMagicChange = useCallback((e: any) => {
@@ -82,20 +110,22 @@ function StakeButton() {
           <ModalContent>
             <div className="grid">
               <div>
-                <img width={70} src="/assets/rocket.svg" alt="Rocket" />
+                <NftImage className="NFTimg" address={selectedNftAdddress} id={selectedNftId} />
               </div>
               <div>
                 <Typography.Title level={3} className="title">
                   Stake on a Rocket
                 </Typography.Title>
 
-                <Select className="child" defaultValue="0" onChange={handleChange}>
-                  <Option key="0" value="0">
-                    Select a rocket to stake
-                  </Option>
-                  {rockets.slice(0, stakedRocketsAmount).map((rocket) => (
-                    <Option key={rocket.id} value={rocket.id}>
-                      Rocket #{rocket.id}
+                <Select
+                  className="child"
+                  loading={selectLoading}
+                  placeholder="Select a rocket to stake"
+                  onChange={handleChange}
+                >
+                  {userWlNfts.map((nft, index) => (
+                    <Option value={index} key={index}>
+                      Rocket #{index + 1} - {nft.contractName} #{nft.id}
                     </Option>
                   ))}
                 </Select>
@@ -154,20 +184,14 @@ const ModalContent = styled.div`
     color: #009bff;
     text-align: center;
   }
-  .text {
-    margin-top: 25px;
-  }
-
   .child {
     display: inline-block;
     margin-top: 15px;
     margin-bottom: 15px;
     width: 100%;
   }
-
-  .text2 {
-    margin-left: 5px;
-    margin-right: 5px;
+  .NFTimg {
+    width: 200px;
   }
 `;
 

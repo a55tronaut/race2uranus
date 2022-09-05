@@ -1,30 +1,27 @@
 import { useCallback, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import { Contract } from 'ethers';
+import { ethers } from 'ethers';
 import { Form, Button, Modal, Divider, Typography, Alert, notification } from 'antd';
 
-import { rockets } from './rocketsData';
+import { useRace, useRaceContract, useEnsureMagicApproval } from '../../hooks';
+import { shortAddress, mapNftAddress } from '../../utils';
 import NftImage from '../NftImage';
-import { useRace, useRaceContract } from '../../hooks';
-import { totalRockets } from '../../constants';
-import { IRocket } from '../../types';
-import { shortAddress } from '../../utils';
 
-import { useEthersSigner } from '../../hooks/useEthersSigner';
-import ERC721ABI from '../../abi/ERC721.json';
+const { Paragraph, Text } = Typography;
 
 function PreRace() {
-  const { Paragraph, Text } = Typography;
-
   const { raceId } = useParams();
   const race = useRace(raceId!);
+
   const boostAmount = race.configSnapshot?.boostAmount!;
+  const boostPrice = race.configSnapshot?.boostPrice!;
   const rocketsStaked = race.rockets!;
   const stakedRocketsAmount = rocketsStaked?.length + 1;
+  const raceReward = race.rewardPool;
 
-  const { signer } = useEthersSigner();
   const { contract } = useRaceContract();
+  const { ensureApproval } = useEnsureMagicApproval();
 
   const [showBoostModal, setShowBoostModal] = useState(false);
   const [loadBoostModal, setLoadBoostModal] = useState(false);
@@ -32,39 +29,34 @@ function PreRace() {
 
   const [rocketId, setRocketId] = useState(0);
   const [rocketNftId, setrocketNftId] = useState('');
+  const [rocketNftAddr, setrocketNftAddr] = useState('');
   const [rocketNftName, setrocketNftName] = useState('');
   const [rocketNftHolder, setrocketNftHolder] = useState('');
 
   const displayBoostModal = useCallback(
-    (rocket: IRocket) => {
+    async (rocket: any) => {
       setLoadBoostModal(true);
       setRocketId(rocket.id);
-      const currentRocket = Number(rocket.id) - 1;
+      const currentRocket = Number(rocket.id);
       const rocketNft = rocketsStaked?.[currentRocket].nft;
       const rocketNftId = rocketsStaked?.[currentRocket].nftId;
+
       const rocketNftHolder = rocketsStaked?.[currentRocket].rocketeer;
 
       if (rocketNft && rocketNftId) {
-        getContractName(rocketNft.toString());
+        const conName = mapNftAddress(rocketNft).title;
+
+        setrocketNftName(conName);
+        setrocketNftAddr(rocketNft);
         setrocketNftId(rocketNftId.toString());
-        setrocketNftHolder(rocketNftHolder.toString());
+        setrocketNftHolder(rocketNftHolder);
       }
 
       setShowBoostModal(true);
       setLoadBoostModal(false);
-
-      async function getContractName(address: string) {
-        const contract: any = new Contract(address, ERC721ABI, signer);
-        const contractName = await contract!.functions.name();
-        setrocketNftName(contractName);
-      }
     },
-    [rocketsStaked, signer]
+    [rocketsStaked]
   );
-
-  const handleOk = () => {
-    setShowBoostModal(false);
-  };
 
   const handleCancel = () => {
     setShowBoostModal(false);
@@ -74,12 +66,14 @@ function PreRace() {
     try {
       setLoading(true);
 
-      await contract.functions?.applyBoost(race.id!, rocketId - 1);
+      await ensureApproval(boostPrice);
+
+      await contract.functions?.applyBoost(race.id!, rocketId);
 
       notification.success({
         message: (
           <span>
-            Boost applied to {rocketNftName} {rocketNftId}
+            Boost applied to {rocketNftName} #{rocketNftId}
           </span>
         ),
       });
@@ -90,7 +84,7 @@ function PreRace() {
     } finally {
       setLoading(false);
     }
-  }, [contract.functions, race.id, rocketNftName, rocketNftId, rocketId]);
+  }, [contract.functions, race.id, rocketId, rocketNftName, rocketNftId, boostPrice, ensureApproval]);
 
   return (
     <>
@@ -109,45 +103,43 @@ function PreRace() {
         <div className="priceEarn">
           <img src="../assets/magic.svg" alt="magicLogo" className="myImage" />
           <Typography.Title level={2} className="heading">
-            {
-              // rewardAmount.toString()
-            }
+            {raceReward && <div>{ethers.utils.formatEther(raceReward!)}</div>}
           </Typography.Title>
         </div>
       </PreRaceText>
       <Container id="rockets">
-        {rockets.slice(0, totalRockets).map((rocket) => (
-          <div id={rocket.alt} className="rocket" key={'div' + rocket.id}>
-            <img width={100} src={'../assets/rocket.svg'} alt={rocket.alt} key={rocket.id} />
-            {rocket.id < stakedRocketsAmount! && (
-              <>
-                <div className="border">
-                  <NftImage
-                    className="nftImg"
-                    address="0x6325439389E0797Ab35752B4F43a14C004f22A9c"
-                    id={rocketsStaked?.[rocket.id - 1]?.nftId}
-                  />
-                </div>
-                <Button
-                  key={'btn' + rocket.id}
-                  id={'btn' + rocket.id}
-                  loading={loadBoostModal}
-                  onClick={() => displayBoostModal(rocket)}
-                  type="primary"
-                  size="middle"
-                  ghost
-                >
-                  BOOST
-                </Button>
-              </>
-            )}
-          </div>
-        ))}
+        {rocketsStaked &&
+          rocketsStaked.map((rocket, index) => (
+            <div className="rocket" key={rocket.id}>
+              <img width={100} src={'../assets/rocket.svg'} alt={'rck' + rocket.id} />
+              {rocket.id < stakedRocketsAmount! && (
+                <>
+                  <div className="border">
+                    <NftImage
+                      className="nftImg"
+                      address={rocketsStaked?.[rocket.id]?.nft}
+                      id={rocketsStaked?.[rocket.id]?.nftId}
+                    />
+                  </div>
+                  <Button
+                    id={'BoostBtn' + rocket.id}
+                    loading={loadBoostModal}
+                    onClick={() => displayBoostModal(rocket)}
+                    type="primary"
+                    size="middle"
+                    ghost
+                  >
+                    BOOST
+                  </Button>
+                </>
+              )}
+            </div>
+          ))}
         <Form layout="vertical">
-          <Modal centered visible={showBoostModal} onOk={handleOk} onCancel={handleCancel} width={650} footer={null}>
+          <Modal centered visible={showBoostModal} onCancel={handleCancel} width={650} footer={null}>
             <ModalContent>
               <div className="grid">
-                <NftImage className="NFTimg" address="0x6325439389E0797Ab35752B4F43a14C004f22A9c" id={rocketNftId} />
+                <NftImage className="NFTimg" address={rocketNftAddr} id={rocketNftId} />
                 <div>
                   <Typography.Title level={4} className="title">
                     Boost Rocket
@@ -226,6 +218,7 @@ const PreRaceText = styled.div`
     height: 120px;
     background-color: purple;
     align-items: center;
+    padding-left: 5%;
   }
   .myImage {
     float: left;
@@ -233,8 +226,6 @@ const PreRaceText = styled.div`
     display: block;
     height: 40px;
     width: 40px;
-  }
-  .heading {
   }
 `;
 
@@ -289,9 +280,6 @@ const ModalContent = styled.div`
     color: #009bff;
     text-align: center;
     margin-bottom: 25px;
-  }
-  .text1 {
-    display: inline;
   }
   .text2 {
     display: inline;

@@ -100,7 +100,6 @@ function wrapEventHandler(handler: (ev: any) => Promise<void>): TypedListener<an
 const wrappedHandleRaceCreatedEvent = wrapEventHandler(handleRaceCreatedEvent);
 async function handleRaceCreatedEvent(ev: RaceCreatedEvent) {
   const { args } = ev;
-  console.log(args);
 }
 
 const wrappedHandleRaceEnteredEvent = wrapEventHandler(handleRaceEnteredEvent);
