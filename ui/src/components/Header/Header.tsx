@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-
 import { Space } from 'antd';
 
 import StakeButton from './StakeButton';
@@ -8,6 +7,7 @@ import Logo from '../Logo';
 import Prize from './Prize';
 import EnterRace from './EnterRace';
 import BurMenu from './BurMenu';
+import ClaimRewards from './ClaimRewards';
 
 function Header() {
   return (
@@ -15,19 +15,18 @@ function Header() {
       <Container>
         <Layout>
           <TopMenu>
-            <div>
-              <Space size="large">
-                <StakeButton />
-                <StartCd />
-              </Space>
-            </div>
+            <Space size="large">
+              <StakeButton />
+              <StartCd />
+            </Space>
             <Logo />
-            <div className="push">
-              <Space size="large">
-                <Prize />
-                <EnterRace />
-              </Space>
-            </div>
+            <Space size="large" className="spaceRight">
+              <Prize />
+              <EnterRace />
+              <ClaimRewardsContainer>
+                <ClaimRewards />
+              </ClaimRewardsContainer>
+            </Space>
             <BurMenu />
           </TopMenu>
         </Layout>
@@ -42,6 +41,18 @@ const Wrapper = styled.div`
   z-index: 1;
 `;
 
+const Container = styled.div`
+  background-image: url(../assets/menu.svg);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  height: 155px;
+
+  .spaceRight {
+    position: relative;
+  }
+`;
+
 const Layout = styled.div`
   max-width: 1280px;
   margin: 0px auto;
@@ -53,10 +64,7 @@ const TopMenu = styled.div`
   align-items: center;
   height: 120px;
   padding: 0 30px;
-  .push {
-    margin-left: auto;
-    display: flex;
-  }
+
   .logo {
     height: 115px;
     position: absolute;
@@ -66,12 +74,10 @@ const TopMenu = styled.div`
   }
 `;
 
-const Container = styled.div`
-  background-image: url(../assets/menu.svg);
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
-  height: 155px;
+const ClaimRewardsContainer = styled.div`
+  position: absolute;
+  bottom: -55px;
+  right: 5px;
 `;
 
 export default Header;

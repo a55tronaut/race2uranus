@@ -65,7 +65,7 @@ const GlobalStyle = createGlobalStyle`
   .ant-btn > span {
     text-transform: uppercase;
     color: white;
-    font-family: 'Orbitron';
+    font-family: Orbitron;
     font-weight: 700;
     letter-spacing: 0.1em;
   }
