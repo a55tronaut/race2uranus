@@ -13,7 +13,8 @@ export function useEnsureMagicApproval() {
     async (requiredAmount: BigNumberish) => {
       const [currentAllowance] = await contract.functions?.allowance(account!, GAME_ADDRESS)!;
       if (currentAllowance.lt(requiredAmount)) {
-        await contract.functions?.approve(GAME_ADDRESS, ethers.constants.MaxUint256);
+        const res = await contract.functions?.approve(GAME_ADDRESS, ethers.constants.MaxUint256);
+        await res?.wait(1);
       }
     },
     [account, contract.functions]

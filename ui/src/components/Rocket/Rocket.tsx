@@ -7,17 +7,17 @@ import { ReactComponent as RocketSvg } from './rocket.svg';
 
 interface IProps {
   address: string;
-  id: BigNumberish;
+  nftId: BigNumberish;
   className?: string;
 }
 
-function Rocket({ address, id, className }: IProps) {
-  const { color } = useNftDominantColor(address, id);
+function Rocket({ address, nftId, className }: IProps) {
+  const { color } = useNftDominantColor(address, nftId);
 
   return (
     <Container color={color} className={className}>
       <Porthole>
-        <NftImage address={address} id={id} className="nftImg" />
+        <NftImage address={address} id={nftId} className="nftImg" />
       </Porthole>
       <RocketSvg className="rocket" />
     </Container>
@@ -25,8 +25,7 @@ function Rocket({ address, id, className }: IProps) {
 }
 
 const Container = styled.div`
-  width: 80px;
-  height: 230px;
+  width: 100%;
   position: relative;
 
   .st6,

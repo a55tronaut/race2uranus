@@ -1,25 +1,25 @@
 import styled from 'styled-components';
 import { Button } from 'antd';
 
-import Rocket from './Rocket';
+import Rocket from '../Rocket';
 
 function Rockets() {
   return (
     <AllRockets>
       <RocketWrapper>
-        <Rocket address="0xfeb5090f01a938ddAB67e1aDe885F90049a3DA84" id="127" />
+        <Rocket address="0xfeb5090f01a938ddAB67e1aDe885F90049a3DA84" nftId="127" />
         <Button type="primary" size="middle" ghost>
           Boost
         </Button>
       </RocketWrapper>
       <RocketWrapper>
-        <Rocket address="0xfeb5090f01a938ddAB67e1aDe885F90049a3DA84" id="128" />
+        <Rocket address="0xfeb5090f01a938ddAB67e1aDe885F90049a3DA84" nftId="128" />
         <Button type="primary" size="middle" ghost>
           Boost
         </Button>
       </RocketWrapper>
       <RocketWrapper>
-        <Rocket address="0xD115790C737A331f383fFe79A08AB913e54D2E31" id="123" />
+        <Rocket address="0xD115790C737A331f383fFe79A08AB913e54D2E31" nftId="123" />
         <Button type="primary" size="middle" ghost>
           Boost
         </Button>

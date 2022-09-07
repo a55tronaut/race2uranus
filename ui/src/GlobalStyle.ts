@@ -1,6 +1,8 @@
 import 'antd/dist/antd.dark.css';
 import { createGlobalStyle } from 'styled-components';
 
+import { black, blue } from './colors';
+
 const GlobalStyle = createGlobalStyle`
   body,
   html {
@@ -20,6 +22,10 @@ const GlobalStyle = createGlobalStyle`
     > main {
       flex: 1;
     }
+  }
+
+  strong {
+    font-weight: bold;
   }
 
   h1 {
@@ -71,23 +77,28 @@ const GlobalStyle = createGlobalStyle`
   }
 
   .ant-btn-background-ghost.ant-btn-primary {
-    color: #009bff;
-    border-color: #009bff;
-  }
-
-  .ant-dropdown-menu-item,
-  .ant-dropdown-menu-submenu-title {
-    padding: 10px 50px 10px 20px;
+    color: ${blue};
+    border-color: ${blue};
   }
 
   .ant-dropdown-menu {
     background-color: rgba(0, 0, 0, 0.5);
     border: solid 1px;
-    border-color: #009bff;
+    border-color: ${blue};
+  }
+  .ant-dropdown-menu-item,
+  .ant-dropdown-menu-submenu-title {
+    padding: 10px 50px 10px 20px;
   }
 
+  .ant-select-item .nftOptionImg,
+  .ant-select-selection-item .nftOptionImg {
+    width: 24px;
+  }
+
+
   .ant-table {
-    border: 1px solid #009bff;
+    border: 1px solid ${blue};
     border-radius: 5px;
     background: none;
   }
@@ -100,7 +111,7 @@ const GlobalStyle = createGlobalStyle`
   .ant-table-thead > tr > th {
     font-weight: bold;
     font-size: 12px;
-    border-bottom: 1px solid #009bff;
+    border-bottom: 1px solid ${blue};
     background: rgba(0, 0, 0, 0.8);
   }
   .ant-table-tbody > tr > td {
@@ -127,22 +138,21 @@ const GlobalStyle = createGlobalStyle`
   }
 
   .anticon {
-    color: #009bff;
-    font-size: 25px;
+    color: ${blue};
   }
 
   .ant-modal {
     border: 1px;
     border-radius: 5px;
     border-style: solid;
-    border-color: #009bff;
-    opacity: 0.85;
+    border-color: ${blue};
   }
   .ant-modal-content {
     border-radius: 5px;
   }
   .ant-modal-body {
-    background-color: #15001d;
+    background-color: ${black};
+    border-radius: 5px;
   }
 `;
 

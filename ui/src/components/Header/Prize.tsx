@@ -14,7 +14,7 @@ function Prize() {
 
   return (
     <PrizeMagic>
-      <Text>Prize</Text>
+      <Text>Reward Pool</Text>
       <Title className="magic" level={4}>
         {raceReward && <div className="number">{ethers.utils.formatEther(raceReward!)}</div>}
       </Title>

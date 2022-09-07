@@ -1,6 +1,7 @@
 import { BigNumber, BigNumberish, utils } from 'ethers';
 import { supportedNfts } from './constants';
 import { NFT_MAPPINGS } from './env';
+import { ISupportedNft } from './types';
 
 export function randomHeight(minHeight: number, maxHeight: number) {
   return Math.floor(Math.random() * maxHeight) + minHeight;
@@ -36,11 +37,11 @@ export function shortId(id?: string | null | undefined, chars = 4): string {
   return `${_id.slice(0, chars - 1)}...${_id.slice(-chars)}`;
 }
 
-export function formatNumber(value: number, decimals = 4, fallbackValue = '-'): string {
+export function formatNumber(value: number, minDecimals = 0, maxDecimals = 2, fallbackValue = '-'): string {
   if (value) {
     const formatter = new Intl.NumberFormat('en-US', {
-      minimumFractionDigits: decimals,
-      maximumFractionDigits: decimals,
+      minimumFractionDigits: minDecimals,
+      maximumFractionDigits: maxDecimals,
     });
 
     return formatter.format(value);
@@ -116,9 +117,16 @@ export function bigNumberishToString(bnish: BigNumberish): string {
   return BigNumber.from(bnish).toString();
 }
 
-export function mapNftAddress(address: string) {
+export function mapNftAddress(address: string): string {
   const normalizedAddress = address.toLowerCase();
   const mappedAddress = NFT_MAPPINGS[normalizedAddress];
-  const supportedNftData = supportedNfts.find((nft) => nft.address.toLowerCase() === mappedAddress)!;
-  return supportedNftData;
+
+  return mappedAddress;
+}
+
+export function getNftConfig(address: string): ISupportedNft {
+  const mappedAddress = mapNftAddress(address);
+  const config = supportedNfts.find((nft) => nft.address.toLowerCase() === mappedAddress.toLowerCase())!;
+
+  return config;
 }

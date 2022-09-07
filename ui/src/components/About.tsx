@@ -1,7 +1,9 @@
 import styled from 'styled-components';
 import { Typography, Space } from 'antd';
 
-const { Text, Title, Paragraph } = Typography;
+import { blue } from '../colors';
+
+const { Title, Paragraph } = Typography;
 
 function Lore() {
   return (
@@ -63,7 +65,7 @@ const ContainerTxt = styled.div`
   .txtChapter {
     font-size: 21px;
     text-transform: uppercase;
-    color: #009bff;
+    color: ${blue};
   }
 
   .txtBody {

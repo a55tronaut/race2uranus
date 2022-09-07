@@ -7,3 +7,4 @@ export * from './useEnsureMagicApproval';
 export * from './useNftsForUser';
 export * from './useNftContract';
 export * from './useNftDominantColor';
+export * from './useSelectedRace';

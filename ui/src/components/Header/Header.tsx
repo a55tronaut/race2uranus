@@ -5,7 +5,7 @@ import StakeButton from './StakeButton';
 import StartCd from './StartCd';
 import Logo from '../Logo';
 import Prize from './Prize';
-import EnterRace from './EnterRace';
+import EnterRace from '../EnterRace';
 import BurMenu from './BurMenu';
 import ClaimRewards from './ClaimRewards';
 

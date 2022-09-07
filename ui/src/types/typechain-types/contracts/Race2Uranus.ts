@@ -63,17 +63,15 @@ export declare namespace Race2Uranus {
     nftId: PromiseOrValue<BigNumberish>;
     totalStake: PromiseOrValue<BigNumberish>;
     totalBoosts: PromiseOrValue<BigNumberish>;
-    rocketeerRewardClaimed: PromiseOrValue<boolean>;
   };
 
-  export type RocketStructOutput = [number, string, string, BigNumber, BigNumber, number, boolean] & {
+  export type RocketStructOutput = [number, string, string, BigNumber, BigNumber, number] & {
     id: number;
     rocketeer: string;
     nft: string;
     nftId: BigNumber;
     totalStake: BigNumber;
     totalBoosts: number;
-    rocketeerRewardClaimed: boolean;
   };
 
   export type RaceStruct = {
@@ -147,8 +145,9 @@ export interface Race2UranusInterface extends utils.Interface {
     'enterRace(uint256,address,uint256,uint256)': FunctionFragment;
     'finishRace(uint256)': FunctionFragment;
     'getActiveRaceIds()': FunctionFragment;
-    'getBlockhash()': FunctionFragment;
-    'getBlockhashUint()': FunctionFragment;
+    'getBlockNumber()': FunctionFragment;
+    'getBlockhash(uint256)': FunctionFragment;
+    'getBlockhashUint(uint256)': FunctionFragment;
     'getRace(uint256)': FunctionFragment;
     'getRaceConfig()': FunctionFragment;
     'getRaceCount()': FunctionFragment;
@@ -156,6 +155,7 @@ export interface Race2UranusInterface extends utils.Interface {
     'getRocketsForRace(uint256)': FunctionFragment;
     'getStakeAmountForStaker(uint256,uint8,address)': FunctionFragment;
     'getTimeParams()': FunctionFragment;
+    'getUsersForRaceId(uint256)': FunctionFragment;
     'getWhitelistedNfts()': FunctionFragment;
     'initialize(address,address[],address)': FunctionFragment;
     'magic()': FunctionFragment;
@@ -163,7 +163,7 @@ export interface Race2UranusInterface extends utils.Interface {
     'owner()': FunctionFragment;
     'proxiableUUID()': FunctionFragment;
     'renounceOwnership()': FunctionFragment;
-    'revealBoosts(uint256,uint8,uint8)': FunctionFragment;
+    'setAutoCreateNextRace(bool)': FunctionFragment;
     'setBeneficiary(address)': FunctionFragment;
     'setRaceConfig((uint8,uint256,uint256,uint256,uint256,uint8,uint8,uint8,uint8,address[]))': FunctionFragment;
     'setTimeParams((uint32[],uint8,uint32))': FunctionFragment;
@@ -192,6 +192,7 @@ export interface Race2UranusInterface extends utils.Interface {
       | 'enterRace'
       | 'finishRace'
       | 'getActiveRaceIds'
+      | 'getBlockNumber'
       | 'getBlockhash'
       | 'getBlockhashUint'
       | 'getRace'
@@ -201,6 +202,7 @@ export interface Race2UranusInterface extends utils.Interface {
       | 'getRocketsForRace'
       | 'getStakeAmountForStaker'
       | 'getTimeParams'
+      | 'getUsersForRaceId'
       | 'getWhitelistedNfts'
       | 'initialize'
       | 'magic'
@@ -208,7 +210,7 @@ export interface Race2UranusInterface extends utils.Interface {
       | 'owner'
       | 'proxiableUUID'
       | 'renounceOwnership'
-      | 'revealBoosts'
+      | 'setAutoCreateNextRace'
       | 'setBeneficiary'
       | 'setRaceConfig'
       | 'setTimeParams'
@@ -261,8 +263,9 @@ export interface Race2UranusInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: 'finishRace', values: [PromiseOrValue<BigNumberish>]): string;
   encodeFunctionData(functionFragment: 'getActiveRaceIds', values?: undefined): string;
-  encodeFunctionData(functionFragment: 'getBlockhash', values?: undefined): string;
-  encodeFunctionData(functionFragment: 'getBlockhashUint', values?: undefined): string;
+  encodeFunctionData(functionFragment: 'getBlockNumber', values?: undefined): string;
+  encodeFunctionData(functionFragment: 'getBlockhash', values: [PromiseOrValue<BigNumberish>]): string;
+  encodeFunctionData(functionFragment: 'getBlockhashUint', values: [PromiseOrValue<BigNumberish>]): string;
   encodeFunctionData(functionFragment: 'getRace', values: [PromiseOrValue<BigNumberish>]): string;
   encodeFunctionData(functionFragment: 'getRaceConfig', values?: undefined): string;
   encodeFunctionData(functionFragment: 'getRaceCount', values?: undefined): string;
@@ -276,6 +279,7 @@ export interface Race2UranusInterface extends utils.Interface {
     values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(functionFragment: 'getTimeParams', values?: undefined): string;
+  encodeFunctionData(functionFragment: 'getUsersForRaceId', values: [PromiseOrValue<BigNumberish>]): string;
   encodeFunctionData(functionFragment: 'getWhitelistedNfts', values?: undefined): string;
   encodeFunctionData(
     functionFragment: 'initialize',
@@ -286,10 +290,7 @@ export interface Race2UranusInterface extends utils.Interface {
   encodeFunctionData(functionFragment: 'owner', values?: undefined): string;
   encodeFunctionData(functionFragment: 'proxiableUUID', values?: undefined): string;
   encodeFunctionData(functionFragment: 'renounceOwnership', values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: 'revealBoosts',
-    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
-  ): string;
+  encodeFunctionData(functionFragment: 'setAutoCreateNextRace', values: [PromiseOrValue<boolean>]): string;
   encodeFunctionData(functionFragment: 'setBeneficiary', values: [PromiseOrValue<string>]): string;
   encodeFunctionData(functionFragment: 'setRaceConfig', values: [Race2Uranus.RaceConfigStruct]): string;
   encodeFunctionData(functionFragment: 'setTimeParams', values: [Race2Uranus.TimeParamsStruct]): string;
@@ -321,6 +322,7 @@ export interface Race2UranusInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: 'enterRace', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'finishRace', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'getActiveRaceIds', data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: 'getBlockNumber', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'getBlockhash', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'getBlockhashUint', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'getRace', data: BytesLike): Result;
@@ -330,6 +332,7 @@ export interface Race2UranusInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: 'getRocketsForRace', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'getStakeAmountForStaker', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'getTimeParams', data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: 'getUsersForRaceId', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'getWhitelistedNfts', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'initialize', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'magic', data: BytesLike): Result;
@@ -337,7 +340,7 @@ export interface Race2UranusInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: 'owner', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'proxiableUUID', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'renounceOwnership', data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: 'revealBoosts', data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: 'setAutoCreateNextRace', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'setBeneficiary', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'setRaceConfig', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'setTimeParams', data: BytesLike): Result;
@@ -550,7 +553,7 @@ export interface Race2Uranus extends BaseContract {
       raceId: PromiseOrValue<BigNumberish>,
       rocketeer: PromiseOrValue<string>,
       overrides?: CallOverrides
-    ): Promise<[BigNumber, boolean[]]>;
+    ): Promise<[BigNumber]>;
 
     calcStakeReward(
       raceId: PromiseOrValue<BigNumberish>,
@@ -587,9 +590,11 @@ export interface Race2Uranus extends BaseContract {
 
     getActiveRaceIds(overrides?: CallOverrides): Promise<[BigNumber[]]>;
 
-    getBlockhash(overrides?: CallOverrides): Promise<[string]>;
+    getBlockNumber(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    getBlockhashUint(overrides?: CallOverrides): Promise<[BigNumber]>;
+    getBlockhash(n: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<[string]>;
+
+    getBlockhashUint(n: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<[BigNumber]>;
 
     getRace(raceId: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<[Race2Uranus.RaceStructOutput]>;
 
@@ -617,6 +622,8 @@ export interface Race2Uranus extends BaseContract {
 
     getTimeParams(overrides?: CallOverrides): Promise<[Race2Uranus.TimeParamsStructOutput]>;
 
+    getUsersForRaceId(raceId: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<[string[]]>;
+
     getWhitelistedNfts(overrides?: CallOverrides): Promise<[string[]]>;
 
     initialize(
@@ -636,10 +643,8 @@ export interface Race2Uranus extends BaseContract {
 
     renounceOwnership(overrides?: Overrides & { from?: PromiseOrValue<string> }): Promise<ContractTransaction>;
 
-    revealBoosts(
-      raceId: PromiseOrValue<BigNumberish>,
-      rocketCount: PromiseOrValue<BigNumberish>,
-      boostCount: PromiseOrValue<BigNumberish>,
+    setAutoCreateNextRace(
+      _autoCreateNextRace: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -722,7 +727,7 @@ export interface Race2Uranus extends BaseContract {
     raceId: PromiseOrValue<BigNumberish>,
     rocketeer: PromiseOrValue<string>,
     overrides?: CallOverrides
-  ): Promise<[BigNumber, boolean[]]>;
+  ): Promise<BigNumber>;
 
   calcStakeReward(
     raceId: PromiseOrValue<BigNumberish>,
@@ -759,9 +764,11 @@ export interface Race2Uranus extends BaseContract {
 
   getActiveRaceIds(overrides?: CallOverrides): Promise<BigNumber[]>;
 
-  getBlockhash(overrides?: CallOverrides): Promise<string>;
+  getBlockNumber(overrides?: CallOverrides): Promise<BigNumber>;
 
-  getBlockhashUint(overrides?: CallOverrides): Promise<BigNumber>;
+  getBlockhash(n: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<string>;
+
+  getBlockhashUint(n: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<BigNumber>;
 
   getRace(raceId: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<Race2Uranus.RaceStructOutput>;
 
@@ -789,6 +796,8 @@ export interface Race2Uranus extends BaseContract {
 
   getTimeParams(overrides?: CallOverrides): Promise<Race2Uranus.TimeParamsStructOutput>;
 
+  getUsersForRaceId(raceId: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<string[]>;
+
   getWhitelistedNfts(overrides?: CallOverrides): Promise<string[]>;
 
   initialize(
@@ -808,10 +817,8 @@ export interface Race2Uranus extends BaseContract {
 
   renounceOwnership(overrides?: Overrides & { from?: PromiseOrValue<string> }): Promise<ContractTransaction>;
 
-  revealBoosts(
-    raceId: PromiseOrValue<BigNumberish>,
-    rocketCount: PromiseOrValue<BigNumberish>,
-    boostCount: PromiseOrValue<BigNumberish>,
+  setAutoCreateNextRace(
+    _autoCreateNextRace: PromiseOrValue<boolean>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -894,7 +901,7 @@ export interface Race2Uranus extends BaseContract {
       raceId: PromiseOrValue<BigNumberish>,
       rocketeer: PromiseOrValue<string>,
       overrides?: CallOverrides
-    ): Promise<[BigNumber, boolean[]]>;
+    ): Promise<BigNumber>;
 
     calcStakeReward(
       raceId: PromiseOrValue<BigNumberish>,
@@ -922,9 +929,11 @@ export interface Race2Uranus extends BaseContract {
 
     getActiveRaceIds(overrides?: CallOverrides): Promise<BigNumber[]>;
 
-    getBlockhash(overrides?: CallOverrides): Promise<string>;
+    getBlockNumber(overrides?: CallOverrides): Promise<BigNumber>;
 
-    getBlockhashUint(overrides?: CallOverrides): Promise<BigNumber>;
+    getBlockhash(n: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<string>;
+
+    getBlockhashUint(n: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<BigNumber>;
 
     getRace(raceId: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<Race2Uranus.RaceStructOutput>;
 
@@ -952,6 +961,8 @@ export interface Race2Uranus extends BaseContract {
 
     getTimeParams(overrides?: CallOverrides): Promise<Race2Uranus.TimeParamsStructOutput>;
 
+    getUsersForRaceId(raceId: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<string[]>;
+
     getWhitelistedNfts(overrides?: CallOverrides): Promise<string[]>;
 
     initialize(
@@ -971,12 +982,7 @@ export interface Race2Uranus extends BaseContract {
 
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
 
-    revealBoosts(
-      raceId: PromiseOrValue<BigNumberish>,
-      rocketCount: PromiseOrValue<BigNumberish>,
-      boostCount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
+    setAutoCreateNextRace(_autoCreateNextRace: PromiseOrValue<boolean>, overrides?: CallOverrides): Promise<void>;
 
     setBeneficiary(_beneficiary: PromiseOrValue<string>, overrides?: CallOverrides): Promise<void>;
 
@@ -1185,9 +1191,11 @@ export interface Race2Uranus extends BaseContract {
 
     getActiveRaceIds(overrides?: CallOverrides): Promise<BigNumber>;
 
-    getBlockhash(overrides?: CallOverrides): Promise<BigNumber>;
+    getBlockNumber(overrides?: CallOverrides): Promise<BigNumber>;
 
-    getBlockhashUint(overrides?: CallOverrides): Promise<BigNumber>;
+    getBlockhash(n: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<BigNumber>;
+
+    getBlockhashUint(n: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<BigNumber>;
 
     getRace(raceId: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1212,6 +1220,8 @@ export interface Race2Uranus extends BaseContract {
 
     getTimeParams(overrides?: CallOverrides): Promise<BigNumber>;
 
+    getUsersForRaceId(raceId: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<BigNumber>;
+
     getWhitelistedNfts(overrides?: CallOverrides): Promise<BigNumber>;
 
     initialize(
@@ -1231,10 +1241,8 @@ export interface Race2Uranus extends BaseContract {
 
     renounceOwnership(overrides?: Overrides & { from?: PromiseOrValue<string> }): Promise<BigNumber>;
 
-    revealBoosts(
-      raceId: PromiseOrValue<BigNumberish>,
-      rocketCount: PromiseOrValue<BigNumberish>,
-      boostCount: PromiseOrValue<BigNumberish>,
+    setAutoCreateNextRace(
+      _autoCreateNextRace: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1355,9 +1363,11 @@ export interface Race2Uranus extends BaseContract {
 
     getActiveRaceIds(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    getBlockhash(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    getBlockNumber(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    getBlockhashUint(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    getBlockhash(n: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    getBlockhashUint(n: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getRace(raceId: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -1382,6 +1392,8 @@ export interface Race2Uranus extends BaseContract {
 
     getTimeParams(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    getUsersForRaceId(raceId: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     getWhitelistedNfts(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     initialize(
@@ -1401,10 +1413,8 @@ export interface Race2Uranus extends BaseContract {
 
     renounceOwnership(overrides?: Overrides & { from?: PromiseOrValue<string> }): Promise<PopulatedTransaction>;
 
-    revealBoosts(
-      raceId: PromiseOrValue<BigNumberish>,
-      rocketCount: PromiseOrValue<BigNumberish>,
-      boostCount: PromiseOrValue<BigNumberish>,
+    setAutoCreateNextRace(
+      _autoCreateNextRace: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

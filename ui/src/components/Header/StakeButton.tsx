@@ -5,8 +5,9 @@ import styled from 'styled-components';
 import { ethers } from 'ethers';
 
 import { useRaceContract, useRace, useEnsureMagicApproval } from '../../hooks';
-import { mapNftAddress } from '../../utils';
+import { getNftConfig, mapNftAddress } from '../../utils';
 import { IUserWlNfts } from '../../types';
+import { blue } from '../../colors';
 import NftImage from '../NftImage';
 
 const { Text } = Typography;
@@ -34,12 +35,12 @@ function StakeButton() {
   const [selectedNftAdddress, setSelectedNftAdddress] = useState('');
 
   const handleStake = useCallback(async () => {
-    const ethersToWei = ethers.utils.parseUnits(stakeAmount, 'ether');
     try {
       setLoading(true);
 
       await stakeForm.validateFields();
 
+      const ethersToWei = ethers.utils.parseUnits(stakeAmount, 'ether');
       await ensureApproval(ethersToWei);
 
       await contract.functions?.stakeOnRocket(race.id!, Number(stakeRocketId), ethersToWei);
@@ -71,7 +72,7 @@ function StakeButton() {
       const rocketNftAddr = rocket.nft;
       const rocketNftId = rocket.nftId.toString();
 
-      const rocketNftName = mapNftAddress(rocket.nft).title;
+      const rocketNftName = getNftConfig(rocket.nft).name;
 
       const nftData = { address: rocketNftAddr, id: rocketNftId, contractName: rocketNftName };
       setUserWlNfts((userWlNfts) => [...userWlNfts, nftData]);
@@ -100,7 +101,7 @@ function StakeButton() {
         STAKE
       </Button>
       <StakeCounter>
-        <Text style={{ color: '#009bff' }} className="counterText">
+        <Text style={{ color: blue }} className="counterText">
           Final Stake In
         </Text>
         <Text className="counterTime">04:54:59</Text>
@@ -181,7 +182,7 @@ const ModalContent = styled.div`
     margin-top: 5%;
   }
   .title {
-    color: #009bff;
+    color: ${blue};
     text-align: center;
   }
   .child {

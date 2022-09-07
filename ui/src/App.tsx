@@ -5,11 +5,9 @@ import { Spin, Typography } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 
-import { LandingPage, Header, Game, Lore, About, WalletConnector } from './components';
 import GlobalStyle from './GlobalStyle';
 import { DappProvider } from './providers';
-
-const antIcon = <LoadingOutlined style={{ fontSize: 72 }} spin />;
+import { LandingPage, Header, Game, Lore, About, WalletConnector } from './components';
 
 function AppWrapper() {
   return (
@@ -25,7 +23,7 @@ function App() {
     <Suspense
       fallback={
         <LoaderWrapper>
-          <Spin indicator={antIcon} />
+          <Spin indicator={<LoadingOutlined style={{ fontSize: 72 }} spin />} />
         </LoaderWrapper>
       }
     >

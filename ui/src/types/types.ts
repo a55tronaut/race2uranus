@@ -1,14 +1,12 @@
-export interface IDummy {}
-
 export interface IRocket {
   id: number;
   alt: string;
   imageSrc: string;
 }
 
-export interface INftList {
+export interface ISupportedNft {
   id: number;
-  title: string;
+  name: string;
   href: string;
   url: string;
   address: string;

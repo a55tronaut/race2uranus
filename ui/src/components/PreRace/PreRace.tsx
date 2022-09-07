@@ -5,8 +5,10 @@ import { ethers } from 'ethers';
 import { Form, Button, Modal, Divider, Typography, Alert, notification } from 'antd';
 
 import { useRace, useRaceContract, useEnsureMagicApproval } from '../../hooks';
-import { shortAddress, mapNftAddress } from '../../utils';
+import { shortAddress, mapNftAddress, getNftConfig } from '../../utils';
+import { blue } from '../../colors';
 import NftImage from '../NftImage';
+import RocketPicker from '../RocketPicker';
 
 const { Paragraph, Text } = Typography;
 
@@ -44,7 +46,7 @@ function PreRace() {
       const rocketNftHolder = rocketsStaked?.[currentRocket].rocketeer;
 
       if (rocketNft && rocketNftId) {
-        const conName = mapNftAddress(rocketNft).title;
+        const conName = getNftConfig(rocketNft).name;
 
         setrocketNftName(conName);
         setrocketNftAddr(rocketNft);
@@ -93,9 +95,8 @@ function PreRace() {
           Welcome To The Launch Pad!
         </Typography.Title>
         <Paragraph className="text">
-          You are about to enter the <Text strong> Race of Uranus. </Text> Choose an empty space <br />
-          vehicle to be able to participate. <br /> You can also stake on any rocket and boost its propulsion system{' '}
-          <br /> with your <Text strong> $MAGIC</Text>.
+          You are about to enter the <Text strong> Race 2 Uranus. </Text> Choose an empty rocket to join the race.{' '}
+          <br /> You can also stake on any rocket or boost its propulsion system with your <Text strong> $MAGIC</Text>.
         </Paragraph>
         <Typography.Title level={5} className="prizeHeader">
           Join to Earn Up To
@@ -181,6 +182,7 @@ function PreRace() {
             </ModalContent>
           </Modal>
         </Form>
+        <RocketPicker rockets={race.rockets || []} onSelect={console.log} />
       </Container>
     </>
   );
@@ -277,7 +279,7 @@ const ModalContent = styled.div`
     grid-template-columns: auto auto auto;
   }
   .title {
-    color: #009bff;
+    color: ${blue};
     text-align: center;
     margin-bottom: 25px;
   }
