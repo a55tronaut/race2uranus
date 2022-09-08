@@ -9,6 +9,7 @@ import { blue } from '../../colors';
 import { Race2Uranus } from '../../types';
 import InfoTooltip from '../InfoTooltip';
 import RocketPicker from '../RocketPicker';
+import ModalFooter from '../ModalFooter';
 
 interface IProps {
   onClose: () => void;
@@ -136,11 +137,11 @@ function StakeOnRocketModalContent({ onClose }: IProps) {
           </Form.Item>
         </Form>
       </Content>
-      <Footer>
+      <ModalFooter>
         <Button key="enter" loading={loading} type="primary" size="middle" ghost onClick={handleSubmit}>
           STAKE
         </Button>
-      </Footer>
+      </ModalFooter>
     </Container>
   );
 }
@@ -166,17 +167,6 @@ const Content = styled.div`
   form {
     flex: 1;
   }
-`;
-
-const Footer = styled.div`
-  border-top: 1px solid ${blue};
-  width: calc(100% + 48px);
-  transform: translateX(-24px);
-  margin-top: 24px;
-  padding: 24px 24px 0 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 `;
 
 export default StakeOnRocketModalContent;

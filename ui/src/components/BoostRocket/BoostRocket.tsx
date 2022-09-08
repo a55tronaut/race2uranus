@@ -1,11 +1,14 @@
 import { useCallback, useState } from 'react';
 import { Button, Modal } from 'antd';
 
-import { useSelectedRace } from '../../hooks';
-import EnterRaceModalContent from './EnterRaceModalContent';
+import { Race2Uranus } from '../../types';
+import BoostRocketModalContent from './BoostRocketModalContent';
 
-function EnterRace() {
-  const race = useSelectedRace();
+interface IProps {
+  rocket: Race2Uranus.RocketStructOutput;
+}
+
+function BoostRocket({ rocket }: IProps) {
   const [showModal, setShowModal] = useState(false);
 
   const handleShowModal = useCallback(() => {
@@ -18,14 +21,14 @@ function EnterRace() {
 
   return (
     <>
-      <Button type="primary" size="large" disabled={!race} ghost onClick={handleShowModal}>
-        Enter Race
+      <Button type="primary" size="large" disabled={!rocket} ghost onClick={handleShowModal}>
+        Boost
       </Button>
       <Modal centered open={showModal} width={650} destroyOnClose onCancel={handleCloseModal} footer={null}>
-        <EnterRaceModalContent onClose={handleCloseModal} />
+        <BoostRocketModalContent rocket={rocket} onClose={handleCloseModal} />
       </Modal>
     </>
   );
 }
 
-export default EnterRace;
+export default BoostRocket;

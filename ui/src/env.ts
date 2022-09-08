@@ -1,13 +1,13 @@
-export const CHAIN_ID = requiredNumber('REACT_APP_CHAIN_ID');
-export const RPC_URL = requiredString('REACT_APP_RPC_URL');
+export const CHAIN_ID = env('REACT_APP_CHAIN_ID', 'number');
+export const RPC_URL = env('REACT_APP_RPC_URL', 'string');
 
-export const GAME_ADDRESS = requiredString('REACT_APP_GAME_ADDRESS');
-export const MAGIC_ADDRESS = requiredString('REACT_APP_MAGIC_ADDRESS');
+export const GAME_ADDRESS = env('REACT_APP_GAME_ADDRESS', 'string');
+export const MAGIC_ADDRESS = env('REACT_APP_MAGIC_ADDRESS', 'string');
 
-export const NFT_META_URL = requiredString('REACT_APP_NFT_META_URL');
-export const NFT_MAPPINGS = parseNftMappings(defaultString('REACT_APP_NFT_MAPPINGS', ''));
+export const NFT_META_URL = env('REACT_APP_NFT_META_URL', 'string');
+export const NFT_MAPPINGS = parseNftMappings(env('REACT_APP_NFT_MAPPINGS', 'string', ''));
 
-export const API_URL = requiredString('REACT_APP_API_URL');
+export const API_URL = env('REACT_APP_API_URL', 'string');
 
 ///////////////////////////////////////////////////////
 
@@ -27,43 +27,49 @@ function parseNftMappings(rawMappins: string): { [key: string]: string } {
 
 ///////////////////////////////////////////////////////
 
-function defaultString(key: string, defaultVal: string): string {
-  return process.env[key] || defaultVal;
-}
+type EnvValType = {
+  string: string;
+  number: number;
+  boolean: boolean;
+};
+type EnvDataType = keyof EnvValType;
 
-function requiredString(key: string): string {
-  return required(key);
-}
+function env<T extends EnvDataType>(key: string, dataType: T, defaultVal?: EnvValType[T]): EnvValType[T] {
+  let val: any = process.env[key] || defaultVal;
 
-function requiredNumber(key: string): number {
-  const val = required(key);
-  const num = Number(val);
+  const isRequired = defaultVal === undefined;
 
-  if (isNaN(num)) {
-    throw new Error(`Env var ${key} is not a number`);
-  }
-
-  return num;
-}
-
-function requiredBoolean(key: string): boolean {
-  const val = required(key).toLowerCase();
-  const truthyVals = ['true', '1'];
-  const falsyVals = ['false', '0'];
-  const acceptedVals = [...truthyVals, ...falsyVals];
-
-  if (!acceptedVals.includes(val)) {
-    throw new Error(`Env var ${key} is not a boolean`);
-  }
-
-  return truthyVals.includes(val);
-}
-
-function required(key: string): string {
-  const val = process.env[key];
-  if (!val) {
+  if (isRequired && !val) {
     throw new Error(`Missing required env var ${key}`);
   }
 
-  return val;
+  switch (dataType) {
+    case 'string': {
+      return val;
+    }
+    case 'number': {
+      const num = Number(val);
+
+      if (isNaN(num)) {
+        throw new Error(`Env var ${key} is not a number`);
+      }
+
+      return num as any;
+    }
+    case 'boolean': {
+      const normalizedVal = val.toLowerCase();
+      const truthyVals = ['true', '1'];
+      const falsyVals = ['false', '0'];
+      const acceptedVals = [...truthyVals, ...falsyVals];
+
+      if (!acceptedVals.includes(normalizedVal)) {
+        throw new Error(`Env var ${key} is not a boolean`);
+      }
+
+      return truthyVals.includes(normalizedVal) as any;
+    }
+    default: {
+      throw new Error(`Unsupported data type: ${dataType}`);
+    }
+  }
 }

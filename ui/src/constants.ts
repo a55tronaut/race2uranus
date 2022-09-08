@@ -37,6 +37,8 @@ export const rocketsType = 1;
 export const assetType = ['monoRockets', 'polyRockets', 'monoSpaceShip', 'polySpaceShip'];
 export const path = 'assets/' + assetType[rocketsType];
 
+export const GAME_LOOP_INTERVAL_SECONDS = 5;
+
 export const supportedNfts: ISupportedNft[] = [
   {
     id: 0,

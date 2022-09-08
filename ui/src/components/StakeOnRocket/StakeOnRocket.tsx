@@ -27,7 +27,7 @@ function StakeOnRocket() {
       <Button type="primary" size="large" disabled={disabled} ghost onClick={handleShowModal}>
         Stake
       </Button>
-      <Modal centered visible={showModal} width={650} destroyOnClose onCancel={handleCloseModal} footer={null}>
+      <Modal centered open={showModal} width={650} destroyOnClose onCancel={handleCloseModal} footer={null}>
         <StakeOnRocketModalContent onClose={handleCloseModal} />
       </Modal>
     </>
