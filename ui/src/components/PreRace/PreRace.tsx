@@ -8,7 +8,6 @@ import { useRace, useRaceContract, useEnsureMagicApproval } from '../../hooks';
 import { shortAddress, mapNftAddress, getNftConfig } from '../../utils';
 import { blue } from '../../colors';
 import NftImage from '../NftImage';
-import RocketPicker from '../RocketPicker';
 
 const { Paragraph, Text } = Typography;
 
@@ -182,7 +181,6 @@ function PreRace() {
             </ModalContent>
           </Modal>
         </Form>
-        <RocketPicker rockets={race.rockets || []} onSelect={console.log} />
       </Container>
     </>
   );

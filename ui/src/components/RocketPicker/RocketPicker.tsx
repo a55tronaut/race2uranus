@@ -1,4 +1,5 @@
 import { Radio } from 'antd';
+import { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { Race2Uranus } from '../../types';
@@ -6,19 +7,44 @@ import Rocket from '../Rocket';
 
 interface IProps {
   rockets: Race2Uranus.RocketStructOutput[];
-  onSelect: (rocket: Race2Uranus.RocketStructOutput) => void;
+  value?: Race2Uranus.RocketStructOutput;
+  onChange?: (rocket: Race2Uranus.RocketStructOutput) => void;
 }
 
-function RocketPicker({ rockets, onSelect }: IProps) {
-  console.log(rockets);
+// https://ant.design/components/form/#components-form-demo-customized-form-controls
+function RocketPicker({ rockets, value, onChange }: IProps) {
+  const [selectedRocket, setSelectedRocket] = useState<Race2Uranus.RocketStructOutput>();
+
+  const updateSelectedRocket = useCallback(
+    (rocket: Race2Uranus.RocketStructOutput) => {
+      setSelectedRocket(value || rocket);
+    },
+    [value]
+  );
+
+  const handleRocketChange = useCallback(
+    (e: any) => {
+      const id = Number(e.target.value);
+      const rocket = rockets[id];
+      updateSelectedRocket(rocket);
+      onChange && onChange(rocket);
+    },
+    [onChange, rockets, updateSelectedRocket]
+  );
+
+  useEffect(() => {
+    updateSelectedRocket(selectedRocket!);
+  }, [selectedRocket, updateSelectedRocket]);
 
   return (
     <Container>
-      <Radio.Group>
+      <Radio.Group onChange={handleRocketChange}>
         {rockets.map((rocket) => (
-          <Radio value={rocket.id}>
-            <Rocket nftId={rocket.nftId} address={rocket.nft} />
-          </Radio>
+          <RadioWrapper>
+            <Radio value={rocket.id}>
+              <Rocket className="rocket" nftId={rocket.nftId} address={rocket.nft} />
+            </Radio>
+          </RadioWrapper>
         ))}
       </Radio.Group>
     </Container>
@@ -28,22 +54,31 @@ function RocketPicker({ rockets, onSelect }: IProps) {
 const Container = styled.div`
   display: flex;
   flex-direction: row;
-  position: absolute;
-  bottom: 30%;
+
+  .ant-radio-group {
+    display: flex;
+    flex-direction: row;
+  }
 `;
 
-const RocketWrapper = styled.div`
-  width: 120px;
-  margin: 0 20px;
-  padding: 0 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  z-index: 1;
+const RadioWrapper = styled.div`
+  .ant-radio-wrapper {
+    filter: grayscale(0.85);
+    transition: filter 0.2s ease;
+    margin: 8px;
+
+    &:hover,
+    &.ant-radio-wrapper-checked {
+      filter: grayscale(0);
+    }
+  }
+
+  .ant-radio {
+    display: none;
+  }
 
   .rocket {
-    width: 80px;
-    margin: 0 auto 1em;
+    width: 40px;
   }
 `;
 

@@ -11,6 +11,7 @@ import NftImage from '../NftImage';
 import InfoTooltip from '../InfoTooltip';
 import Rocket from '../Rocket';
 import WhitelistedNfts from '../WhitelistedNfts';
+import ModalFooter from '../ModalFooter';
 
 const { Option } = Select;
 
@@ -221,7 +222,7 @@ function EnterRaceModalContent({ onClose }: IProps) {
           />
         )}
       </Message>
-      <Footer>
+      <ModalFooter>
         <Button
           key="enter"
           loading={loading}
@@ -233,7 +234,7 @@ function EnterRaceModalContent({ onClose }: IProps) {
         >
           ENTER
         </Button>
-      </Footer>
+      </ModalFooter>
     </Container>
   );
 }
@@ -282,17 +283,6 @@ const RocketContainer = styled.div`
 
 const Message = styled.div`
   margin: 0 24px 48px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const Footer = styled.div`
-  border-top: 1px solid ${blue};
-  width: calc(100% + 48px);
-  transform: translateX(-24px);
-  margin-top: 24px;
-  padding: 24px 24px 0 24px;
   display: flex;
   align-items: center;
   justify-content: center;

@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { Space } from 'antd';
 
-import StakeButton from './StakeButton';
+import StakeOnRocket from '../StakeOnRocket';
 import StartCd from './StartCd';
 import Logo from '../Logo';
 import Prize from './Prize';
@@ -16,7 +16,7 @@ function Header() {
         <Layout>
           <TopMenu>
             <Space size="large">
-              <StakeButton />
+              <StakeOnRocket />
               <StartCd />
             </Space>
             <Logo />

@@ -1,7 +1,10 @@
+import { Tooltip } from 'antd';
 import { BigNumberish } from 'ethers';
+import { useMemo } from 'react';
 import styled from 'styled-components';
 
 import { useNftDominantColor } from '../../hooks';
+import { getNftConfig } from '../../utils';
 import NftImage from '../NftImage';
 import { ReactComponent as RocketSvg } from './rocket.svg';
 
@@ -14,13 +17,24 @@ interface IProps {
 function Rocket({ address, nftId, className }: IProps) {
   const { color } = useNftDominantColor(address, nftId);
 
+  const title = useMemo(() => {
+    if (address) {
+      const nftConfig = getNftConfig(address);
+      return `${nftConfig.name} #${nftId.toString()}`;
+    }
+
+    return '';
+  }, [address, nftId]);
+
   return (
-    <Container color={color} className={className}>
-      <Porthole>
-        <NftImage address={address} id={nftId} className="nftImg" />
-      </Porthole>
-      <RocketSvg className="rocket" />
-    </Container>
+    <Tooltip title={title} placement="top">
+      <Container color={color} className={className}>
+        <Porthole>
+          <NftImage address={address} id={nftId} className="nftImg" />
+        </Porthole>
+        <RocketSvg className="rocket" />
+      </Container>
+    </Tooltip>
   );
 }
 
