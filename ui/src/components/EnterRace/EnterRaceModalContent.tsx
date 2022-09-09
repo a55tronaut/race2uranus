@@ -91,7 +91,13 @@ function EnterRaceModalContent({ onClose }: IProps) {
       await form.validateFields();
       const stakeAmountWei = ethers.utils.parseEther(stakeAmount!.toString());
       await ensureApproval(stakeAmountWei);
-      await contract.functions!.enterRace(race.id!, selectedNft!.address, selectedNft!.nftId, stakeAmountWei);
+      const res = await contract.functions!.enterRace(
+        race.id!,
+        selectedNft!.address,
+        selectedNft!.nftId,
+        stakeAmountWei
+      );
+      await res.wait(1);
 
       notification.success({
         message: (

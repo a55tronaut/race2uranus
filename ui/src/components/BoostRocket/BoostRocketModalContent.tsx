@@ -1,7 +1,6 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import styled from 'styled-components';
-import { ethers } from 'ethers';
-import { Button, Typography, notification } from 'antd';
+import { Button, Typography, notification, Alert } from 'antd';
 
 import { useRaceContract, useEnsureMagicApproval, useSelectedRace } from '../../hooks';
 import { getNftConfig } from '../../utils';
@@ -9,6 +8,7 @@ import { blue } from '../../colors';
 import { Race2Uranus } from '../../types';
 import Rocket from '../Rocket';
 import ModalFooter from '../ModalFooter';
+import MagicAmount from '../MagicAmount';
 
 interface IProps {
   rocket: Race2Uranus.RocketStructOutput;
@@ -21,16 +21,13 @@ function BoostRocketModalContent({ rocket, onClose }: IProps) {
   const { ensureApproval } = useEnsureMagicApproval();
   const [loading, setLoading] = useState(false);
 
-  const boostPrice = useMemo(() => {
-    return Number(ethers.utils.formatEther(race.configSnapshot?.boostPrice!));
-  }, [race.configSnapshot?.boostPrice]);
-
   const handleSubmit = useCallback(async () => {
     setLoading(true);
 
     try {
       await ensureApproval(race.configSnapshot!.boostPrice);
-      await contract.functions!.applyBoost(race.id!, rocket.id);
+      const res = await contract.functions!.applyBoost(race.id!, rocket.id);
+      await res.wait(1);
 
       const nftConfig = getNftConfig(rocket.nft);
 
@@ -59,14 +56,26 @@ function BoostRocketModalContent({ rocket, onClose }: IProps) {
   return (
     <Container>
       <Content>
+        <Typography.Title level={4} className="title">
+          Boost Rocket
+        </Typography.Title>
         <RocketContainer>
           <Rocket className="rocket" address={rocket.nft} nftId={rocket.nftId!} />
+          <DetailsContainer>
+            <Alert
+              type="info"
+              message={
+                <>
+                  Boost the rocket's propulsion systems with a bit of <strong>$MAGIC</strong>! The substance is
+                  inherently unstable, so it may speed up the rocket but it can also slow it down.
+                </>
+              }
+            />
+            <PriceContainer>
+              Boost price: <MagicAmount withName amount={race.configSnapshot?.boostPrice!} />
+            </PriceContainer>
+          </DetailsContainer>
         </RocketContainer>
-        <DetailsContainer>
-          <Typography.Title level={4} className="title">
-            Boost Rocket
-          </Typography.Title>
-        </DetailsContainer>
       </Content>
       <ModalFooter>
         <Button key="enter" loading={loading} type="primary" size="middle" ghost onClick={handleSubmit}>
@@ -91,7 +100,21 @@ const Content = styled.div`
   }
 `;
 
-const RocketContainer = styled.div``;
-const DetailsContainer = styled.div``;
+const RocketContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+
+  .rocket {
+    width: 80px;
+  }
+`;
+
+const DetailsContainer = styled.div`
+  margin-left: 48px;
+`;
+
+const PriceContainer = styled.div`
+  margin-top: 48px;
+`;
 
 export default BoostRocketModalContent;

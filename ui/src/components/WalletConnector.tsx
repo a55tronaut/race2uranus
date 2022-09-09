@@ -32,7 +32,7 @@ function WalletConnector() {
   return (
     <Modal
       centered
-      visible={showModal}
+      open={showModal}
       closable={false}
       maskStyle={maskStyle}
       style={{ border: 'none' }}

@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Typography } from 'antd';
 import styled from 'styled-components';
 import { ethers } from 'ethers';
+
 import { useRace } from '../../hooks';
 
 const { Title, Text } = Typography;

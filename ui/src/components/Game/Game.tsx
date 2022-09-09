@@ -8,6 +8,8 @@ import { Race2Uranus } from '../../types';
 import { GAME_LOOP_INTERVAL_SECONDS, SECOND_MILLIS } from '../../constants';
 import Rocket from '../Rocket';
 import Track from './Track';
+import BoostRocket from '../BoostRocket';
+import Background from './Background';
 
 interface IGameRocketProps {
   style?: React.CSSProperties;
@@ -24,12 +26,6 @@ const MAX_ROCKET_OFFSET = 70;
 function Game() {
   const race = useSelectedRace();
   const [rockets, setRockets] = useState<GameRocket[]>([]);
-
-  // useEffect(() => {
-  //   if (race.rockets) {
-  //     setRockets(race.rockets as any);
-  //   }
-  // }, [race.rockets]);
 
   const updateRocketPositions = useCallback(() => {
     if (race.rockets) {
@@ -60,6 +56,7 @@ function Game() {
 
   return (
     <Container>
+      <Background />
       <Rockets>
         {rockets.map((rocket) => (
           <RocketWithTrack key={rocket.id}>
@@ -67,6 +64,7 @@ function Game() {
             <RocketWrapper style={rocket.style}>
               <Rocket className="rocket" address={rocket.nft} nftId={rocket.nftId} />
             </RocketWrapper>
+            <BoostRocket className="boostBtn" rocket={rocket} />
           </RocketWithTrack>
         ))}
       </Rockets>
@@ -75,15 +73,16 @@ function Game() {
 }
 
 const Container = styled.div`
-  width: 100vw;
-  min-width: 960px;
+  width: 100%;
+  min-width: 1280px;
   height: 100vh;
   min-height: 600px;
   background-image: url(../assets/background.svg);
   background-position: center top;
   background-size: cover;
   background-repeat: no-repeat;
-  position: fixed;
+  overflow: hidden;
+  position: relative;
 `;
 
 const Rockets = styled.div`
@@ -104,6 +103,12 @@ const RocketWithTrack = styled.div`
     position: absolute;
     bottom: 0;
     left: -20px;
+  }
+
+  .boostBtn {
+    position: absolute;
+    bottom: 16px;
+    left: -13px;
   }
 `;
 

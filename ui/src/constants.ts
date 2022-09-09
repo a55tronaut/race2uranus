@@ -38,6 +38,7 @@ export const assetType = ['monoRockets', 'polyRockets', 'monoSpaceShip', 'polySp
 export const path = 'assets/' + assetType[rocketsType];
 
 export const GAME_LOOP_INTERVAL_SECONDS = 5;
+export const PLANETS_LOOP_INTERVAL_SECONDS = GAME_LOOP_INTERVAL_SECONDS * 3;
 
 export const supportedNfts: ISupportedNft[] = [
   {

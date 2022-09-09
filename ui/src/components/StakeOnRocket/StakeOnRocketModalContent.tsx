@@ -42,7 +42,8 @@ function StakeOnRocketModalContent({ onClose }: IProps) {
       await form.validateFields();
       const stakeAmountWei = ethers.utils.parseEther(stakeAmount!.toString());
       await ensureApproval(stakeAmountWei);
-      await contract.functions!.stakeOnRocket(race.id!, selectedRocket!.id, stakeAmountWei);
+      const res = await contract.functions!.stakeOnRocket(race.id!, selectedRocket!.id, stakeAmountWei);
+      await res.wait(1);
 
       const nftConfig = getNftConfig(selectedRocket!.nft);
 

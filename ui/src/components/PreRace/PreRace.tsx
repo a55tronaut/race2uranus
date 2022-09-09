@@ -136,7 +136,7 @@ function PreRace() {
             </div>
           ))}
         <Form layout="vertical">
-          <Modal centered visible={showBoostModal} onCancel={handleCancel} width={650} footer={null}>
+          <Modal centered open={showBoostModal} onCancel={handleCancel} width={650} footer={null}>
             <ModalContent>
               <div className="grid">
                 <NftImage className="NFTimg" address={rocketNftAddr} id={rocketNftId} />
