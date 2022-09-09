@@ -10,7 +10,7 @@
     "verify:arbgor": "npx hardhat verify --network arbgor",
     "deploy:arb": "npx hardhat run scripts/deploy.ts --network arb",
     "verify:arb": "npx hardhat verify --network arb",
-    "//": "pass network to these like -- --network <name>",
+    "//": "pass network to these like: -- --network <name>",
     "setTimeParams": "npx hardhat run scripts/setTimeParams.ts",
     "setRaceConfig": "npx hardhat run scripts/setRaceConfig.ts"
   },

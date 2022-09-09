@@ -42,3 +42,7 @@ Below is a list of possible environment variables.
 | `TESTNET_DEPLOYER_PK` | `string` |         | Private key used to deploy the contract to testnet              |
 | `MAINNET_DEPLOYER_PK` | `string` |         | Private key used to deploy the contract to mainnet              |
 | `ARBISCAN_API_KEY`    | `string` |         | Arbitrum Developer API KEY used to submit code for verification |
+
+## Contract verification
+
+`npx hardhat verify <proxy_address> --network arbrin`

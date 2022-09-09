@@ -29,7 +29,7 @@ contract Race2Uranus is Initializable, UUPSUpgradeable, OwnableUpgradeable {
 
   event BoostApplied(uint256 indexed raceId, uint8 rocketId, address booster);
 
-  event RaceStarted(uint256 indexed raceId, uint256 revealBlockNumber);
+  event RaceStarted(uint256 indexed raceId, uint256 blastOffTimestamp, uint256 revealBlockNumber);
 
   event RaceFinished(uint256 indexed raceId, uint8 winningRocketId, address nft, uint256 nftId, address rocketeer);
 
@@ -61,6 +61,7 @@ contract Race2Uranus is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     RaceConfig configSnapshot;
     bool started;
     bool finished;
+    uint256 blastOffTimestamp;
     uint256 revealBlock;
     Rocket[] rockets;
     uint256 rewardPool;
@@ -369,29 +370,24 @@ contract Race2Uranus is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     require(!race.started, 'Race already started');
     require(race.configSnapshot.maxRockets == race.rockets.length, 'Race can only be started with full roster');
 
+    race.blastOffTimestamp = _calcClosestBlastOffTimestamp(block.timestamp, timeParams.blastOffTimes);
+    uint256 revealTimestamp = _calcRevealTimestamp(race.blastOffTimestamp, timeParams.revealDelayMinutes);
+    race.revealBlock = block.number + _calcBlockDiff(block.timestamp, revealTimestamp);
     race.started = true;
 
-    uint256 revealTimestamp = _calcRevealTimestamp(
-      block.timestamp,
-      timeParams.blastOffTimes,
-      timeParams.revealDelayMinutes
-    );
-    race.revealBlock = block.number + _calcBlockDiff(block.timestamp, revealTimestamp);
-
-    emit RaceStarted(raceId, race.revealBlock);
+    emit RaceStarted(raceId, race.blastOffTimestamp, race.revealBlock);
   }
 
-  function _calcRevealTimestamp(
-    uint256 _currentTimestamp,
-    uint32[] memory _blastOffTimes,
-    uint8 _revealDelayMinutes
-  ) public pure returns (uint256 revealTimestamp) {
-    uint256 blastOffTimestamp = _calcClosestBlastOffTimestamp(_currentTimestamp, _blastOffTimes);
-    return blastOffTimestamp + (uint256(_revealDelayMinutes) * 1 minutes);
+  function _calcRevealTimestamp(uint256 _blastOffTimestamp, uint8 _revealDelayMinutes)
+    public
+    pure
+    returns (uint256 revealTimestamp)
+  {
+    return _blastOffTimestamp + (uint256(_revealDelayMinutes) * 1 minutes);
   }
 
   function _calcClosestBlastOffTimestamp(uint256 _currentTimestamp, uint32[] memory _blastOffTimes)
-    internal
+    public
     pure
     returns (uint256 blastOffTimestamp)
   {

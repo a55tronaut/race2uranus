@@ -1003,6 +1003,7 @@ describe(race2UranusName, () => {
       const [updatedRace] = await race2Uranus.functions.getRace(race.id);
 
       expect(updatedRace.started).to.equal(true);
+      expect(updatedRace.blastOffTimestamp).to.be.greaterThan("0");
       expect(updatedRace.revealBlock).to.be.greaterThan("0");
     });
 
@@ -1426,10 +1427,14 @@ describe(race2UranusName, () => {
         revealDelayMinutes,
         expectedTimestamp,
       } of testCases) {
+        const { blastOffTimestamp } =
+          await race2Uranus.functions._calcClosestBlastOffTimestamp(
+            currentTimestamp,
+            blastOffTimes
+          );
         const { revealTimestamp } =
           await race2Uranus.functions._calcRevealTimestamp(
-            currentTimestamp,
-            blastOffTimes,
+            blastOffTimestamp,
             revealDelayMinutes
           );
 
