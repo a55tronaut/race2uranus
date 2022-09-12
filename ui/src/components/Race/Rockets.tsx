@@ -12,6 +12,7 @@ import Track from './Track';
 interface IProps {
   rockets: Race2Uranus.RocketStructOutput[];
   move: boolean;
+  winner?: number;
 }
 interface IGameRocketProps {
   style?: React.CSSProperties;
@@ -24,13 +25,17 @@ type GameRocket = Race2Uranus.RocketStructOutput & IGameRocketProps;
 const MIN_ROCKET_OFFSET = 10;
 const MAX_ROCKET_OFFSET = 60;
 
-function Rockets({ rockets, move }: IProps) {
+function Rockets({ rockets, move, winner }: IProps) {
   const [gameRockets, setGameRockets] = useState<GameRocket[]>([]);
 
   const updateRocketPositions = useCallback(
     (move: boolean) => {
       const updatedRockets: GameRocket[] = rockets.map((rocket) => {
-        const offset = move ? random(MIN_ROCKET_OFFSET, MAX_ROCKET_OFFSET, true) : 0;
+        let offset = move ? random(MIN_ROCKET_OFFSET, MAX_ROCKET_OFFSET, true) : 0;
+
+        if (rocket.id === winner) {
+          offset = MAX_ROCKET_OFFSET + 5;
+        }
 
         return { ...rocket, offset, style: { bottom: `${offset}%` } };
       }, []);
@@ -45,7 +50,7 @@ function Rockets({ rockets, move }: IProps) {
 
       setGameRockets(updatedRockets);
     },
-    [rockets]
+    [rockets, winner]
   );
 
   useEffect(() => {

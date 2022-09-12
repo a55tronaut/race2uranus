@@ -14,7 +14,11 @@ function Race() {
     <Container>
       {loading && <div>loading...</div>}
       <Background statusMeta={statusMeta!} />
-      <Rockets rockets={race?.rockets || []} move={!statusMeta?.waiting} />
+      <Rockets
+        rockets={race?.rockets || []}
+        move={!statusMeta?.waiting}
+        winner={statusMeta?.done ? race?.winner : undefined}
+      />
     </Container>
   );
 }

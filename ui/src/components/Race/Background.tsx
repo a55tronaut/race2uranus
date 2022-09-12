@@ -3,9 +3,11 @@
 import styled from 'styled-components';
 
 import { IRaceStatusMeta } from '../../types';
+import FinishLine from './FinishLine';
 import Grid from './Grid';
 import LaunchPad from './LaunchPad';
 import Planets from './Planets';
+import Uranus from './Uranus';
 
 interface IProps {
   statusMeta: IRaceStatusMeta;
@@ -17,6 +19,8 @@ function Background({ statusMeta }: IProps) {
       {!statusMeta?.waiting && <Planets />}
       <Grid move={!statusMeta?.waiting} />
       <LaunchPad show={statusMeta?.waiting!} move={statusMeta?.inProgress!} />
+      <FinishLine move={statusMeta?.done!} />
+      <Uranus move={statusMeta?.done!} />
     </Container>
   );
 }

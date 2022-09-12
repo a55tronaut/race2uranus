@@ -39,7 +39,7 @@ const Wrapper = styled.div`
   position: fixed;
   width: 100vw;
   min-width: 1280px;
-  z-index: 1;
+  z-index: 10;
 `;
 
 const Container = styled.div`

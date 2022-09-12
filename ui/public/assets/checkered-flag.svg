@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="160" height="160" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style type="text/css">
+
+    .str0 {stroke:black;stroke-width:0.0762}
+    .fil0 {fill:black}
+    .fil1 {fill:white}
+
+  </style>
+  </defs>
+  <g id="Layer_x0020_1">
+    <g id="_227646496">
+      <rect id="_227649208" class="fil0 str0" x="0" y="0" width="40" height="40"/>
+      <rect id="_227649112" class="fil1 str0" x="0" y="40" width="40" height="40"/>
+      <rect id="_227649016" class="fil0 str0" x="0" y="80" width="40" height="40"/>
+      <rect id="_227648920" class="fil1 str0" x="0" y="120" width="40" height="40"/>
+      <rect id="_227648824" class="fil1 str0" x="40" y="0" width="40" height="40"/>
+      <rect id="_227648728" class="fil0 str0" x="40" y="40" width="40" height="40"/>
+      <rect id="_227648632" class="fil1 str0" x="40" y="80" width="40" height="40"/>
+      <rect id="_227648536" class="fil0 str0" x="40" y="120" width="40" height="40"/>
+      <rect id="_227648440" class="fil0 str0" x="80" y="0" width="40" height="40"/>
+      <rect id="_227648344" class="fil1 str0" x="80" y="40" width="40" height="40"/>
+      <rect id="_227648248" class="fil0 str0" x="80" y="80" width="40" height="40"/>
+      <rect id="_227648152" class="fil1 str0" x="80" y="120" width="40" height="40"/>
+      <rect id="_227648056" class="fil1 str0" x="120" y="0" width="40" height="40"/>
+      <rect id="_227647960" class="fil0 str0" x="120" y="40" width="40" height="40"/>
+      <rect id="_227647864" class="fil1 str0" x="120" y="80" width="40" height="40"/>
+      <rect id="_227647768" class="fil0 str0" x="120" y="120" width="40" height="40"/>
+    </g>
+  </g>
+</svg>
