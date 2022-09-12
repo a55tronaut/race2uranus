@@ -16,7 +16,7 @@ interface IProps {
 }
 
 function BoostRocketModalContent({ rocket, onClose }: IProps) {
-  const race = useSelectedRace();
+  const { race } = useSelectedRace();
   const { contract } = useRaceContract();
   const { ensureApproval } = useEnsureMagicApproval();
   const [loading, setLoading] = useState(false);
@@ -25,8 +25,8 @@ function BoostRocketModalContent({ rocket, onClose }: IProps) {
     setLoading(true);
 
     try {
-      await ensureApproval(race.configSnapshot!.boostPrice);
-      const res = await contract.functions!.applyBoost(race.id!, rocket.id);
+      await ensureApproval(race!.configSnapshot.boostPrice);
+      const res = await contract.functions!.applyBoost(race!.id, rocket.id);
       await res.wait(1);
 
       const nftConfig = getNftConfig(rocket.nft);
@@ -51,31 +51,31 @@ function BoostRocketModalContent({ rocket, onClose }: IProps) {
     } finally {
       setLoading(false);
     }
-  }, [contract.functions, ensureApproval, onClose, race.configSnapshot, race.id, rocket.id, rocket.nft, rocket.nftId]);
+  }, [contract.functions, ensureApproval, onClose, race, rocket.id, rocket.nft, rocket.nftId]);
 
   return (
     <Container>
+      <Typography.Title level={4} className="title">
+        Boost Rocket
+      </Typography.Title>
       <Content>
-        <Typography.Title level={4} className="title">
-          Boost Rocket
-        </Typography.Title>
         <RocketContainer>
           <Rocket className="rocket" address={rocket.nft} nftId={rocket.nftId!} />
-          <DetailsContainer>
-            <Alert
-              type="info"
-              message={
-                <>
-                  Boost the rocket's propulsion systems with a bit of <strong>$MAGIC</strong>! The substance is
-                  inherently unstable, so it may speed up the rocket but it can also slow it down.
-                </>
-              }
-            />
-            <PriceContainer>
-              Boost price: <MagicAmount withName amount={race.configSnapshot?.boostPrice!} />
-            </PriceContainer>
-          </DetailsContainer>
         </RocketContainer>
+        <DetailsContainer>
+          <Alert
+            type="info"
+            message={
+              <>
+                Boost the rocket's propulsion systems with a bit of <strong>$MAGIC</strong>! The substance is inherently
+                unstable so it may speed up the rocket but it can also slow it down!
+              </>
+            }
+          />
+          <PriceContainer>
+            Boost price: <MagicAmount withName amount={race!.configSnapshot.boostPrice!} />
+          </PriceContainer>
+        </DetailsContainer>
       </Content>
       <ModalFooter>
         <Button key="enter" loading={loading} type="primary" size="middle" ghost onClick={handleSubmit}>
@@ -86,12 +86,8 @@ function BoostRocketModalContent({ rocket, onClose }: IProps) {
   );
 }
 
-const Container = styled.div``;
-
-const Content = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: 24px;
+const Container = styled.div`
+  padding-top: 24px;
 
   .title {
     color: ${blue};
@@ -100,9 +96,16 @@ const Content = styled.div`
   }
 `;
 
+const Content = styled.div`
+  display: flex;
+  flex-direction: row;
+  padding: 24px;
+`;
+
 const RocketContainer = styled.div`
   display: flex;
   flex-direction: row;
+  flex: 0;
 
   .rocket {
     width: 80px;

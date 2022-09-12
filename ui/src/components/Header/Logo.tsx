@@ -1,14 +1,17 @@
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
 function Logo() {
   return (
-    <Logos>
-      <img alt="logo" className="logo" src={'../assets/logo.svg'} />
-    </Logos>
+    <Container>
+      <Link to="/">
+        <img alt="logo" className="logo" src="/assets/logo.svg" />
+      </Link>
+    </Container>
   );
 }
 
-const Logos = styled.div`
+const Container = styled.div`
   .logo {
     height: 115px;
     position: absolute;

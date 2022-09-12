@@ -1,7 +1,4 @@
-// 1.8 billion miles
-
 import { useCallback, useEffect, useState } from 'react';
-import styled from 'styled-components';
 import random from 'lodash/random';
 
 import { PLANETS_LOOP_INTERVAL_SECONDS, SECOND_MILLIS } from '../../constants';
@@ -15,7 +12,7 @@ const planetPaths = [`/assets/planet1.svg`, `/assets/planet2.svg`, `/assets/plan
 
 let planetCounter = 0;
 
-function Background() {
+function Planets() {
   const [planets, setPlanets] = useState<IPlanet[]>([]);
 
   const updatePlanets = useCallback(() => {
@@ -28,10 +25,10 @@ function Background() {
         newPlanets.push({
           id: planetCounter++,
           src,
-          startY: random(-200, -20),
-          endY: random(120, 200),
-          x: random(-10, 110),
-          size: random(30, 150),
+          startY: random(-150, -20),
+          endY: random(130, 250),
+          x: random(-5, 100),
+          size: random(25, 150),
           rotation: random(0, 359),
         });
       }
@@ -48,7 +45,7 @@ function Background() {
   }, [updatePlanets]);
 
   return (
-    <Container>
+    <>
       {planets.map((planet) => (
         <Planet
           key={planet.id}
@@ -60,40 +57,8 @@ function Background() {
           rotation={planet.rotation}
         />
       ))}
-
-      <Grid />
-    </Container>
+    </>
   );
 }
 
-const Container = styled.div`
-  width: 100%;
-  height: 100vh;
-  position: absolute;
-  top: 0;
-  left: 0;
-`;
-
-const Grid = styled.div`
-  width: 1280px;
-  height: 200%;
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  margin: 0 auto;
-  background: url('/assets/grid.svg') repeat-y;
-  opacity: 0.2;
-  animation: slide 0.2s linear infinite;
-
-  @keyframes slide {
-    0% {
-      transform: translate3d(0, 0, 0);
-    }
-    100% {
-      transform: translate3d(0, 80px, 0);
-    }
-  }
-`;
-
-export default Background;
+export default Planets;

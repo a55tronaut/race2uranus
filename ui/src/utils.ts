@@ -101,6 +101,11 @@ export async function sleep(ms: number): Promise<void> {
   return new Promise<void>((resolve) => setTimeout(resolve, ms));
 }
 
+export async function waitUntil(timestamp: number): Promise<void> {
+  const now = Date.now();
+  return sleep(timestamp - now);
+}
+
 export function calAvgBlockCreation(startTime: number, endTime: number, blocksPassed: number): number {
   return (endTime - startTime) / blocksPassed;
 }

@@ -7,8 +7,8 @@ import styled from 'styled-components';
 
 import GlobalStyle from './GlobalStyle';
 import { DappProvider } from './providers';
-import { LandingPage, Header, Lore, About, WalletConnector } from './components';
-import { RacePage } from './pages';
+import { WalletConnector } from './components';
+import { AboutPage, LandingPage, LorePage, RacePage } from './pages';
 
 function AppWrapper() {
   return (
@@ -32,8 +32,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/race/:raceId" element={<RacePage />} />
-          <Route path="/lore" element={<Lore />} />
-          <Route path="/about" element={<About />} />
+          <Route path="/lore" element={<LorePage />} />
+          <Route path="/about" element={<AboutPage />} />
           <Route path="/" element={<LandingPage />} />
           <Route path="/*" element={<NotFound />} />
         </Routes>

@@ -1,8 +1,9 @@
 import { Tooltip } from 'antd';
 import { BigNumberish } from 'ethers';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
+import { SECOND_MILLIS } from '../../constants';
 import { useNftDominantColor } from '../../hooks';
 import { getNftConfig } from '../../utils';
 import NftImage from '../NftImage';
@@ -12,10 +13,13 @@ interface IProps {
   address: string;
   nftId: BigNumberish;
   className?: string;
+  boostCount?: number;
 }
 
-function Rocket({ address, nftId, className }: IProps) {
+function Rocket({ address, nftId, className, boostCount }: IProps) {
   const { color } = useNftDominantColor(address, nftId);
+  const [boostClassName, setBoostClassName] = useState('');
+  const [prevBoostCount, setPrevBoostCount] = useState(boostCount);
 
   const title = useMemo(() => {
     if (address) {
@@ -26,6 +30,17 @@ function Rocket({ address, nftId, className }: IProps) {
     return '';
   }, [address, nftId]);
 
+  useEffect(() => {
+    if (boostCount && boostCount > prevBoostCount!) {
+      setBoostClassName('boosting');
+      setPrevBoostCount(boostCount);
+
+      setTimeout(() => {
+        setBoostClassName('');
+      }, 4 * SECOND_MILLIS);
+    }
+  }, [boostCount, prevBoostCount]);
+
   return (
     <Tooltip title={title} placement="top">
       <Container color={color} className={className}>
@@ -33,6 +48,7 @@ function Rocket({ address, nftId, className }: IProps) {
           <NftImage address={address} id={nftId} className="nftImg" />
         </Porthole>
         <RocketSvg className="rocket" />
+        <Boost className={boostClassName} src="/assets/boost.svg" />
       </Container>
     </Tooltip>
   );
@@ -66,6 +82,21 @@ const Porthole = styled.div`
   justify-content: center;
   align-items: center;
   mask: url('/assets/rocketPortholeMask.svg');
+`;
+
+const Boost = styled.img`
+  width: 337%;
+  position: absolute;
+  left: 50%;
+  top: -30%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 4s ease;
+
+  &.boosting {
+    transition: opacity 2s ease;
+    opacity: 0.8;
+  }
 `;
 
 export default Rocket;

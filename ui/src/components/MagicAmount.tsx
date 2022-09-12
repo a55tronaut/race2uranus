@@ -14,7 +14,7 @@ const { Title } = Typography;
 
 function MagicAmount({ amount, withName }: IProps) {
   const formattedAmount = useMemo(() => {
-    return formatNumber(Number(ethers.utils.formatEther(amount)));
+    return formatNumber(Number(ethers.utils.formatEther(amount || '0')));
   }, [amount]);
 
   return (

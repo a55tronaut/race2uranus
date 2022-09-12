@@ -5,7 +5,7 @@ import { useSelectedRace } from '../../hooks';
 import EnterRaceModalContent from './EnterRaceModalContent';
 
 function EnterRace() {
-  const race = useSelectedRace();
+  const { race } = useSelectedRace();
   const [showModal, setShowModal] = useState(false);
 
   const handleShowModal = useCallback(() => {

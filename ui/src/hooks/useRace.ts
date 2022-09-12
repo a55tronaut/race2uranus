@@ -1,10 +1,12 @@
 import { BigNumberish, ethers } from 'ethers';
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 import create from 'zustand';
 import queue from 'queue';
+import merge from 'lodash/merge';
 
 import {
   BoostAppliedEvent,
+  IRaceStatusMeta,
   Race2Uranus,
   RaceCreatedEvent,
   RaceEnteredEvent,
@@ -13,14 +15,19 @@ import {
   StakedOnRocketEvent,
   TypedListener,
 } from '../types';
+import { waitUntil } from '../utils';
+import { SECOND_MILLIS } from '../constants';
 import { useRaceContract, useRaceContractStore } from './useRaceContract';
 
 interface IRaceStoreState {
-  [key: string]: IRaceItem;
+  [key: string]: IRace;
 }
 
-interface IRaceItem extends Partial<Race2Uranus.RaceStructOutput> {
-  functions?: Race2Uranus['functions'];
+interface IRace {
+  loading: boolean;
+  error: boolean;
+  race?: Race2Uranus.RaceStructOutput;
+  statusMeta?: IRaceStatusMeta;
 }
 
 // this ensures race data for a given id is only loaded once
@@ -31,12 +38,14 @@ const knownRaces: { [key: string]: boolean } = {};
 const q = queue({ autostart: true, concurrency: 1 });
 
 const defaultState: IRaceStoreState = {};
+const defaultRace: IRace = { loading: false, error: false };
+const defaultStatusMeta: IRaceStatusMeta = { waiting: true, inProgress: false, done: false };
 
 const useRaceStore = create<IRaceStoreState>(() => defaultState);
 
-export function useRace(id: BigNumberish): IRaceItem {
+export function useRace(id: BigNumberish): IRace {
   const { contract } = useRaceContract();
-  const race = useRaceStore((state) => state[id?.toString()]);
+  const race = useRaceStore((state) => state[id?.toString()]) || defaultRace;
 
   useEffect(() => {
     const shouldLoadRace = id && !knownRaces[id.toString()] && contract.functions?.getRace;
@@ -45,15 +54,68 @@ export function useRace(id: BigNumberish): IRaceItem {
       refreshRaceData();
     }
     async function refreshRaceData() {
-      const [race] = await contract.functions?.getRace(id)!;
-      updateRaceStore(id, race);
+      try {
+        const [race] = await contract.functions!.getRace(id)!;
+        const statusMeta = calcAndNotifyStatusMeta(race);
+
+        updateRaceInStore(id, { loading: false, race, statusMeta });
+
+        // TODO: remove
+        setTimeout(() => {
+          console.log('updating status');
+          updateRaceInStore(id, { statusMeta: { waiting: false, inProgress: true, done: false } });
+        }, 5000);
+      } catch (e) {
+        console.error(e);
+        updateRaceInStore(id, { loading: false, error: true });
+      }
     }
   }, [contract.functions, id, race]);
 
   return {
     ...race,
-    functions: contract.functions!,
   };
+}
+
+function calcAndNotifyStatusMeta(
+  race: Race2Uranus.RaceStructOutput,
+  prevStatusMeta = defaultStatusMeta
+): IRaceStatusMeta {
+  const statusMeta = calcStatusMeta(race);
+  if (!prevStatusMeta.waiting && statusMeta.waiting) {
+    notifyWhenRaceInProgress(race);
+  }
+
+  return statusMeta;
+}
+
+function calcStatusMeta(race: Race2Uranus.RaceStructOutput): IRaceStatusMeta {
+  let waiting = false;
+  let inProgress = false;
+  let done = false;
+
+  if (race?.finished) {
+    done = true;
+  } else {
+    if (race?.started && race?.blastOffTimestamp.lt(new Date().getTime() / 1000)) {
+      inProgress = true;
+    } else {
+      waiting = true;
+    }
+  }
+
+  return {
+    waiting,
+    inProgress,
+    done,
+  };
+}
+
+async function notifyWhenRaceInProgress(race: Race2Uranus.RaceStructOutput) {
+  const diffSeconds = new Date().getTime() / 1000 - race.blastOffTimestamp.toNumber();
+  await waitUntil(diffSeconds * SECOND_MILLIS);
+
+  updateRaceInStore(race.id, { statusMeta: { waiting: false, inProgress: true, done: false } });
 }
 
 useRaceContractStore.subscribe(({ contract }) => {
@@ -65,7 +127,7 @@ useRaceContractStore.subscribe(({ contract }) => {
 const processedEvents: { [key: string]: boolean } = {};
 
 function addEventListeners(contract: Race2Uranus) {
-  ensureOneContractListener(contract, contract.filters.RaceCreated(), wrappedHandleRaceCreatedEvent);
+  // ensureOneContractListener(contract, contract.filters.RaceCreated(), wrappedHandleRaceCreatedEvent);
   ensureOneContractListener(contract, contract.filters.RaceEntered(), wrappedHandleRaceEnteredEvent);
   ensureOneContractListener(contract, contract.filters.StakedOnRocket(), wrappedHandleStakedOnRocketEvent);
   ensureOneContractListener(contract, contract.filters.BoostApplied(), wrappedHandleBoostAppliedEvent);
@@ -78,16 +140,16 @@ function ensureOneContractListener(contract: Race2Uranus, filter: any, handler: 
   contract.on(filter, handler);
 }
 
-const wrappedHandleRaceCreatedEvent = wrapEventHandler(handleRaceCreatedEvent);
-async function handleRaceCreatedEvent(ev: RaceCreatedEvent) {
-  const { args } = ev;
-}
+// const wrappedHandleRaceCreatedEvent = wrapEventHandler(handleRaceCreatedEvent);
+// async function handleRaceCreatedEvent(ev: RaceCreatedEvent) {
+//   const { args } = ev;
+// }
 
 const wrappedHandleRaceEnteredEvent = wrapEventHandler(handleRaceEnteredEvent);
 async function handleRaceEnteredEvent(ev: RaceEnteredEvent) {
   const { args } = ev;
   const { raceId, rocketId, rocketeer, nft, nftId } = args;
-  const race = getRaceFromStore(raceId);
+  const race = getRaceStructFromStore(raceId);
 
   if (race) {
     const newRockets = [...(race.rockets || [])];
@@ -102,7 +164,7 @@ async function handleRaceEnteredEvent(ev: RaceEnteredEvent) {
       rocketeerRewardClaimed: false,
     } as any);
 
-    updateRaceStore(raceId, { rockets: newRockets });
+    updateRaceStructInStore(raceId, { rockets: newRockets });
   }
 }
 
@@ -110,7 +172,7 @@ const wrappedHandleStakedOnRocketEvent = wrapEventHandler(handleStakedOnRocketEv
 async function handleStakedOnRocketEvent(ev: StakedOnRocketEvent) {
   const { args } = ev;
   const { raceId, rocketId, amount } = args;
-  const race = getRaceFromStore(raceId);
+  const race = getRaceStructFromStore(raceId);
 
   if (race) {
     const updatedRockets = race.rockets?.map((r) => {
@@ -125,7 +187,7 @@ async function handleStakedOnRocketEvent(ev: StakedOnRocketEvent) {
       return updatedRocket;
     });
 
-    updateRaceStore(raceId, { rockets: updatedRockets, rewardPool: race.rewardPool?.add(amount) });
+    updateRaceStructInStore(raceId, { rockets: updatedRockets, rewardPool: race.rewardPool?.add(amount) });
   }
 }
 
@@ -133,7 +195,7 @@ const wrappedHandleBoostAppliedEvent = wrapEventHandler(handleBoostAppliedEvent)
 async function handleBoostAppliedEvent(ev: BoostAppliedEvent) {
   const { args } = ev;
   const { raceId, rocketId } = args;
-  const race = getRaceFromStore(raceId);
+  const race = getRaceStructFromStore(raceId);
 
   if (race) {
     const updatedRockets = race.rockets?.map((r) => {
@@ -148,7 +210,7 @@ async function handleBoostAppliedEvent(ev: BoostAppliedEvent) {
       return updatedRocket;
     });
 
-    updateRaceStore(raceId, {
+    updateRaceStructInStore(raceId, {
       rockets: updatedRockets,
       rewardPool: race.rewardPool?.add(race.configSnapshot?.boostPrice || '0'),
     });
@@ -158,11 +220,11 @@ async function handleBoostAppliedEvent(ev: BoostAppliedEvent) {
 const wrappedHandleRaceStartedEvent = wrapEventHandler(handleRaceStartedEvent);
 async function handleRaceStartedEvent(ev: RaceStartedEvent) {
   const { args } = ev;
-  const { raceId, revealBlockNumber } = args;
-  const race = getRaceFromStore(raceId);
+  const { raceId, blastOffTimestamp, revealBlockNumber } = args;
+  const race = getRaceStructFromStore(raceId);
 
   if (race) {
-    updateRaceStore(raceId, { started: true, revealBlock: revealBlockNumber });
+    updateRaceStructInStore(raceId, { started: true, blastOffTimestamp, revealBlock: revealBlockNumber });
   }
 }
 
@@ -170,18 +232,18 @@ const wrappedHandleRaceFinishedEvent = wrapEventHandler(handleRaceFinishedEvent)
 async function handleRaceFinishedEvent(ev: RaceFinishedEvent) {
   const { args } = ev;
   const { raceId, winningRocketId } = args;
-  const race = getRaceFromStore(raceId);
+  const race = getRaceStructFromStore(raceId);
 
   if (race) {
-    updateRaceStore(raceId, { finished: true, winner: winningRocketId });
+    updateRaceStructInStore(raceId, { finished: true, winner: winningRocketId });
   }
 }
 
 function wrapEventHandler(handler: (ev: any) => Promise<void>): TypedListener<any> {
   const wrappedHandler: TypedListener<any> = (...all) => {
     const ev = all[all.length - 1];
-    const eventKey = `${ev.event}${ev.transactionHash}`;
-    console.log('found event', eventKey, ev.transactionHash);
+    const eventKey = `${ev.event}.${ev.transactionHash}`;
+
     if (!processedEvents[eventKey]) {
       processedEvents[eventKey] = true;
       q.push(async () => {
@@ -192,10 +254,21 @@ function wrapEventHandler(handler: (ev: any) => Promise<void>): TypedListener<an
   return wrappedHandler;
 }
 
-function getRaceFromStore(raceId: BigNumberish): IRaceItem {
+function getRaceStructFromStore(raceId: BigNumberish): Race2Uranus.RaceStructOutput | undefined {
+  return useRaceStore.getState()[raceId.toString()].race;
+}
+
+function getRaceFromStore(raceId: BigNumberish): IRace {
   return useRaceStore.getState()[raceId.toString()];
 }
 
-function updateRaceStore(raceId: BigNumberish, race: Partial<IRaceItem>) {
-  useRaceStore.setState({ [raceId.toString()]: race });
+function updateRaceStructInStore(raceId: BigNumberish, raceStruct: Partial<Race2Uranus.RaceStructOutput>) {
+  updateRaceInStore(raceId, { race: raceStruct } as any);
+}
+
+function updateRaceInStore(raceId: BigNumberish, race: Partial<IRace>) {
+  const existingRace = getRaceFromStore(raceId) || {};
+  const newRace = merge({}, existingRace, race);
+  const statusMeta = race.statusMeta || calcAndNotifyStatusMeta(newRace.race!, existingRace?.statusMeta);
+  useRaceStore.setState({ [raceId.toString()]: merge(newRace, { statusMeta }) });
 }

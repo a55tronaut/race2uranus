@@ -27,10 +27,10 @@ interface IProps {
 }
 
 function EnterRaceModalContent({ onClose }: IProps) {
-  const race = useSelectedRace();
+  const { race } = useSelectedRace();
   const { contract } = useRaceContract();
   const { ensureApproval } = useEnsureMagicApproval();
-  const { nfts, loading: nftsLoading } = useNftsForUser(race.configSnapshot?.whitelistedNfts!);
+  const { nfts, loading: nftsLoading } = useNftsForUser(race?.configSnapshot.whitelistedNfts!);
   const [form] = Form.useForm();
   const [nftOptions, setNftOptions] = useState<INftOption[]>([]);
   const [loading, setLoading] = useState(false);
@@ -40,28 +40,28 @@ function EnterRaceModalContent({ onClose }: IProps) {
   const [allNftsUsed, setAllNftsUsed] = useState(false);
 
   const minStake = useMemo(() => {
-    return Number(ethers.utils.formatEther(race.configSnapshot?.minStakeAmount!));
-  }, [race.configSnapshot?.minStakeAmount]);
+    return Number(ethers.utils.formatEther(race!.configSnapshot.minStakeAmount!));
+  }, [race]);
   const maxStake = useMemo(() => {
-    return Number(ethers.utils.formatEther(race.configSnapshot?.maxStakeAmount!));
-  }, [race.configSnapshot?.maxStakeAmount]);
+    return Number(ethers.utils.formatEther(race!.configSnapshot.maxStakeAmount!));
+  }, [race]);
 
   useEffect(() => {
     const opts: INftOption[] = [];
-    race.configSnapshot?.whitelistedNfts!.forEach((addr) => {
+    race!.configSnapshot.whitelistedNfts!.forEach((addr) => {
       const nftConfig = getNftConfig(addr);
       nfts[addr]?.forEach((id) =>
         opts.push({
           address: addr,
           nftId: id,
           name: nftConfig.name,
-          disabled: isNftUsed(race.rockets!, addr, id),
+          disabled: isNftUsed(race!.rockets!, addr, id),
         })
       );
     });
 
     setNftOptions(opts);
-  }, [nfts, race.configSnapshot?.whitelistedNfts, race.rockets]);
+  }, [nfts, race]);
 
   useEffect(() => {
     if (!nftsLoading) {
@@ -92,7 +92,7 @@ function EnterRaceModalContent({ onClose }: IProps) {
       const stakeAmountWei = ethers.utils.parseEther(stakeAmount!.toString());
       await ensureApproval(stakeAmountWei);
       const res = await contract.functions!.enterRace(
-        race.id!,
+        race!.id,
         selectedNft!.address,
         selectedNft!.nftId,
         stakeAmountWei
@@ -116,7 +116,7 @@ function EnterRaceModalContent({ onClose }: IProps) {
     } finally {
       setLoading(false);
     }
-  }, [contract.functions, ensureApproval, form, onClose, race.id, selectedNft, stakeAmount]);
+  }, [contract.functions, ensureApproval, form, onClose, race, selectedNft, stakeAmount]);
 
   const nftSelectLabel = (
     <>
@@ -128,7 +128,7 @@ function EnterRaceModalContent({ onClose }: IProps) {
             Your NFT will never actually leave your wallet. By entering the race you're only proving that you own the
             NFT.
             <br /> The following NFT collections can be used to enter the race:{' '}
-            <WhitelistedNfts whitelist={race.configSnapshot?.whitelistedNfts!} />
+            <WhitelistedNfts whitelist={race!.configSnapshot.whitelistedNfts!} />
           </>
         }
       />
@@ -145,7 +145,7 @@ function EnterRaceModalContent({ onClose }: IProps) {
             The $MAGIC you stake will be added to the race reward pool. The more you stake the bigger share of the pool
             you will get if your rocket wins!
             <br />
-            <strong>{race.configSnapshot?.rocketsSharePercent}%</strong> of the reward pool will be split between all
+            <strong>{race!.configSnapshot.rocketsSharePercent}%</strong> of the reward pool will be split between all
             rockets as a guaranteed reward on top of staking rewards!
           </>
         }
@@ -155,17 +155,22 @@ function EnterRaceModalContent({ onClose }: IProps) {
 
   return (
     <Container>
+      <Typography.Title level={4} className="title">
+        Enter Race
+      </Typography.Title>
       <Content>
         <RocketContainer>
           <Rocket className="rocket" address={selectedNft?.address!} nftId={selectedNft?.nftId!} />
         </RocketContainer>
         <Form layout="vertical" form={form}>
-          <Typography.Title level={4} className="title">
-            Enter Race
-          </Typography.Title>
-
           <Form.Item name="nft" label={nftSelectLabel} rules={[{ required: true, message: 'NFT is required' }]}>
-            <Select placeholder="Select NFT" loading={nftsLoading} disabled={loading} onChange={handleNftChange}>
+            <Select
+              placeholder="Select NFT"
+              loading={nftsLoading}
+              disabled={loading}
+              size="large"
+              onChange={handleNftChange}
+            >
               {nftOptions.map((nft, index) => (
                 <Option value={index} key={nft.address + nft.nftId} disabled={nft.disabled}>
                   <NftImage className="nftOptionImg" address={nft.address} id={nft.nftId} />{' '}
@@ -174,7 +179,6 @@ function EnterRaceModalContent({ onClose }: IProps) {
               ))}
             </Select>
           </Form.Item>
-
           <Form.Item
             name="stakeAmount"
             label={stakeAmountLabel}
@@ -211,7 +215,7 @@ function EnterRaceModalContent({ onClose }: IProps) {
                 You don't have any eligible NFTs to enter the race.
                 <br />
                 You can only use NFTs from these collections:{' '}
-                <WhitelistedNfts whitelist={race.configSnapshot?.whitelistedNfts!} />
+                <WhitelistedNfts whitelist={race!.configSnapshot.whitelistedNfts!} />
               </>
             }
           />
@@ -222,7 +226,7 @@ function EnterRaceModalContent({ onClose }: IProps) {
             message={
               <>
                 You've already used all of your eligible NFTs to enter this race, but you can get more from the approved
-                collections: <WhitelistedNfts whitelist={race.configSnapshot?.whitelistedNfts!} />
+                collections: <WhitelistedNfts whitelist={race!.configSnapshot.whitelistedNfts!} />
               </>
             }
           />
@@ -251,7 +255,15 @@ function isNftUsed(rockets: Race2Uranus.RocketStructOutput[], address: string, n
   );
 }
 
-const Container = styled.div``;
+const Container = styled.div`
+  padding-top: 24px;
+
+  .title {
+    color: ${blue};
+    text-align: center;
+    margin-bottom: 24px;
+  }
+`;
 
 const Content = styled.div`
   display: flex;

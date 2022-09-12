@@ -27,8 +27,10 @@ function Planet({ src, startY, endY, x, size, rotation }: IProps) {
     setStyle(newStyle);
 
     setTimeout(() => {
-      newStyle.top = `${endY}%`;
-      setStyle(newStyle);
+      setStyle({
+        ...newStyle,
+        top: `${endY}%`,
+      });
     });
   }, [endY, rotation, size, startY, x]);
 

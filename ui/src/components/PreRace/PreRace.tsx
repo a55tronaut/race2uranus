@@ -13,13 +13,13 @@ const { Paragraph, Text } = Typography;
 
 function PreRace() {
   const { raceId } = useParams();
-  const race = useRace(raceId!);
+  const { race } = useRace(raceId!);
 
-  const boostAmount = race.configSnapshot?.boostAmount!;
-  const boostPrice = race.configSnapshot?.boostPrice!;
-  const rocketsStaked = race.rockets!;
+  const boostAmount = race?.configSnapshot?.boostAmount!;
+  const boostPrice = race?.configSnapshot?.boostPrice!;
+  const rocketsStaked = race?.rockets!;
   const stakedRocketsAmount = rocketsStaked?.length + 1;
-  const raceReward = race.rewardPool;
+  const raceReward = race?.rewardPool;
 
   const { contract } = useRaceContract();
   const { ensureApproval } = useEnsureMagicApproval();
@@ -69,7 +69,7 @@ function PreRace() {
 
       await ensureApproval(boostPrice);
 
-      await contract.functions?.applyBoost(race.id!, rocketId);
+      await contract.functions?.applyBoost(race?.id!, rocketId);
 
       notification.success({
         message: (
@@ -85,7 +85,7 @@ function PreRace() {
     } finally {
       setLoading(false);
     }
-  }, [contract.functions, race.id, rocketId, rocketNftName, rocketNftId, boostPrice, ensureApproval]);
+  }, [contract.functions, race?.id, rocketId, rocketNftName, rocketNftId, boostPrice, ensureApproval]);
 
   return (
     <>
@@ -94,7 +94,7 @@ function PreRace() {
           Welcome To The Launch Pad!
         </Typography.Title>
         <Paragraph className="text">
-          You are about to enter the <Text strong> Race 2 Uranus. </Text> Choose an empty rocket to join the race.{' '}
+          You are about to enter the <Text strong> Race 2 Uranus. </Text> Choose an empty rocket to join the race?.{' '}
           <br /> You can also stake on any rocket or boost its propulsion system with your <Text strong> $MAGIC</Text>.
         </Paragraph>
         <Typography.Title level={5} className="prizeHeader">

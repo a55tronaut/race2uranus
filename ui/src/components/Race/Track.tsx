@@ -22,20 +22,18 @@ function Track({ className, position }: IProps) {
 const Container = styled.div`
   height: 50vh;
   width: 120px;
-  background-image: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.1));
+  background-image: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.15));
   filter: invert(0);
   margin: auto auto 0;
   transition: all ${GAME_LOOP_INTERVAL_SECONDS}s ease-in-out;
 
   &.first {
-    // #009bff https://codepen.io/sosuke/pen/Pjoqqp
-    filter: invert(100%) invert(45%) sepia(47%) saturate(4452%) hue-rotate(182deg) brightness(103%) contrast(105%)
-      saturate(200%);
+    // #ffd600 https://codepen.io/sosuke/pen/Pjoqqp
+    filter: invert(100%) invert(73%) sepia(59%) saturate(790%) hue-rotate(0deg) brightness(105%) contrast(105%);
   }
   &.second {
     // #a400aa
-    filter: invert(100%) invert(13%) sepia(87%) saturate(6168%) hue-rotate(294deg) brightness(79%) contrast(107%)
-      saturate(200%);
+    filter: invert(100%) invert(14%) sepia(95%) saturate(5542%) hue-rotate(294deg) brightness(78%) contrast(109%);
   }
   &.third {
     // #6000c6

@@ -1,13 +1,13 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Button, Modal } from 'antd';
 
 import { useSelectedRace } from '../../hooks';
 import StakeOnRocketModalContent from './StakeOnRocketModalContent';
 
 function StakeOnRocket() {
-  const race = useSelectedRace();
+  const { race } = useSelectedRace();
   const [showModal, setShowModal] = useState(false);
-  const [disabled, setDisabled] = useState(false);
+  const disabled = !race || race.rockets.length === race.configSnapshot.maxRockets;
 
   const handleShowModal = useCallback(() => {
     setShowModal(true);
@@ -16,11 +16,6 @@ function StakeOnRocket() {
   const handleCloseModal = useCallback(() => {
     setShowModal(false);
   }, []);
-
-  useEffect(() => {
-    const _disabled = !race || race.rockets?.length === race.configSnapshot?.maxRockets;
-    setDisabled(_disabled);
-  }, [race]);
 
   return (
     <>

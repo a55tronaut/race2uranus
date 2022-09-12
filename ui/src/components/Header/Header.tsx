@@ -4,7 +4,7 @@ import { Space } from 'antd';
 import StakeOnRocket from '../StakeOnRocket';
 import StartCd from './StartCd';
 import Logo from '../Logo';
-import Prize from './Prize';
+import RewardPool from './RewardPool';
 import EnterRace from '../EnterRace';
 import BurMenu from './BurMenu';
 import ClaimRewards from './ClaimRewards';
@@ -21,7 +21,7 @@ function Header() {
             </Space>
             <Logo />
             <Space size="large" className="spaceRight">
-              <Prize />
+              <RewardPool />
               <EnterRace />
               <ClaimRewardsContainer>
                 <ClaimRewards />
@@ -38,6 +38,7 @@ function Header() {
 const Wrapper = styled.div`
   position: fixed;
   width: 100vw;
+  min-width: 1280px;
   z-index: 1;
 `;
 

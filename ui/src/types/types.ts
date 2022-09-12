@@ -27,3 +27,9 @@ export interface INftLeaderboardResult {
   winnings: number;
   races: number;
 }
+
+export interface IRaceStatusMeta {
+  waiting: boolean;
+  inProgress: boolean;
+  done: boolean;
+}

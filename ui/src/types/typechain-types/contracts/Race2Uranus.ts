@@ -79,6 +79,7 @@ export declare namespace Race2Uranus {
     configSnapshot: Race2Uranus.RaceConfigStruct;
     started: PromiseOrValue<boolean>;
     finished: PromiseOrValue<boolean>;
+    blastOffTimestamp: PromiseOrValue<BigNumberish>;
     revealBlock: PromiseOrValue<BigNumberish>;
     rockets: Race2Uranus.RocketStruct[];
     rewardPool: PromiseOrValue<BigNumberish>;
@@ -94,6 +95,7 @@ export declare namespace Race2Uranus {
     boolean,
     boolean,
     BigNumber,
+    BigNumber,
     Race2Uranus.RocketStructOutput[],
     BigNumber,
     number,
@@ -105,6 +107,7 @@ export declare namespace Race2Uranus {
     configSnapshot: Race2Uranus.RaceConfigStructOutput;
     started: boolean;
     finished: boolean;
+    blastOffTimestamp: BigNumber;
     revealBlock: BigNumber;
     rockets: Race2Uranus.RocketStructOutput[];
     rewardPool: BigNumber;
@@ -129,7 +132,8 @@ export declare namespace Race2Uranus {
 
 export interface Race2UranusInterface extends utils.Interface {
   functions: {
-    '_calcRevealTimestamp(uint256,uint32[],uint8)': FunctionFragment;
+    '_calcClosestBlastOffTimestamp(uint256,uint32[])': FunctionFragment;
+    '_calcRevealTimestamp(uint256,uint8)': FunctionFragment;
     'applyBoost(uint256,uint8)': FunctionFragment;
     'autoCreateNextRace()': FunctionFragment;
     'beneficiary()': FunctionFragment;
@@ -176,6 +180,7 @@ export interface Race2UranusInterface extends utils.Interface {
 
   getFunction(
     nameOrSignatureOrTopic:
+      | '_calcClosestBlastOffTimestamp'
       | '_calcRevealTimestamp'
       | 'applyBoost'
       | 'autoCreateNextRace'
@@ -222,8 +227,12 @@ export interface Race2UranusInterface extends utils.Interface {
   ): FunctionFragment;
 
   encodeFunctionData(
+    functionFragment: '_calcClosestBlastOffTimestamp',
+    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>[]]
+  ): string;
+  encodeFunctionData(
     functionFragment: '_calcRevealTimestamp',
-    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>[], PromiseOrValue<BigNumberish>]
+    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: 'applyBoost',
@@ -306,6 +315,7 @@ export interface Race2UranusInterface extends utils.Interface {
     values: [PromiseOrValue<string>, PromiseOrValue<BytesLike>]
   ): string;
 
+  decodeFunctionResult(functionFragment: '_calcClosestBlastOffTimestamp', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: '_calcRevealTimestamp', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'applyBoost', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'autoCreateNextRace', data: BytesLike): Result;
@@ -359,7 +369,7 @@ export interface Race2UranusInterface extends utils.Interface {
     'RaceCreated(uint256)': EventFragment;
     'RaceEntered(uint256,uint8,address,address,uint256)': EventFragment;
     'RaceFinished(uint256,uint8,address,uint256,address)': EventFragment;
-    'RaceStarted(uint256,uint256)': EventFragment;
+    'RaceStarted(uint256,uint256,uint256)': EventFragment;
     'RocketeerRewardClaimed(uint256,address,uint256)': EventFragment;
     'StakeRewardClaimed(uint256,address,uint256)': EventFragment;
     'StakedOnRocket(uint256,uint8,address,uint256)': EventFragment;
@@ -451,9 +461,10 @@ export type RaceFinishedEventFilter = TypedEventFilter<RaceFinishedEvent>;
 
 export interface RaceStartedEventObject {
   raceId: BigNumber;
+  blastOffTimestamp: BigNumber;
   revealBlockNumber: BigNumber;
 }
-export type RaceStartedEvent = TypedEvent<[BigNumber, BigNumber], RaceStartedEventObject>;
+export type RaceStartedEvent = TypedEvent<[BigNumber, BigNumber, BigNumber], RaceStartedEventObject>;
 
 export type RaceStartedEventFilter = TypedEventFilter<RaceStartedEvent>;
 
@@ -515,9 +526,14 @@ export interface Race2Uranus extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
-    _calcRevealTimestamp(
+    _calcClosestBlastOffTimestamp(
       _currentTimestamp: PromiseOrValue<BigNumberish>,
       _blastOffTimes: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { blastOffTimestamp: BigNumber }>;
+
+    _calcRevealTimestamp(
+      _blastOffTimestamp: PromiseOrValue<BigNumberish>,
       _revealDelayMinutes: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<[BigNumber] & { revealTimestamp: BigNumber }>;
@@ -692,9 +708,14 @@ export interface Race2Uranus extends BaseContract {
     ): Promise<ContractTransaction>;
   };
 
-  _calcRevealTimestamp(
+  _calcClosestBlastOffTimestamp(
     _currentTimestamp: PromiseOrValue<BigNumberish>,
     _blastOffTimes: PromiseOrValue<BigNumberish>[],
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  _calcRevealTimestamp(
+    _blastOffTimestamp: PromiseOrValue<BigNumberish>,
     _revealDelayMinutes: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
@@ -866,9 +887,14 @@ export interface Race2Uranus extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
-    _calcRevealTimestamp(
+    _calcClosestBlastOffTimestamp(
       _currentTimestamp: PromiseOrValue<BigNumberish>,
       _blastOffTimes: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    _calcRevealTimestamp(
+      _blastOffTimestamp: PromiseOrValue<BigNumberish>,
       _revealDelayMinutes: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -1073,11 +1099,16 @@ export interface Race2Uranus extends BaseContract {
       rocketeer?: null
     ): RaceFinishedEventFilter;
 
-    'RaceStarted(uint256,uint256)'(
+    'RaceStarted(uint256,uint256,uint256)'(
       raceId?: PromiseOrValue<BigNumberish> | null,
+      blastOffTimestamp?: null,
       revealBlockNumber?: null
     ): RaceStartedEventFilter;
-    RaceStarted(raceId?: PromiseOrValue<BigNumberish> | null, revealBlockNumber?: null): RaceStartedEventFilter;
+    RaceStarted(
+      raceId?: PromiseOrValue<BigNumberish> | null,
+      blastOffTimestamp?: null,
+      revealBlockNumber?: null
+    ): RaceStartedEventFilter;
 
     'RocketeerRewardClaimed(uint256,address,uint256)'(
       raceId?: PromiseOrValue<BigNumberish> | null,
@@ -1119,9 +1150,14 @@ export interface Race2Uranus extends BaseContract {
   };
 
   estimateGas: {
-    _calcRevealTimestamp(
+    _calcClosestBlastOffTimestamp(
       _currentTimestamp: PromiseOrValue<BigNumberish>,
       _blastOffTimes: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    _calcRevealTimestamp(
+      _blastOffTimestamp: PromiseOrValue<BigNumberish>,
       _revealDelayMinutes: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -1291,9 +1327,14 @@ export interface Race2Uranus extends BaseContract {
   };
 
   populateTransaction: {
-    _calcRevealTimestamp(
+    _calcClosestBlastOffTimestamp(
       _currentTimestamp: PromiseOrValue<BigNumberish>,
       _blastOffTimes: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    _calcRevealTimestamp(
+      _blastOffTimestamp: PromiseOrValue<BigNumberish>,
       _revealDelayMinutes: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
