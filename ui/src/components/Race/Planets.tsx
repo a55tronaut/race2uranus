@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import random from 'lodash/random';
 
-import { PLANETS_LOOP_INTERVAL_SECONDS, SECOND_MILLIS } from '../../constants';
+import { GAME_LOOP_INTERVAL_SECONDS, SECOND_MILLIS } from '../../constants';
 import Planet, { IProps as IPlanetProps } from './Planet';
 
 interface IPlanet extends IPlanetProps {
@@ -28,7 +28,7 @@ function Planets() {
           startY: random(-150, -20),
           endY: random(130, 250),
           x: random(-5, 100),
-          size: random(25, 150),
+          size: random(25, 250),
           rotation: random(0, 359),
         });
       }
@@ -39,7 +39,7 @@ function Planets() {
 
   useEffect(() => {
     updatePlanets();
-    const intervalId = setInterval(updatePlanets, PLANETS_LOOP_INTERVAL_SECONDS * SECOND_MILLIS);
+    const intervalId = setInterval(updatePlanets, GAME_LOOP_INTERVAL_SECONDS * 3 * SECOND_MILLIS);
 
     return () => clearInterval(intervalId);
   }, [updatePlanets]);

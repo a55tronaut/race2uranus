@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { useSelectedRace } from '../../hooks';
 import Background from './Background';
 import Rockets from './Rockets';
+import Winner from './Winner';
 
 function Race() {
   const { race, statusMeta, loading } = useSelectedRace();
@@ -19,6 +20,7 @@ function Race() {
         move={!statusMeta?.waiting}
         winner={statusMeta?.done ? race?.winner : undefined}
       />
+      {statusMeta?.done && <Winner rocket={race!.rockets[race!.winner]} />}
     </Container>
   );
 }

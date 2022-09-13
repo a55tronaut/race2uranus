@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import { PLANETS_LOOP_INTERVAL_SECONDS } from '../../constants';
+import { GAME_LOOP_INTERVAL_SECONDS } from '../../constants';
 
 export interface IProps {
   src: string;
@@ -39,7 +39,7 @@ function Planet({ src, startY, endY, x, size, rotation }: IProps) {
 
 const Container = styled.img`
   position: absolute;
-  transition: all ${PLANETS_LOOP_INTERVAL_SECONDS}s linear;
+  transition: all ${GAME_LOOP_INTERVAL_SECONDS * 3}s linear;
   visibility: hidden;
 `;
 
