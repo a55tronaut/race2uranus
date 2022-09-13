@@ -1,6 +1,9 @@
 export const CHAIN_ID = env('REACT_APP_CHAIN_ID', 'number');
 export const RPC_URL = env('REACT_APP_RPC_URL', 'string');
 
+export const L1_CHAIN_ID = env('REACT_APP_L1_CHAIN_ID', 'number');
+export const L1_RPC_URL = env('REACT_APP_L1_RPC_URL', 'string');
+
 export const GAME_ADDRESS = env('REACT_APP_GAME_ADDRESS', 'string');
 export const MAGIC_ADDRESS = env('REACT_APP_MAGIC_ADDRESS', 'string');
 

@@ -2,11 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import random from 'lodash/random';
 
 import { GAME_LOOP_INTERVAL_SECONDS, SECOND_MILLIS } from '../../constants';
-import Planet, { IProps as IPlanetProps } from './Planet';
-
-interface IPlanet extends IPlanetProps {
-  id: string;
-}
+import Planet, { IProps as IPlanet } from './Planet';
 
 const planetPaths = [`/assets/planet1.svg`, `/assets/planet2.svg`, `/assets/planet3.svg`];
 
@@ -21,7 +17,7 @@ function Planets() {
 
       for (let i = 0; i < numOfPlanets; i++) {
         newPlanets.push({
-          id: `${Date.now()}.${i}`,
+          id: `${Date.now()}.${src}.${i}`,
           src,
           startY: random(-150, -20),
           endY: random(130, 250),
@@ -47,6 +43,7 @@ function Planets() {
       {planets.map((planet) => (
         <Planet
           key={planet.id}
+          id={planet.id}
           src={planet.src}
           startY={planet.startY}
           endY={planet.endY}

@@ -2,3 +2,4 @@ export const blue = '#009bff';
 export const black = '#15001d';
 export const purple = '#a400aa';
 export const violet = '#6000c6';
+export const orange = '#f69520';

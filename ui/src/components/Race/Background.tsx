@@ -2,7 +2,8 @@
 
 import styled from 'styled-components';
 
-import { IRaceStatusMeta } from '../../types';
+import { IRaceStatusMeta, Race2Uranus } from '../../types';
+import DistanceCovered from './DistanceCovered';
 import FinishLine from './FinishLine';
 import Grid from './Grid';
 import LaunchPad from './LaunchPad';
@@ -10,14 +11,16 @@ import Planets from './Planets';
 import Uranus from './Uranus';
 
 interface IProps {
+  race: Race2Uranus.RaceStructOutput;
   statusMeta: IRaceStatusMeta;
 }
 
-function Background({ statusMeta }: IProps) {
+function Background({ race, statusMeta }: IProps) {
   return (
     <Container>
       {!statusMeta?.waiting && <Planets />}
       <Grid move={!statusMeta?.waiting} />
+      {!statusMeta?.waiting && <DistanceCovered race={race} />}
       <LaunchPad show={statusMeta?.waiting!} move={statusMeta?.inProgress!} />
       <FinishLine move={statusMeta?.done!} />
       <Uranus move={statusMeta?.done!} />

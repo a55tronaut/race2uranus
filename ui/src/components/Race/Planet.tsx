@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { GAME_LOOP_INTERVAL_SECONDS } from '../../constants';
+import { runAfterRender } from '../../utils';
 
 export interface IProps {
+  id: string;
   src: string;
   startY: number;
   endY: number;
@@ -12,7 +14,7 @@ export interface IProps {
   rotation: number;
 }
 
-function Planet({ src, startY, endY, x, size, rotation }: IProps) {
+function Planet({ id, src, startY, endY, x, size, rotation }: IProps) {
   const [style, setStyle] = useState<React.CSSProperties>({});
 
   useEffect(() => {
@@ -26,7 +28,7 @@ function Planet({ src, startY, endY, x, size, rotation }: IProps) {
 
     setStyle(newStyle);
 
-    setTimeout(() => {
+    runAfterRender(() => {
       setStyle({
         ...newStyle,
         top: `${endY}%`,
@@ -34,7 +36,7 @@ function Planet({ src, startY, endY, x, size, rotation }: IProps) {
     });
   }, [endY, rotation, size, startY, x]);
 
-  return <Container src={src} style={style} />;
+  return <Container key={id} src={src} style={style} />;
 }
 
 const Container = styled.img`

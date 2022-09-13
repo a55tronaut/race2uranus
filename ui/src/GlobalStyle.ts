@@ -11,6 +11,7 @@ const GlobalStyle = createGlobalStyle`
     font-size: 10px;
     font-weight: 300;
     box-sizing: border-box;
+    color: white;
   }
 
   #root {

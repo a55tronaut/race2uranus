@@ -135,3 +135,7 @@ export function getNftConfig(address: string): ISupportedNft {
 
   return config;
 }
+
+export function runAfterRender(fn: Function) {
+  window.requestAnimationFrame(() => window.requestAnimationFrame(() => fn()));
+}

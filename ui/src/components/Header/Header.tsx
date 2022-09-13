@@ -2,12 +2,12 @@ import styled from 'styled-components';
 import { Space } from 'antd';
 
 import StakeOnRocket from '../StakeOnRocket';
-import StartCd from './StartCd';
 import Logo from '../Logo';
 import RewardPool from './RewardPool';
 import EnterRace from '../EnterRace';
 import BurMenu from './BurMenu';
 import ClaimRewards from './ClaimRewards';
+import EtaToUranus from './EtaToUranus';
 
 function Header() {
   return (
@@ -17,7 +17,7 @@ function Header() {
           <TopMenu>
             <Space size="large">
               <StakeOnRocket />
-              <StartCd />
+              <EtaToUranus className="eta" />
             </Space>
             <Logo />
             <Space size="large" className="spaceRight">
@@ -51,6 +51,10 @@ const Container = styled.div`
 
   .spaceRight {
     position: relative;
+  }
+
+  .eta {
+    margin-left: 70px;
   }
 `;
 

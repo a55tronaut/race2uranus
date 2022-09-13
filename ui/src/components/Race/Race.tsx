@@ -17,7 +17,7 @@ function Race() {
         <Spin className="loader" size="large" />
       ) : (
         <>
-          <Background statusMeta={statusMeta!} />
+          <Background race={race!} statusMeta={statusMeta!} />
           <Rockets
             rockets={race?.rockets || []}
             maxRockets={race?.configSnapshot.maxRockets || 0}

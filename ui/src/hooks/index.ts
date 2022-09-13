@@ -8,3 +8,5 @@ export * from './useNftsForUser';
 export * from './useNftContract';
 export * from './useNftDominantColor';
 export * from './useSelectedRace';
+export * from './useTimeToL1Block';
+export * from './useWaitUntilL1Block';
