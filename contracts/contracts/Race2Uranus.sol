@@ -115,7 +115,7 @@ contract Race2Uranus is Initializable, UUPSUpgradeable, OwnableUpgradeable {
 
     timeParams.blastOffTimes.push(16 hours);
     timeParams.revealDelayMinutes = 90;
-    timeParams.blockTimeMillis = 13000;
+    timeParams.blockTimeMillis = 15000;
 
     raceConfig = RaceConfig(
       8, // uint8 maxRockets;
