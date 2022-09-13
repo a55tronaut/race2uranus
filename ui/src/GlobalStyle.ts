@@ -68,6 +68,10 @@ const GlobalStyle = createGlobalStyle`
     letter-spacing: 0.1em;
   }
 
+  .ant-typography.ant-typography {
+    color: white ;
+  }
+
   .ant-btn > span {
     text-transform: uppercase;
     color: white;

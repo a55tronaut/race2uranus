@@ -1,5 +1,4 @@
-import { Button, Typography } from 'antd';
-import { CSSProperties } from 'react';
+import { Typography } from 'antd';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { GAME_LOOP_INTERVAL_SECONDS } from '../../constants';

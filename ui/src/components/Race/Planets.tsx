@@ -5,12 +5,10 @@ import { GAME_LOOP_INTERVAL_SECONDS, SECOND_MILLIS } from '../../constants';
 import Planet, { IProps as IPlanetProps } from './Planet';
 
 interface IPlanet extends IPlanetProps {
-  id: number;
+  id: string;
 }
 
 const planetPaths = [`/assets/planet1.svg`, `/assets/planet2.svg`, `/assets/planet3.svg`];
-
-let planetCounter = 0;
 
 function Planets() {
   const [planets, setPlanets] = useState<IPlanet[]>([]);
@@ -23,7 +21,7 @@ function Planets() {
 
       for (let i = 0; i < numOfPlanets; i++) {
         newPlanets.push({
-          id: planetCounter++,
+          id: `${Date.now()}.${i}`,
           src,
           startY: random(-150, -20),
           endY: random(130, 250),

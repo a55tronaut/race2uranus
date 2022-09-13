@@ -11,6 +11,7 @@ import Track from './Track';
 
 interface IProps {
   rockets: Race2Uranus.RocketStructOutput[];
+  maxRockets: number;
   move: boolean;
   winner?: number;
 }
@@ -25,16 +26,24 @@ type GameRocket = Race2Uranus.RocketStructOutput & IGameRocketProps;
 const MIN_ROCKET_OFFSET = 10;
 const MAX_ROCKET_OFFSET = 60;
 
-function Rockets({ rockets, move, winner }: IProps) {
+const emptyRocket: Partial<Race2Uranus.RocketStructOutput> = {};
+
+function Rockets({ rockets, maxRockets, move, winner }: IProps) {
   const [gameRockets, setGameRockets] = useState<GameRocket[]>([]);
 
   const updateRocketPositions = useCallback(
     (move: boolean) => {
-      const updatedRockets: GameRocket[] = rockets.map((rocket) => {
+      const missingRockets = maxRockets - rockets.length;
+      const filledRockets = [...rockets, ...new Array(missingRockets).fill(emptyRocket)].map((rocket, index) => ({
+        ...rocket,
+        id: rocket.id || index,
+      }));
+
+      const updatedRockets: GameRocket[] = filledRockets.map((rocket) => {
         let offset = move ? random(MIN_ROCKET_OFFSET, MAX_ROCKET_OFFSET, true) : 0;
 
         if (rocket.id === winner) {
-          offset = MAX_ROCKET_OFFSET + 5;
+          offset = MAX_ROCKET_OFFSET + 3;
         }
 
         return { ...rocket, offset, style: { bottom: `${offset}%` } };
@@ -50,7 +59,7 @@ function Rockets({ rockets, move, winner }: IProps) {
 
       setGameRockets(updatedRockets);
     },
-    [rockets, winner]
+    [maxRockets, rockets, winner]
   );
 
   useEffect(() => {
@@ -74,7 +83,7 @@ function Rockets({ rockets, move, winner }: IProps) {
           <RocketWrapper style={rocket.style}>
             <Rocket className="rocket" address={rocket.nft} nftId={rocket.nftId} boostCount={rocket.totalBoosts} />
           </RocketWrapper>
-          <BoostRocket className="boostBtn" rocket={rocket} />
+          {rocket.rocketeer && <BoostRocket className="boostBtn" rocket={rocket} />}
         </RocketWithTrack>
       ))}
     </Container>

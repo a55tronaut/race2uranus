@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Generator: Adobe Illustrator 26.3.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 320 320" style="enable-background:new 0 0 320 320;" xml:space="preserve">
+	 viewBox="40 0 240 320" style="enable-background:new 0 0 320 320;" xml:space="preserve">
 <style type="text/css">
 	.st0{fill-rule:evenodd;clip-rule:evenodd;fill:url(#SVGID_1_);}
 	.st1{fill-rule:evenodd;clip-rule:evenodd;fill:url(#SVGID_00000104690852154563291750000009352021566277597323_);}
@@ -13,7 +13,7 @@
 		<stop  offset="1" style="stop-color:#FF5B00;stop-opacity:0"/>
 	</radialGradient>
 	<circle class="st0" cx="160" cy="122.74" r="120"/>
-	
+
 		<linearGradient id="SVGID_00000119089946342997199920000001167432365776408197_" gradientUnits="userSpaceOnUse" x1="160" y1="72.2529" x2="160" y2="317.2632">
 		<stop  offset="0" style="stop-color:#FF5B00"/>
 		<stop  offset="0.1463" style="stop-color:#FF5B00;stop-opacity:0.8537"/>
@@ -22,7 +22,7 @@
 	<path style="fill-rule:evenodd;clip-rule:evenodd;fill:url(#SVGID_00000119089946342997199920000001167432365776408197_);" d="
 		M160.97,72.25c-22.48-0.22-58.21,53.63-55.86,104.07l11,140.94h87.67l11-139.86C218.12,127.02,183.3,72.47,160.97,72.25z"/>
 	<g>
-		
+
 			<linearGradient id="SVGID_00000044146322450462315980000014191072839217284785_" gradientUnits="userSpaceOnUse" x1="159.6287" y1="72.2529" x2="159.6287" y2="108.4957">
 			<stop  offset="5.586590e-03" style="stop-color:#FFFF0E"/>
 			<stop  offset="1" style="stop-color:#FFFF0E;stop-opacity:0"/>

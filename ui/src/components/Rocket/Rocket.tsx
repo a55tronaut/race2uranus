@@ -85,7 +85,7 @@ const Porthole = styled.div`
 `;
 
 const Boost = styled.img`
-  width: 337%;
+  width: 256%;
   position: absolute;
   left: 50%;
   top: -30%;

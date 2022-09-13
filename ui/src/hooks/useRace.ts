@@ -1,8 +1,9 @@
-import { BigNumberish, ethers } from 'ethers';
+import { BigNumber, BigNumberish, ethers } from 'ethers';
 import { useEffect } from 'react';
 import create from 'zustand';
 import queue from 'queue';
 import merge from 'lodash/merge';
+import moment from 'moment';
 
 import {
   BoostAppliedEvent,
@@ -15,7 +16,7 @@ import {
   StakedOnRocketEvent,
   TypedListener,
 } from '../types';
-import { waitUntil } from '../utils';
+import { sleep } from '../utils';
 import { SECOND_MILLIS } from '../constants';
 import { useRaceContract, useRaceContractStore } from './useRaceContract';
 
@@ -38,8 +39,7 @@ const knownRaces: { [key: string]: boolean } = {};
 const q = queue({ autostart: true, concurrency: 1 });
 
 const defaultState: IRaceStoreState = {};
-const defaultRace: IRace = { loading: false, error: false };
-const defaultStatusMeta: IRaceStatusMeta = { waiting: true, inProgress: false, done: false };
+const defaultRace: IRace = { loading: true, error: false };
 
 const useRaceStore = create<IRaceStoreState>(() => defaultState);
 
@@ -56,15 +56,25 @@ export function useRace(id: BigNumberish): IRace {
     async function refreshRaceData() {
       try {
         const [race] = await contract.functions!.getRace(id)!;
-        const statusMeta = calcAndNotifyStatusMeta(race);
 
-        updateRaceInStore(id, { loading: false, race, statusMeta });
+        updateRaceInStore(id, { loading: false, race });
 
         // TODO: remove
-        setTimeout(() => {
-          console.log('updating status');
-          updateRaceInStore(id, { statusMeta: { waiting: false, inProgress: true, done: false } });
-        }, 5000);
+
+        // setTimeout(() => {
+        //   console.log('updating blastofftimestamp');
+        //   updateRaceStructInStore(id, {
+        //     blastOffTimestamp: BigNumber.from(Math.floor(moment().add(5, 'seconds').toDate().getTime() / 1000)),
+        //   });
+        // }, 5000);
+        // setTimeout(() => {
+        //   console.log('updating status to inProgress');
+        //   updateRaceInStore(id, { statusMeta: { waiting: false, inProgress: true, done: false } });
+        // }, 5000);
+        // setTimeout(() => {
+        //   console.log('updating status to done');
+        //   updateRaceInStore(id, { statusMeta: { waiting: false, inProgress: false, done: true } });
+        // }, 10000);
       } catch (e) {
         console.error(e);
         updateRaceInStore(id, { loading: false, error: true });
@@ -79,10 +89,10 @@ export function useRace(id: BigNumberish): IRace {
 
 function calcAndNotifyStatusMeta(
   race: Race2Uranus.RaceStructOutput,
-  prevStatusMeta = defaultStatusMeta
+  prevRace?: Race2Uranus.RaceStructOutput
 ): IRaceStatusMeta {
   const statusMeta = calcStatusMeta(race);
-  if (!prevStatusMeta.waiting && statusMeta.waiting) {
+  if (statusMeta.waiting && prevRace?.blastOffTimestamp.eq(0) && race.blastOffTimestamp.gt(0)) {
     notifyWhenRaceInProgress(race);
   }
 
@@ -112,10 +122,10 @@ function calcStatusMeta(race: Race2Uranus.RaceStructOutput): IRaceStatusMeta {
 }
 
 async function notifyWhenRaceInProgress(race: Race2Uranus.RaceStructOutput) {
-  const diffSeconds = new Date().getTime() / 1000 - race.blastOffTimestamp.toNumber();
-  await waitUntil(diffSeconds * SECOND_MILLIS);
+  const diffMillis = race.blastOffTimestamp.toNumber() * SECOND_MILLIS - Date.now();
+  await sleep(diffMillis);
 
-  updateRaceInStore(race.id, { statusMeta: { waiting: false, inProgress: true, done: false } });
+  updateRaceInStore(race.id, {}, { waiting: false, inProgress: true, done: false });
 }
 
 useRaceContractStore.subscribe(({ contract }) => {
@@ -262,13 +272,17 @@ function getRaceFromStore(raceId: BigNumberish): IRace {
   return useRaceStore.getState()[raceId.toString()];
 }
 
-function updateRaceStructInStore(raceId: BigNumberish, raceStruct: Partial<Race2Uranus.RaceStructOutput>) {
-  updateRaceInStore(raceId, { race: raceStruct } as any);
+function updateRaceStructInStore(
+  raceId: BigNumberish,
+  raceStruct: Partial<Race2Uranus.RaceStructOutput>,
+  statusMeta?: IRaceStatusMeta
+) {
+  updateRaceInStore(raceId, { race: raceStruct, statusMeta } as any);
 }
 
-function updateRaceInStore(raceId: BigNumberish, race: Partial<IRace>) {
+function updateRaceInStore(raceId: BigNumberish, race: Partial<IRace>, meta?: IRaceStatusMeta) {
   const existingRace = getRaceFromStore(raceId) || {};
   const newRace = merge({}, existingRace, race);
-  const statusMeta = race.statusMeta || calcAndNotifyStatusMeta(newRace.race!, existingRace?.statusMeta);
+  const statusMeta = meta || calcAndNotifyStatusMeta(newRace.race!, existingRace.race);
   useRaceStore.setState({ [raceId.toString()]: merge(newRace, { statusMeta }) });
 }

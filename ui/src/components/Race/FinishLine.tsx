@@ -20,7 +20,7 @@ const Container = styled.div`
   left: 50%;
   top: -400vh;
   transform: translate(-50%, 0) skew(-15deg);
-  opacity: 0.3;
+  opacity: 0.2;
   z-index: 2;
   transition: top ${3 * GAME_LOOP_INTERVAL_SECONDS}s linear;
   background-image: url(/assets/checkered-flag.svg);
