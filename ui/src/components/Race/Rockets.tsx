@@ -12,6 +12,7 @@ import Track from './Track';
 interface IProps {
   rockets: Race2Uranus.RocketStructOutput[];
   maxRockets: number;
+  canBoost: boolean;
   move: boolean;
   winner?: number;
 }
@@ -28,7 +29,7 @@ const MAX_ROCKET_OFFSET = 60;
 
 const emptyRocket: Partial<Race2Uranus.RocketStructOutput> = {};
 
-function Rockets({ rockets, maxRockets, move, winner }: IProps) {
+function Rockets({ rockets, maxRockets, canBoost, move, winner }: IProps) {
   const [gameRockets, setGameRockets] = useState<GameRocket[]>([]);
 
   const updateRocketPositions = useCallback(
@@ -83,7 +84,7 @@ function Rockets({ rockets, maxRockets, move, winner }: IProps) {
           <RocketWrapper style={rocket.style}>
             <Rocket className="rocket" address={rocket.nft} nftId={rocket.nftId} boostCount={rocket.totalBoosts} />
           </RocketWrapper>
-          {rocket.rocketeer && <BoostRocket className="boostBtn" rocket={rocket} />}
+          {rocket.rocketeer && canBoost && <BoostRocket className="boostBtn" rocket={rocket} />}
         </RocketWithTrack>
       ))}
     </Container>

@@ -22,6 +22,7 @@ function Race() {
           <Rockets
             rockets={race?.rockets || []}
             maxRockets={race?.configSnapshot.maxRockets || 0}
+            canBoost={!statusMeta?.revealBlockReached}
             move={!statusMeta?.waiting}
             winner={statusMeta?.done ? race?.winner : undefined}
           />
