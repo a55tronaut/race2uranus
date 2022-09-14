@@ -18,7 +18,7 @@ function Background({ race, statusMeta }: IProps) {
     <Container>
       {!statusMeta?.waiting && <Planets />}
       <Grid move={!statusMeta?.waiting} />
-      {!statusMeta?.waiting && <DistanceCovered race={race} />}
+      {statusMeta?.inProgress && !statusMeta?.revealBlockReached && <DistanceCovered race={race} />}
       <LaunchPad show={statusMeta?.waiting!} move={statusMeta?.inProgress!} />
       <FinishLine move={statusMeta?.done!} />
       <Uranus move={statusMeta?.done!} />

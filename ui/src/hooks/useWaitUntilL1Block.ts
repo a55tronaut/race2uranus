@@ -9,7 +9,7 @@ export function useWaitUntilL1Block(blockNumber: BigNumberish) {
 
   useEffect(() => {
     const blockNum = BigNumber.from(blockNumber || '0').toNumber();
-    if (!loading && !reached && currentBlock >= blockNum) {
+    if (!loading && !reached && blockNum > 0 && currentBlock >= blockNum) {
       setReached(true);
     }
   }, [avgBlockTimeMillis, blockNumber, currentBlock, loading, reached]);

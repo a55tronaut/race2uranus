@@ -1,57 +1,74 @@
-import { Button, message } from 'antd';
-import styled from 'styled-components';
 import { useCallback, useEffect, useState } from 'react';
-import { ethers } from 'ethers';
+import { Button, Typography, notification } from 'antd';
+import styled from 'styled-components';
+import { BigNumber, BigNumberish } from 'ethers';
 import { useEthers } from '@usedapp/core';
 
-import { useRaceContract } from '../../hooks';
+import { useRaceContract, useSelectedRace } from '../../hooks';
+import MagicAmount from '../MagicAmount';
 
-function ClaimRewards() {
+interface IProps {
+  className?: string;
+}
+
+const { Text } = Typography;
+
+function ClaimRewards({ className }: IProps) {
+  const { statusMeta } = useSelectedRace();
   const { account } = useEthers();
   const { contract } = useRaceContract();
-  const [rewards, setRewards] = useState(0);
+  const [rewards, setRewards] = useState<BigNumberish>(0);
+  const [initialRefresh, setInitialRefresh] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const refreshRewards = useCallback(async () => {
-    if (contract.functions && account) {
+    if (contract && account) {
+      setInitialRefresh(true);
       const [amount] = await contract.functions.calcClaimableAmountAll(account);
-      setRewards(Number(ethers.utils.formatEther(amount)));
+      setRewards(amount);
     }
   }, [account, contract]);
 
   useEffect(() => {
-    refreshRewards();
-  }, [refreshRewards]);
+    if (!initialRefresh && contract && account) {
+      refreshRewards();
+    }
+  }, [account, contract, initialRefresh, refreshRewards]);
 
   useEffect(() => {
-    if (contract.on) {
-      contract.on(contract.filters!.RaceFinished(), refreshRewards);
-    }
+    contract?.on(contract.filters!.RaceFinished(), refreshRewards);
 
-    return () => {
-      if (contract.off) {
-        contract.off(contract.filters!.RaceFinished(), refreshRewards);
-      }
-    };
+    return () => contract?.off(contract.filters!.RaceFinished(), refreshRewards) as any;
   }, [contract, refreshRewards]);
+
+  useEffect(() => {
+    if (statusMeta?.done) {
+      refreshRewards();
+    }
+  }, [refreshRewards, statusMeta?.done]);
 
   const handleClaimRewards = useCallback(async () => {
     try {
       setLoading(true);
-      await contract.functions!.claimAll();
+      const res = await contract!.functions.claimAll();
+      await res.wait(1);
       setRewards(0);
-      message.success({ content: 'Succesfully claimed rewards' });
+      notification.success({ message: 'Succesfully claimed rewards' });
     } finally {
       setLoading(false);
     }
-  }, [contract.functions]);
+  }, [contract]);
 
   return (
-    <Container>
-      {rewards > 0 && (
-        <Button type="ghost" loading={loading} onClick={handleClaimRewards}>
-          Claim rewards
-        </Button>
+    <Container className={className}>
+      {BigNumber.from(rewards || '0').gt(0) && (
+        <>
+          <Text>Your Rewards</Text>
+          <MagicAmount amount={rewards} />
+          <Button className="claimBtn" type="ghost" size="small" loading={loading} onClick={handleClaimRewards}>
+            Claim
+          </Button>
+        </>
       )}
     </Container>
   );
@@ -60,6 +77,16 @@ function ClaimRewards() {
 const Container = styled.div`
   text-align: center;
   margin: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 0;
+  min-width: 160px;
+
+  .claimBtn {
+    margin-top: 8px;
+  }
 `;
 
 export default ClaimRewards;

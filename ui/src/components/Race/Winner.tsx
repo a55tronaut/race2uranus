@@ -1,23 +1,34 @@
-import { Typography } from 'antd';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Typography } from 'antd';
 import styled from 'styled-components';
-import { GAME_LOOP_INTERVAL_SECONDS } from '../../constants';
+import cn from 'classnames';
 
+import { GAME_LOOP_INTERVAL_SECONDS } from '../../constants';
 import { Race2Uranus } from '../../types';
 import Layout from '../Layout';
 import Rocket from '../Rocket';
 
 interface IProps {
-  rocket: Race2Uranus.RocketStructOutput;
+  show: boolean;
+  rocket?: Race2Uranus.RocketStructOutput;
 }
 
-function Winner({ rocket }: IProps) {
+function Winner({ show, rocket }: IProps) {
+  const [animate, setAnimate] = useState(false);
+
+  useEffect(() => {
+    if (!show) {
+      setAnimate(true);
+    }
+  }, [show]);
+
   return (
-    <Container>
+    <Container className={cn({ show, animate })}>
       <Layout>
         <Content>
           <RocketWrapper>
-            <Rocket className="rocket" address={rocket.nft} nftId={rocket.nftId} />
+            <Rocket className="rocket" address={rocket?.nft} nftId={rocket?.nftId} />
           </RocketWrapper>
           <Description>
             <Typography.Title level={1} className="title">
@@ -42,8 +53,16 @@ const Container = styled.div`
   width: 100%;
   height: 100vh;
   min-height: 600px;
-  opacity: 0;
-  animation: appear ${3 * GAME_LOOP_INTERVAL_SECONDS}s ease forwards;
+  display: none;
+
+  &.show {
+    display: block;
+  }
+
+  &.animate {
+    opacity: 0;
+    animation: appear ${3 * GAME_LOOP_INTERVAL_SECONDS}s ease forwards;
+  }
 
   @keyframes appear {
     0% {

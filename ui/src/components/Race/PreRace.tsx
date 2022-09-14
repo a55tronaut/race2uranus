@@ -26,7 +26,8 @@ function PreRace({ show, rewardPool }: IProps) {
             Click the <strong>Enter Race</strong> button to join the race and earn a <strong>guaranteed</strong> share
             of the reward pool!
             <br />
-            You can also stake on any rocket or boost its propulsion system with your <strong>$MAGIC</strong>!
+            You can also <strong>Stake</strong> on any rocket or <strong>Boost</strong> its propulsion system with your{' '}
+            <strong>$MAGIC</strong>!
           </Paragraph>
           <div className="poolBg">
             <Title level={5} className="poolHeader">
@@ -73,6 +74,7 @@ const Content = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  min-width: 800px;
 
   .title {
     margin-bottom: 36px;

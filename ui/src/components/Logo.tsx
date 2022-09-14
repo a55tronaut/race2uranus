@@ -7,11 +7,10 @@ interface IProps {
 
 function Logo({ className }: IProps) {
   const classNames = cn('logo', className);
+
   return (
     <Container>
-      <a href="/" className="logo-link">
-        <img alt="logo" className={classNames} src="/assets/logo.svg" />
-      </a>
+      <img alt="logo" className={classNames} src="/assets/logo.svg" />
     </Container>
   );
 }
@@ -19,6 +18,7 @@ function Logo({ className }: IProps) {
 const Container = styled.div`
   margin: auto;
   display: block;
+
   .logo {
     height: 100px;
   }

@@ -10,8 +10,8 @@ import NftImage from '../NftImage';
 import { ReactComponent as RocketSvg } from './rocket.svg';
 
 interface IProps {
-  address: string;
-  nftId: BigNumberish;
+  address?: string;
+  nftId?: BigNumberish;
   className?: string;
   boostCount?: number;
 }
@@ -24,7 +24,7 @@ function Rocket({ address, nftId, className, boostCount }: IProps) {
   const title = useMemo(() => {
     if (address) {
       const nftConfig = getNftConfig(address);
-      return `${nftConfig.name} #${nftId.toString()}`;
+      return `${nftConfig.name} #${nftId?.toString()}`;
     }
 
     return '';
@@ -44,9 +44,7 @@ function Rocket({ address, nftId, className, boostCount }: IProps) {
   return (
     <Tooltip title={title} placement="top">
       <Container color={color} className={className}>
-        <Porthole>
-          <NftImage address={address} id={nftId} className="nftImg" />
-        </Porthole>
+        <Porthole>{!!address && !!nftId && <NftImage address={address} id={nftId} className="nftImg" />}</Porthole>
         <RocketSvg className="rocket" />
         <Boost className={boostClassName} src="/assets/boost.svg" />
       </Container>

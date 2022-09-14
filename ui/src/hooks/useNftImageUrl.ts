@@ -6,7 +6,7 @@ import { useNftImageUrls } from './useNftImageUrls';
 // https://images.weserv.nl/
 const proxyUrl = '//images.weserv.nl/?maxage=1w&w=200&url=';
 
-export function useNftImageUrl(address: string, id: BigNumberish) {
+export function useNftImageUrl(address?: string, id?: BigNumberish) {
   const { fetchImageUrl } = useNftImageUrls();
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
@@ -20,7 +20,7 @@ export function useNftImageUrl(address: string, id: BigNumberish) {
     async function fetchUrl() {
       try {
         setLoading(true);
-        const _url = await fetchImageUrl(address, id);
+        const _url = await fetchImageUrl(address!, id!);
         setUrl(proxyUrl + _url.replace('https://', ''));
       } catch (e) {
         setError(true);

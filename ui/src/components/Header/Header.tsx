@@ -1,8 +1,7 @@
 import styled from 'styled-components';
-import { Space } from 'antd';
 
 import StakeOnRocket from '../StakeOnRocket';
-import Logo from '../Logo';
+import Logo from './Logo';
 import RewardPool from './RewardPool';
 import EnterRace from '../EnterRace';
 import BurMenu from './BurMenu';
@@ -13,23 +12,19 @@ function Header() {
   return (
     <Wrapper>
       <Container>
-        <Layout>
-          <TopMenu>
-            <Space size="large">
-              <StakeOnRocket />
-              <EtaToUranus className="eta" />
-            </Space>
-            <Logo />
-            <Space size="large" className="spaceRight">
-              <RewardPool />
-              <EnterRace />
-              <ClaimRewardsContainer>
-                <ClaimRewards />
-              </ClaimRewardsContainer>
-            </Space>
+        <Content>
+          <div className="space">
+            <StakeOnRocket />
+            <EtaToUranus className="eta" />
+            <RewardPool />
+          </div>
+          <Logo />
+          <div className="space right">
+            <ClaimRewards className="claim" />
+            <EnterRace />
             <BurMenu />
-          </TopMenu>
-        </Layout>
+          </div>
+        </Content>
       </Container>
     </Wrapper>
   );
@@ -49,24 +44,28 @@ const Container = styled.div`
   background-repeat: no-repeat;
   height: 155px;
 
-  .spaceRight {
-    position: relative;
-  }
+  .space {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 
-  .eta {
-    margin-left: 70px;
+    .eta {
+      margin-left: 70px;
+    }
+
+    .claim {
+      margin-right: 70px;
+    }
   }
 `;
 
-const Layout = styled.div`
+const Content = styled.div`
   max-width: 1280px;
   margin: 0px auto;
-`;
-
-const TopMenu = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: space-between;
   height: 120px;
   padding: 0 30px;
 
@@ -75,14 +74,8 @@ const TopMenu = styled.div`
     position: absolute;
     left: 50%;
     transform: translate(-50%, -50%);
-    margin-top: 0.5em;
+    margin-top: 8px;
   }
-`;
-
-const ClaimRewardsContainer = styled.div`
-  position: absolute;
-  bottom: -55px;
-  right: 5px;
 `;
 
 export default Header;

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { BigNumberish, ethers } from 'ethers';
 import { Button, Typography, Select, Input, Form, notification, Alert } from 'antd';
+import { TwitterOutlined } from '@ant-design/icons';
 
 import { useNftsForUser, useRaceContract, useEnsureMagicApproval, useSelectedRace } from '../../hooks';
 import { formatNumber, getNftConfig } from '../../utils';
@@ -38,6 +39,7 @@ function EnterRaceModalContent({ onClose }: IProps) {
   const [stakeAmount, setStakeAmount] = useState<number>();
   const [noValidNfts, setNoValidNfts] = useState(false);
   const [allNftsUsed, setAllNftsUsed] = useState(false);
+  const [entered, setEntered] = useState(false);
 
   const minStake = useMemo(() => {
     return Number(ethers.utils.formatEther(race!.configSnapshot.minStakeAmount!));
@@ -45,6 +47,13 @@ function EnterRaceModalContent({ onClose }: IProps) {
   const maxStake = useMemo(() => {
     return Number(ethers.utils.formatEther(race!.configSnapshot.maxStakeAmount!));
   }, [race]);
+
+  const shareMsg = useMemo(() => {
+    if (selectedNft) {
+      return `Hey $MAGIC holders, I have entered my ${selectedNft.name} #${selectedNft.nftId} into Race 2 Uranus! Join the race or stake $MAGIC to win!`;
+    }
+    return '';
+  }, [selectedNft]);
 
   useEffect(() => {
     const opts: INftOption[] = [];
@@ -60,7 +69,9 @@ function EnterRaceModalContent({ onClose }: IProps) {
       );
     });
 
-    setNftOptions(opts);
+    const sortedOpts = opts.sort((a, b) => (a.disabled ? 1 : -1));
+
+    setNftOptions(sortedOpts);
   }, [nfts, race]);
 
   useEffect(() => {
@@ -91,7 +102,7 @@ function EnterRaceModalContent({ onClose }: IProps) {
       await form.validateFields();
       const stakeAmountWei = ethers.utils.parseEther(stakeAmount!.toString());
       await ensureApproval(stakeAmountWei);
-      const res = await contract.functions!.enterRace(
+      const res = await contract!.functions.enterRace(
         race!.id,
         selectedNft!.address,
         selectedNft!.nftId,
@@ -108,7 +119,7 @@ function EnterRaceModalContent({ onClose }: IProps) {
         ),
       });
 
-      onClose();
+      setEntered(true);
     } catch (e) {
       console.error(e);
       const error = (e as any)?.message || 'Error';
@@ -116,7 +127,14 @@ function EnterRaceModalContent({ onClose }: IProps) {
     } finally {
       setLoading(false);
     }
-  }, [contract.functions, ensureApproval, form, onClose, race, selectedNft, stakeAmount]);
+  }, [contract, ensureApproval, form, race, selectedNft, stakeAmount]);
+
+  const handleShare = useCallback(async () => {
+    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareMsg)}&url=${encodeURIComponent(
+      window.location.href
+    )}&hashtags=MAGIC,Race2Uranus`;
+    window.open(url, '_blank');
+  }, [shareMsg]);
 
   const nftSelectLabel = (
     <>
@@ -156,55 +174,61 @@ function EnterRaceModalContent({ onClose }: IProps) {
   return (
     <Container>
       <Typography.Title level={4} className="title">
-        Enter Race
+        {entered ? 'Welcome Aboard!' : 'Enter Race'}
       </Typography.Title>
       <Content>
         <RocketContainer>
           <Rocket className="rocket" address={selectedNft?.address!} nftId={selectedNft?.nftId!} />
         </RocketContainer>
-        <Form layout="vertical" form={form}>
-          <Form.Item name="nft" label={nftSelectLabel} rules={[{ required: true, message: 'NFT is required' }]}>
-            <Select
-              placeholder="Select NFT"
-              loading={nftsLoading}
-              disabled={loading}
-              size="large"
-              onChange={handleNftChange}
+        {entered ? (
+          <SharePreview>
+            <Alert type="info" message={shareMsg} />
+          </SharePreview>
+        ) : (
+          <Form layout="vertical" form={form}>
+            <Form.Item name="nft" label={nftSelectLabel} rules={[{ required: true, message: 'NFT is required' }]}>
+              <Select
+                placeholder="Select NFT"
+                loading={nftsLoading}
+                disabled={loading}
+                size="large"
+                onChange={handleNftChange}
+              >
+                {nftOptions.map((nft, index) => (
+                  <Option value={index} key={nft.address + nft.nftId} disabled={nft.disabled}>
+                    <NftImage className="nftOptionImg" address={nft.address} id={nft.nftId} />{' '}
+                    {nft.name + ' #' + nft.nftId}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item
+              name="stakeAmount"
+              label={stakeAmountLabel}
+              validateFirst
+              rules={[
+                { required: true, message: 'Stake amount is required' },
+                {
+                  min: minStake,
+                  max: maxStake,
+                  message: `You must stake between ${formatNumber(minStake)} - ${formatNumber(maxStake)} $MAGIC`,
+                  type: 'number',
+                  transform: Number,
+                },
+              ]}
             >
-              {nftOptions.map((nft, index) => (
-                <Option value={index} key={nft.address + nft.nftId} disabled={nft.disabled}>
-                  <NftImage className="nftOptionImg" address={nft.address} id={nft.nftId} />{' '}
-                  {nft.name + ' #' + nft.nftId}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <Form.Item
-            name="stakeAmount"
-            label={stakeAmountLabel}
-            validateFirst
-            rules={[
-              { required: true, message: 'Stake amount is required' },
-              {
-                min: minStake,
-                max: maxStake,
-                message: `You must stake between ${formatNumber(minStake)} - ${formatNumber(maxStake)} $MAGIC`,
-                type: 'number',
-                transform: Number,
-              },
-            ]}
-          >
-            <Input
-              type="number"
-              size="large"
-              placeholder={`${formatNumber(minStake)} - ${formatNumber(maxStake)}`}
-              addonAfter="$MAGIC"
-              value={stakeAmount}
-              disabled={loading}
-              onChange={handleAmountChange}
-            />
-          </Form.Item>
-        </Form>
+              <Input
+                type="number"
+                size="large"
+                placeholder={`${formatNumber(minStake)} - ${formatNumber(maxStake)}`}
+                addonAfter="$MAGIC"
+                value={stakeAmount}
+                disabled={loading}
+                onChange={handleAmountChange}
+              />
+            </Form.Item>
+          </Form>
+        )}
       </Content>
       <Message>
         {noValidNfts && (
@@ -233,17 +257,23 @@ function EnterRaceModalContent({ onClose }: IProps) {
         )}
       </Message>
       <ModalFooter>
-        <Button
-          key="enter"
-          loading={loading}
-          disabled={noValidNfts || allNftsUsed}
-          type="primary"
-          size="middle"
-          ghost
-          onClick={handleSubmit}
-        >
-          ENTER
-        </Button>
+        {entered ? (
+          <Button key="share" type="primary" size="middle" ghost onClick={handleShare}>
+            <TwitterOutlined /> SHARE
+          </Button>
+        ) : (
+          <Button
+            key="enter"
+            loading={loading}
+            disabled={noValidNfts || allNftsUsed}
+            type="primary"
+            size="middle"
+            ghost
+            onClick={handleSubmit}
+          >
+            ENTER
+          </Button>
+        )}
       </ModalFooter>
     </Container>
   );
@@ -284,6 +314,13 @@ const Content = styled.div`
   form {
     flex: 1;
   }
+`;
+
+const SharePreview = styled.div`
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const RocketContainer = styled.div`

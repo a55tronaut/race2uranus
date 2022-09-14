@@ -10,7 +10,7 @@ import Rockets from './Rockets';
 import Winner from './Winner';
 
 function Race() {
-  const { race, statusMeta, loading } = useSelectedRace();
+  const { loading, race, statusMeta } = useSelectedRace();
 
   return (
     <Container>
@@ -31,7 +31,7 @@ function Race() {
             blastOffTimestamp={race?.blastOffTimestamp!}
           />
           <DestroyAsteroid race={race!} statusMeta={statusMeta!} />
-          {statusMeta?.done && <Winner rocket={race!.rockets[race!.winner]} />}
+          <Winner show={statusMeta?.done!} rocket={race!.rockets[race!.winner]} />
         </>
       )}
     </Container>

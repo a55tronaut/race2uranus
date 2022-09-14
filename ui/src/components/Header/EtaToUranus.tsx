@@ -63,6 +63,7 @@ const Container = styled.div`
 
   .time.time {
     color: ${orange};
+    margin: 0;
   }
 `;
 

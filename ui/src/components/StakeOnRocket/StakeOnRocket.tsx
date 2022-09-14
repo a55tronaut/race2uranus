@@ -5,9 +5,9 @@ import { useSelectedRace } from '../../hooks';
 import StakeOnRocketModalContent from './StakeOnRocketModalContent';
 
 function StakeOnRocket() {
-  const { race } = useSelectedRace();
+  const { race, statusMeta } = useSelectedRace();
   const [showModal, setShowModal] = useState(false);
-  const disabled = !race || race.rockets.length === race.configSnapshot.maxRockets;
+  const disabled = !race || race?.rockets.length === 0 || statusMeta?.revealBlockReached;
 
   const handleShowModal = useCallback(() => {
     setShowModal(true);

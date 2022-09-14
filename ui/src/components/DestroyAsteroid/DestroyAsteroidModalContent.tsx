@@ -23,13 +23,13 @@ function BoostRocketModalContent({ race, onClose }: IProps) {
     setLoading(true);
 
     try {
-      const res = await contract.functions!.finishRace(race!.id);
+      const res = await contract!.functions.finishRace(race!.id);
       await res.wait(1);
 
       notification.success({
         message: (
           <>
-            You've destroyed the asteroid and gained
+            You've destroyed the asteroid and gained{' '}
             <strong>{formatNumber(Number(ethers.utils.formatEther(race.configSnapshot.revealBounty)))} $MAGIC</strong>!
           </>
         ),
@@ -46,7 +46,7 @@ function BoostRocketModalContent({ race, onClose }: IProps) {
     } finally {
       setLoading(false);
     }
-  }, [contract.functions, onClose, race]);
+  }, [contract, onClose, race]);
 
   return (
     <Container>

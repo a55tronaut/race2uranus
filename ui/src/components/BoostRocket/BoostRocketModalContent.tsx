@@ -26,7 +26,7 @@ function BoostRocketModalContent({ rocket, onClose }: IProps) {
 
     try {
       await ensureApproval(race!.configSnapshot.boostPrice);
-      const res = await contract.functions!.applyBoost(race!.id, rocket.id);
+      const res = await contract!.functions.applyBoost(race!.id, rocket.id);
       await res.wait(1);
 
       const nftConfig = getNftConfig(rocket.nft);
@@ -51,7 +51,7 @@ function BoostRocketModalContent({ rocket, onClose }: IProps) {
     } finally {
       setLoading(false);
     }
-  }, [contract.functions, ensureApproval, onClose, race, rocket.id, rocket.nft, rocket.nftId]);
+  }, [contract, ensureApproval, onClose, race, rocket.id, rocket.nft, rocket.nftId]);
 
   return (
     <Container>

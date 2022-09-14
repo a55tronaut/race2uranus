@@ -21,5 +21,6 @@ function RewardPool() {
 const Container = styled.div`
   text-align: center;
   margin: 0 3em;
+  min-width: 160px;
 `;
 export default RewardPool;

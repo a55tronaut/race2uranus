@@ -12,11 +12,11 @@ function LandingPage() {
   const [noActiveRaces, setNoActiveRaces] = useState(false);
 
   useEffect(() => {
-    if (contract.functions?.getActiveRaceIds) {
+    if (contract) {
       redirectToActiveRace();
     }
     async function redirectToActiveRace() {
-      const [raceIds] = await contract.functions!.getActiveRaceIds()!;
+      const [raceIds] = await contract!.functions.getActiveRaceIds()!;
 
       if (raceIds[0]) {
         navigate(`/race/${raceIds[0].toString()}`, { replace: true });

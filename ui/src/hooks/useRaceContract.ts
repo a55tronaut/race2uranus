@@ -9,14 +9,14 @@ import { useEthersProvider } from './useEthersProvider';
 import { useEthersSigner } from './useEthersSigner';
 
 interface IRaceContractStoreState {
-  contract: Partial<Race2Uranus>;
+  contract?: Race2Uranus;
 }
 
 interface IRaceContractStoreMethods {}
 
 interface IRaceContractHook extends IRaceContractStoreState, IRaceContractStoreMethods {}
 
-const defaultState: IRaceContractStoreState = { contract: {} } as any;
+const defaultState: IRaceContractStoreState = {};
 
 export const useRaceContractStore = create<IRaceContractStoreState>(() => defaultState);
 
