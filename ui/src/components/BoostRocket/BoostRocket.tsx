@@ -1,9 +1,9 @@
 import { useCallback, useState } from 'react';
 import { Button, Modal } from 'antd';
+import styled from 'styled-components';
 
 import { Race2Uranus } from '../../types';
 import BoostRocketModalContent from './BoostRocketModalContent';
-import styled from 'styled-components';
 
 interface IProps {
   rocket: Race2Uranus.RocketStructOutput;

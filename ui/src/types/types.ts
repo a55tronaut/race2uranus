@@ -31,5 +31,6 @@ export interface INftLeaderboardResult {
 export interface IRaceStatusMeta {
   waiting: boolean;
   inProgress: boolean;
+  revealBlockReached: boolean;
   done: boolean;
 }

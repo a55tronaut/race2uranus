@@ -1,12 +1,13 @@
 import styled from 'styled-components';
+import { Spin } from 'antd';
 
 import { useSelectedRace } from '../../hooks';
+import DestroyAsteroid from '../DestroyAsteroid';
 import Background from './Background';
 import PreRace from './PreRace';
 import LaunchCountdown from './LaunchCountdown';
 import Rockets from './Rockets';
 import Winner from './Winner';
-import { Spin } from 'antd';
 
 function Race() {
   const { race, statusMeta, loading } = useSelectedRace();
@@ -29,6 +30,7 @@ function Race() {
             show={statusMeta?.waiting! && !!race?.blastOffTimestamp.gt(0)}
             blastOffTimestamp={race?.blastOffTimestamp!}
           />
+          <DestroyAsteroid race={race!} statusMeta={statusMeta!} />
           {statusMeta?.done && <Winner rocket={race!.rockets[race!.winner]} />}
         </>
       )}

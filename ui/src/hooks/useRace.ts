@@ -2,23 +2,24 @@ import { BigNumber, BigNumberish, ethers } from 'ethers';
 import { useEffect } from 'react';
 import create from 'zustand';
 import queue from 'queue';
-import merge from 'lodash/merge';
+import { deepmergeCustom } from 'deepmerge-ts';
+import deepEqual from 'deep-equal';
 import moment from 'moment';
 
 import {
   BoostAppliedEvent,
   IRaceStatusMeta,
   Race2Uranus,
-  RaceCreatedEvent,
   RaceEnteredEvent,
   RaceFinishedEvent,
   RaceStartedEvent,
   StakedOnRocketEvent,
   TypedListener,
 } from '../types';
-import { sleep } from '../utils';
-import { SECOND_MILLIS } from '../constants';
 import { useRaceContract, useRaceContractStore } from './useRaceContract';
+import { useWaitUntilL1Block } from './useWaitUntilL1Block';
+import { useL1Block, useL1BlockStore } from './useL1Block';
+import { useWaitUntil } from './useWaitUntil';
 
 interface IRaceStoreState {
   [key: string]: IRace;
@@ -31,10 +32,23 @@ interface IRace {
   statusMeta?: IRaceStatusMeta;
 }
 
-// this ensures race data for a given id is only loaded once
-// relying on zustand to keep track of this does not work because setState is async
-// so if this hook is used in more than one place then before zustand updates the data refresh may be triggered multiple times
-const knownRaces: { [key: string]: boolean } = {};
+// to handle merging contract structOutputs (arrays with props)
+const customMerge = deepmergeCustom({
+  mergeOthers(records, utils) {
+    if (records.some((r) => Array.isArray(r))) {
+      const res: any = [];
+      records.forEach((r: any) => {
+        Object.keys(r).forEach((key) => {
+          res[key] = r[key];
+        });
+      });
+
+      return res;
+    }
+
+    return utils.defaultMergeFunctions.mergeOthers(records);
+  },
+});
 
 const q = queue({ autostart: true, concurrency: 1 });
 
@@ -44,37 +58,22 @@ const defaultRace: IRace = { loading: true, error: false };
 const useRaceStore = create<IRaceStoreState>(() => defaultState);
 
 export function useRace(id: BigNumberish): IRace {
+  useL1Block(); // ensure hook is called (we use its store below)
   const { contract } = useRaceContract();
   const race = useRaceStore((state) => state[id?.toString()]) || defaultRace;
+  const revealBlockReached = useWaitUntilL1Block(race.race?.revealBlock!);
+  const blastOffReached = useWaitUntil(race.race?.blastOffTimestamp.toNumber()! * 1000);
 
   useEffect(() => {
-    const shouldLoadRace = id && !knownRaces[id.toString()] && contract.functions?.getRace;
+    const shouldLoadRace = id && !getRaceFromStore(id) && !!contract.functions?.getRace;
     if (shouldLoadRace) {
-      knownRaces[id.toString()] = true;
+      updateRaceInStore(id, defaultRace);
       refreshRaceData();
     }
     async function refreshRaceData() {
       try {
         const [race] = await contract.functions!.getRace(id)!;
-
         updateRaceInStore(id, { loading: false, race });
-
-        // TODO: remove
-
-        // setTimeout(() => {
-        //   console.log('updating blastofftimestamp');
-        //   updateRaceStructInStore(id, {
-        //     blastOffTimestamp: BigNumber.from(Math.floor(moment().add(5, 'seconds').toDate().getTime() / 1000)),
-        //   });
-        // }, 5000);
-        // setTimeout(() => {
-        //   console.log('updating status to inProgress');
-        //   updateRaceInStore(id, { statusMeta: { waiting: false, inProgress: true, done: false } });
-        // }, 5000);
-        // setTimeout(() => {
-        //   console.log('updating status to done');
-        //   updateRaceInStore(id, { statusMeta: { waiting: false, inProgress: false, done: true } });
-        // }, 10000);
       } catch (e) {
         console.error(e);
         updateRaceInStore(id, { loading: false, error: true });
@@ -82,50 +81,48 @@ export function useRace(id: BigNumberish): IRace {
     }
   }, [contract.functions, id, race]);
 
-  return {
-    ...race,
-  };
-}
+  useEffect(() => {
+    if (blastOffReached) {
+      updateStatusMetaInStore(id, calcStatusMeta(race.race!));
+    }
+  }, [blastOffReached, id, race.race]);
 
-function calcAndNotifyStatusMeta(
-  race: Race2Uranus.RaceStructOutput,
-  prevRace?: Race2Uranus.RaceStructOutput
-): IRaceStatusMeta {
-  const statusMeta = calcStatusMeta(race);
-  if (statusMeta.waiting && prevRace?.blastOffTimestamp.eq(0) && race.blastOffTimestamp.gt(0)) {
-    notifyWhenRaceInProgress(race);
-  }
+  useEffect(() => {
+    if (revealBlockReached) {
+      updateStatusMetaInStore(id, calcStatusMeta(race.race!));
+    }
+  }, [blastOffReached, id, race.race, revealBlockReached]);
 
-  return statusMeta;
+  return race;
 }
 
 function calcStatusMeta(race: Race2Uranus.RaceStructOutput): IRaceStatusMeta {
   let waiting = false;
   let inProgress = false;
   let done = false;
+  let revealBlockReached = false;
 
   if (race?.finished) {
     done = true;
   } else {
-    if (race?.started && race?.blastOffTimestamp.lt(new Date().getTime() / 1000)) {
+    if (race?.started && race?.blastOffTimestamp.lt(Math.ceil(Date.now() / 1000))) {
       inProgress = true;
     } else {
       waiting = true;
     }
   }
 
+  const { currentBlock } = useL1BlockStore.getState();
+  if (currentBlock > 0 && race?.revealBlock.gt(0) && race?.revealBlock.lte(currentBlock)) {
+    revealBlockReached = true;
+  }
+
   return {
     waiting,
     inProgress,
     done,
+    revealBlockReached,
   };
-}
-
-async function notifyWhenRaceInProgress(race: Race2Uranus.RaceStructOutput) {
-  const diffMillis = race.blastOffTimestamp.toNumber() * SECOND_MILLIS - Date.now();
-  await sleep(diffMillis);
-
-  updateRaceInStore(race.id, {}, { waiting: false, inProgress: true, done: false });
 }
 
 useRaceContractStore.subscribe(({ contract }) => {
@@ -137,7 +134,6 @@ useRaceContractStore.subscribe(({ contract }) => {
 const processedEvents: { [key: string]: boolean } = {};
 
 function addEventListeners(contract: Race2Uranus) {
-  // ensureOneContractListener(contract, contract.filters.RaceCreated(), wrappedHandleRaceCreatedEvent);
   ensureOneContractListener(contract, contract.filters.RaceEntered(), wrappedHandleRaceEnteredEvent);
   ensureOneContractListener(contract, contract.filters.StakedOnRocket(), wrappedHandleStakedOnRocketEvent);
   ensureOneContractListener(contract, contract.filters.BoostApplied(), wrappedHandleBoostAppliedEvent);
@@ -149,11 +145,6 @@ function ensureOneContractListener(contract: Race2Uranus, filter: any, handler: 
   contract.off(filter, handler);
   contract.on(filter, handler);
 }
-
-// const wrappedHandleRaceCreatedEvent = wrapEventHandler(handleRaceCreatedEvent);
-// async function handleRaceCreatedEvent(ev: RaceCreatedEvent) {
-//   const { args } = ev;
-// }
 
 const wrappedHandleRaceEnteredEvent = wrapEventHandler(handleRaceEnteredEvent);
 async function handleRaceEnteredEvent(ev: RaceEnteredEvent) {
@@ -272,17 +263,28 @@ function getRaceFromStore(raceId: BigNumberish): IRace {
   return useRaceStore.getState()[raceId.toString()];
 }
 
-function updateRaceStructInStore(
-  raceId: BigNumberish,
-  raceStruct: Partial<Race2Uranus.RaceStructOutput>,
-  statusMeta?: IRaceStatusMeta
-) {
-  updateRaceInStore(raceId, { race: raceStruct, statusMeta } as any);
+function updateRaceStructInStore(raceId: BigNumberish, raceStruct: Partial<Race2Uranus.RaceStructOutput>) {
+  updateRaceInStore(raceId, { race: raceStruct } as any);
 }
 
-function updateRaceInStore(raceId: BigNumberish, race: Partial<IRace>, meta?: IRaceStatusMeta) {
+function updateRaceInStore(raceId: BigNumberish, race: Partial<IRace>) {
   const existingRace = getRaceFromStore(raceId) || {};
-  const newRace = merge({}, existingRace, race);
-  const statusMeta = meta || calcAndNotifyStatusMeta(newRace.race!, existingRace.race);
-  useRaceStore.setState({ [raceId.toString()]: merge(newRace, { statusMeta }) });
+  const newRace = customMerge(existingRace, race);
+
+  if (deepEqual(existingRace, newRace)) {
+    return;
+  }
+  const statusMeta = calcStatusMeta(newRace.race!);
+  const newRaceWithMeta = customMerge(newRace, { statusMeta });
+  useRaceStore.setState({ [raceId.toString()]: newRaceWithMeta as any });
+}
+
+function updateStatusMetaInStore(raceId: BigNumberish, statusMeta: Partial<IRaceStatusMeta>) {
+  const existingRace = getRaceFromStore(raceId) || {};
+  const newStatusMeta = customMerge(existingRace.statusMeta || {}, statusMeta);
+  if (deepEqual(existingRace.statusMeta, newStatusMeta)) {
+    return;
+  }
+  const newRaceWithMeta = customMerge(existingRace, { statusMeta: newStatusMeta });
+  useRaceStore.setState({ [raceId.toString()]: newRaceWithMeta as any });
 }

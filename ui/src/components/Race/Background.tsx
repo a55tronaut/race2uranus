@@ -1,5 +1,3 @@
-// 1.8 billion miles
-
 import styled from 'styled-components';
 
 import { IRaceStatusMeta, Race2Uranus } from '../../types';

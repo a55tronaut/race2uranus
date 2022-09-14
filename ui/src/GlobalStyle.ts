@@ -69,7 +69,7 @@ const GlobalStyle = createGlobalStyle`
     letter-spacing: 0.1em;
   }
 
-  .ant-typography.ant-typography {
+  .ant-typography::not(.title) {
     color: white ;
   }
 

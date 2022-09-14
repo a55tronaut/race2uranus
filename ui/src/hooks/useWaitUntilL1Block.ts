@@ -14,5 +14,5 @@ export function useWaitUntilL1Block(blockNumber: BigNumberish) {
     }
   }, [avgBlockTimeMillis, blockNumber, currentBlock, loading, reached]);
 
-  return { reached };
+  return reached;
 }

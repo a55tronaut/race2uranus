@@ -23,6 +23,8 @@
     "classnames": "^2.3.1",
     "colorthief": "^2.3.2",
     "csv-parse": "^5.3.0",
+    "deep-equal": "^2.0.5",
+    "deepmerge-ts": "^4.2.1",
     "dotenv": "^16.0.1",
     "ethers": "^5.6.9",
     "jquery": "^3.6.0",
@@ -73,6 +75,7 @@
     ]
   },
   "devDependencies": {
+    "@types/deep-equal": "^1.0.1",
     "@types/jquery": "^3.5.14",
     "@types/lodash": "^4.14.182",
     "@types/react-helmet": "^6.1.5",

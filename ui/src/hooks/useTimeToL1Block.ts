@@ -8,14 +8,15 @@ export function useTimeToL1Block(blockNumber: BigNumberish) {
   const [timeLeft, setTimeLeft] = useState(0);
   const [timestamp, setTimestamp] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [prevBlock, setPrevBlock] = useState(0);
+  const [prevCurrentBlock, setPrevCurrentBlock] = useState(0);
+  const [prevBlockNumber, setPrevBlockNumber] = useState<BigNumberish>(0);
 
   useEffect(() => {
     if (l1Loading) {
       return;
     }
 
-    if (currentBlock === prevBlock) {
+    if (currentBlock === prevCurrentBlock && BigNumber.from(blockNumber || 0).eq(prevBlockNumber || 0)) {
       return;
     }
 
@@ -32,9 +33,10 @@ export function useTimeToL1Block(blockNumber: BigNumberish) {
       setTimestamp(0);
     }
 
-    setPrevBlock(currentBlock);
+    setPrevBlockNumber(blockNumber);
+    setPrevCurrentBlock(currentBlock);
     setLoading(false);
-  }, [avgBlockTimeMillis, blockNumber, currentBlock, l1Loading, prevBlock]);
+  }, [avgBlockTimeMillis, blockNumber, currentBlock, l1Loading, prevBlockNumber, prevCurrentBlock]);
 
   return { loading, timeLeft, timestamp };
 }
