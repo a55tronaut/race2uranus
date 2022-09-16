@@ -48,6 +48,9 @@ const Container = styled.div`
     display: flex;
     flex-direction: row;
     align-items: center;
+    &.right {
+      justify-content: flex-end;
+    }
 
     .eta {
       margin-left: 70px;

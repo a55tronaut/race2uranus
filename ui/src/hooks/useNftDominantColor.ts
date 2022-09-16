@@ -1,11 +1,11 @@
 import { BigNumberish } from 'ethers';
 
 import { useDominantColor } from './useDominantColor';
-import { useNftImageUrl } from './useNftImageUrl';
+import { useNftMeta } from './useNftMeta';
 
 export function useNftDominantColor(address?: string, id?: BigNumberish) {
-  const { url } = useNftImageUrl(address, id);
-  const { color, error, loading } = useDominantColor(url);
+  const { meta } = useNftMeta(address, id);
+  const { color, error, loading } = useDominantColor(meta?.url);
 
   return {
     color,

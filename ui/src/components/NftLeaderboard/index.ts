@@ -1,1 +1,1 @@
-export { default as NftLeaderboard } from './NftLeaderboard';
+export { default } from './NftLeaderboard';

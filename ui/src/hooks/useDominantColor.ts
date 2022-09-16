@@ -3,7 +3,7 @@ import ColorThief from 'colorthief';
 
 const colorThief = new ColorThief();
 
-export function useDominantColor(url: string) {
+export function useDominantColor(url?: string) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [color, setColor] = useState('');
@@ -27,7 +27,7 @@ export function useDominantColor(url: string) {
         setLoading(false);
       });
       img.crossOrigin = 'anonymous';
-      img.src = url;
+      img.src = url!;
     }
   }, [url]);
 

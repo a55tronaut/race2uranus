@@ -7,7 +7,7 @@ export interface IRocket {
 export interface ISupportedNft {
   id: number;
   name: string;
-  href: string;
+  img: string;
   url: string;
   address: string;
 }

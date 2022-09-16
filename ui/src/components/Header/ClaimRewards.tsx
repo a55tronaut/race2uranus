@@ -63,9 +63,12 @@ function ClaimRewards({ className }: IProps) {
     <Container className={className}>
       {BigNumber.from(rewards || '0').gt(0) && (
         <>
-          <Text>Your Rewards</Text>
-          <MagicAmount amount={rewards} />
-          <Button className="claimBtn" type="ghost" size="small" loading={loading} onClick={handleClaimRewards}>
+          <div className="rewards">
+            <Text>Your Rewards</Text>
+            <br />
+            <MagicAmount amount={rewards} />
+          </div>
+          <Button className="claimBtn" type="ghost" size="large" loading={loading} onClick={handleClaimRewards}>
             Claim
           </Button>
         </>
@@ -78,14 +81,16 @@ const Container = styled.div`
   text-align: center;
   margin: 8px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
   flex: 0;
   min-width: 160px;
 
-  .claimBtn {
-    margin-top: 8px;
+  .rewards {
+    flex: 0;
+    white-space: nowrap;
+    margin-right: 8px;
   }
 `;
 

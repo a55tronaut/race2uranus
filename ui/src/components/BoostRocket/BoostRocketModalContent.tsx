@@ -3,12 +3,12 @@ import styled from 'styled-components';
 import { Button, Typography, notification, Alert } from 'antd';
 
 import { useRaceContract, useEnsureMagicApproval, useSelectedRace } from '../../hooks';
-import { getNftConfig } from '../../utils';
 import { blue } from '../../colors';
 import { Race2Uranus } from '../../types';
 import Rocket from '../Rocket';
 import ModalFooter from '../ModalFooter';
 import MagicAmount from '../MagicAmount';
+import NftName from '../NftName';
 
 interface IProps {
   rocket: Race2Uranus.RocketStructOutput;
@@ -29,14 +29,12 @@ function BoostRocketModalContent({ rocket, onClose }: IProps) {
       const res = await contract!.functions.applyBoost(race!.id, rocket.id);
       await res.wait(1);
 
-      const nftConfig = getNftConfig(rocket.nft);
-
       notification.success({
         message: (
           <>
             You've boosted the rocket occupied by{' '}
             <strong>
-              {nftConfig.name} #{rocket.nftId.toString()}
+              <NftName address={rocket.nft} id={rocket.nftId} />
             </strong>
             !
           </>

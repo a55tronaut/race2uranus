@@ -4,12 +4,13 @@ import { ethers } from 'ethers';
 import { Button, Typography, Input, Form, notification } from 'antd';
 
 import { useRaceContract, useEnsureMagicApproval, useSelectedRace } from '../../hooks';
-import { formatNumber, getNftConfig } from '../../utils';
+import { formatNumber } from '../../utils';
 import { blue } from '../../colors';
 import { Race2Uranus } from '../../types';
 import InfoTooltip from '../InfoTooltip';
 import RocketPicker from '../RocketPicker';
 import ModalFooter from '../ModalFooter';
+import NftName from '../NftName';
 
 interface IProps {
   onClose: () => void;
@@ -45,14 +46,12 @@ function StakeOnRocketModalContent({ onClose }: IProps) {
       const res = await contract!.functions.stakeOnRocket(race!.id, selectedRocket!.id, stakeAmountWei);
       await res.wait(1);
 
-      const nftConfig = getNftConfig(selectedRocket!.nft);
-
       notification.success({
         message: (
           <>
             You've staked <strong>{formatNumber(stakeAmount!)} $MAGIC</strong> on rocket occupied by{' '}
             <strong>
-              {nftConfig.name} #{selectedRocket!.nftId.toString()}
+              <NftName address={selectedRocket!.nft} id={selectedRocket!.nftId} />
             </strong>
             !
           </>

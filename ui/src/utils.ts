@@ -1,4 +1,5 @@
-import { BigNumber, BigNumberish, utils } from 'ethers';
+import { BigNumber, utils } from 'ethers';
+
 import { supportedNfts } from './constants';
 import { NFT_MAPPINGS } from './env';
 import { ISupportedNft } from './types';
@@ -22,8 +23,8 @@ export function convertDecimals(bn: BigNumber, decimalsIn: number, decimalsOut =
 }
 
 export function isTruthy(value: string): boolean {
-  // eslint-disable-next-line eqeqeq
-  return value === 'true' || value == '1';
+  const valLower = (value || '').toLowerCase();
+  return valLower === 'true' || valLower === '1';
 }
 
 export function shortAddress(address?: string | null | undefined, chars = 4): string {
@@ -104,22 +105,6 @@ export async function sleep(ms: number): Promise<void> {
 export async function waitUntil(timestamp: number): Promise<void> {
   const now = Date.now();
   return sleep(timestamp - now);
-}
-
-export function calAvgBlockCreation(startTime: number, endTime: number, blocksPassed: number): number {
-  return (endTime - startTime) / blocksPassed;
-}
-
-export function calcEstBlockCreation(avgTimePerBlock: number, targetBlock: number): number {
-  return Math.floor(avgTimePerBlock * targetBlock);
-}
-
-export function convertSeconds(seconds: number): string {
-  return new Date(seconds * 1000).toISOString().slice(11, 19);
-}
-
-export function bigNumberishToString(bnish: BigNumberish): string {
-  return BigNumber.from(bnish).toString();
 }
 
 export function mapNftAddress(address: string): string {

@@ -1,12 +1,12 @@
 import { Tooltip } from 'antd';
 import { BigNumberish } from 'ethers';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { SECOND_MILLIS } from '../../constants';
 import { useNftDominantColor } from '../../hooks';
-import { getNftConfig } from '../../utils';
 import NftImage from '../NftImage';
+import NftName from '../NftName';
 import { ReactComponent as RocketSvg } from './rocket.svg';
 
 interface IProps {
@@ -21,15 +21,6 @@ function Rocket({ address, nftId, className, boostCount }: IProps) {
   const [boostClassName, setBoostClassName] = useState('');
   const [prevBoostCount, setPrevBoostCount] = useState(boostCount);
 
-  const title = useMemo(() => {
-    if (address) {
-      const nftConfig = getNftConfig(address);
-      return `${nftConfig.name} #${nftId?.toString()}`;
-    }
-
-    return '';
-  }, [address, nftId]);
-
   useEffect(() => {
     if (boostCount && boostCount > prevBoostCount!) {
       setBoostClassName('boosting');
@@ -42,7 +33,7 @@ function Rocket({ address, nftId, className, boostCount }: IProps) {
   }, [boostCount, prevBoostCount]);
 
   return (
-    <Tooltip title={title} placement="top">
+    <Tooltip title={address && nftId ? <NftName address={address!} id={nftId!} /> : undefined} placement="top">
       <Container color={color} className={className}>
         <Porthole>{!!address && !!nftId && <NftImage address={address} id={nftId} className="nftImg" />}</Porthole>
         <RocketSvg className="rocket" />

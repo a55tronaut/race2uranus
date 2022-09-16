@@ -22,7 +22,8 @@ export function useNftLeaderboard() {
 
   useEffect(() => {
     refreshItems();
-  }, [refreshItems]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return { items, loading, error, refreshItems };
 }

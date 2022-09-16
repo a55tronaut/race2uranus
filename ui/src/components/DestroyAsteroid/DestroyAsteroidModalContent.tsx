@@ -61,12 +61,10 @@ function BoostRocketModalContent({ race, onClose }: IProps) {
         <DetailsContainer>
           Oh no! There's an asteroid in the way! We need to destroy it to get to our destination!
           <br />
-          Our scans indicate that the asteroid contains valuable resources!
           <br />
+          Our scans indicate that the asteroid contains valuable resources! Destroy it first to gain
           <br />
           <div className="amount">
-            Destroy it first to gain
-            <br />
             <MagicAmount withName amount={race!.configSnapshot.revealBounty} />
           </div>
         </DetailsContainer>
@@ -121,6 +119,7 @@ const DetailsContainer = styled.div`
 
   .amount {
     text-align: center;
+    margin-top: 8px;
   }
 `;
 

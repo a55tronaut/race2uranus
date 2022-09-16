@@ -11,7 +11,7 @@ function Layout({ children }: IProps) {
 const Container = styled.div`
   width: 100%;
   min-width: 1280px;
-  height: 100vh;
+  min-height: 100vh;
   background-image: url(/assets/background.svg);
   background-position: center top;
   background-size: cover;

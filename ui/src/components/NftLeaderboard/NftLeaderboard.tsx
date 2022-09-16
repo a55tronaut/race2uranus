@@ -1,7 +1,9 @@
+import { useEffect } from 'react';
 import { shortenAddress, useEthers } from '@usedapp/core';
 import { Table, TableColumnsType, Typography } from 'antd';
 import styled from 'styled-components';
 
+import { useSelectedRace } from '../../hooks';
 import { INftLeaderboardResult } from '../../types';
 import NftImage from '../NftImage';
 import { useNftLeaderboard } from './useNftLeaderboard';
@@ -51,8 +53,15 @@ const columns: TableColumnsType<INftLeaderboardResult> = [
 ];
 
 function NftLeaderboard() {
+  const { statusMeta } = useSelectedRace();
   const { account } = useEthers();
-  const { items, loading } = useNftLeaderboard();
+  const { items, loading, refreshItems } = useNftLeaderboard();
+
+  useEffect(() => {
+    if (statusMeta?.done) {
+      refreshItems();
+    }
+  }, [refreshItems, statusMeta?.done]);
 
   return (
     <Container>
@@ -75,6 +84,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 48px 32px 96px 32px;
 
   .title {
     text-align: center;

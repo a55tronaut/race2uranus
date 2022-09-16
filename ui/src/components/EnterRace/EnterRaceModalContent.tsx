@@ -4,8 +4,8 @@ import { BigNumberish, ethers } from 'ethers';
 import { Button, Typography, Select, Input, Form, notification, Alert } from 'antd';
 import { TwitterOutlined } from '@ant-design/icons';
 
-import { useNftsForUser, useRaceContract, useEnsureMagicApproval, useSelectedRace } from '../../hooks';
-import { formatNumber, getNftConfig } from '../../utils';
+import { useNftsForUser, useRaceContract, useEnsureMagicApproval, useSelectedRace, useNftMeta } from '../../hooks';
+import { formatNumber } from '../../utils';
 import { blue } from '../../colors';
 import { Race2Uranus } from '../../types';
 import NftImage from '../NftImage';
@@ -13,11 +13,11 @@ import InfoTooltip from '../InfoTooltip';
 import Rocket from '../Rocket';
 import WhitelistedNfts from '../WhitelistedNfts';
 import ModalFooter from '../ModalFooter';
+import NftName from '../NftName';
 
 const { Option } = Select;
 
 interface INftOption {
-  name: string;
   address: string;
   nftId: BigNumberish;
   disabled: boolean;
@@ -40,6 +40,7 @@ function EnterRaceModalContent({ onClose }: IProps) {
   const [noValidNfts, setNoValidNfts] = useState(false);
   const [allNftsUsed, setAllNftsUsed] = useState(false);
   const [entered, setEntered] = useState(false);
+  const { meta } = useNftMeta(selectedNft?.address, selectedNft?.nftId);
 
   const minStake = useMemo(() => {
     return Number(ethers.utils.formatEther(race!.configSnapshot.minStakeAmount!));
@@ -49,21 +50,16 @@ function EnterRaceModalContent({ onClose }: IProps) {
   }, [race]);
 
   const shareMsg = useMemo(() => {
-    if (selectedNft) {
-      return `Hey $MAGIC holders, I have entered my ${selectedNft.name} #${selectedNft.nftId} into Race 2 Uranus! Join the race or stake $MAGIC to win!`;
-    }
-    return '';
-  }, [selectedNft]);
+    return `I have entered my ${meta?.name} into Race to Uranus! Join the race or stake $MAGIC to win!`;
+  }, [meta?.name]);
 
   useEffect(() => {
     const opts: INftOption[] = [];
     race!.configSnapshot.whitelistedNfts!.forEach((addr) => {
-      const nftConfig = getNftConfig(addr);
       nfts[addr]?.forEach((id) =>
         opts.push({
           address: addr,
           nftId: id,
-          name: nftConfig.name,
           disabled: isNftUsed(race!.rockets!, addr, id),
         })
       );
@@ -113,8 +109,11 @@ function EnterRaceModalContent({ onClose }: IProps) {
       notification.success({
         message: (
           <>
-            You've entered the Race with <strong>{`${selectedNft!.name} #${selectedNft?.nftId}`}</strong> and staked{' '}
-            <strong>{formatNumber(stakeAmount!)} $MAGIC</strong>!
+            You've entered your{' '}
+            <strong>
+              <NftName address={selectedNft!.address} id={selectedNft!.nftId} />
+            </strong>{' '}
+            into the Race and staked <strong>{formatNumber(stakeAmount!)} $MAGIC</strong>!
           </>
         ),
       });
@@ -197,7 +196,7 @@ function EnterRaceModalContent({ onClose }: IProps) {
                 {nftOptions.map((nft, index) => (
                   <Option value={index} key={nft.address + nft.nftId} disabled={nft.disabled}>
                     <NftImage className="nftOptionImg" address={nft.address} id={nft.nftId} />{' '}
-                    {nft.name + ' #' + nft.nftId}
+                    <NftName address={nft.address} id={nft.nftId} />
                   </Option>
                 ))}
               </Select>
