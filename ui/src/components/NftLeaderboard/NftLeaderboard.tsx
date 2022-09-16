@@ -6,7 +6,6 @@ import { ethers } from 'ethers';
 
 import { useSelectedRace } from '../../hooks';
 import { INftLeaderboardResult } from '../../types';
-import { orange } from '../../colors';
 import NftImage from '../NftImage';
 import { useNftLeaderboard } from './useNftLeaderboard';
 import NftName from '../NftName';
@@ -107,14 +106,6 @@ const Container = styled.div`
 
   .nft {
     width: 40px;
-  }
-
-  .earnings span {
-    color: ${orange};
-  }
-
-  .ant-table-row.owned > td {
-    color: ${orange};
   }
 `;
 
