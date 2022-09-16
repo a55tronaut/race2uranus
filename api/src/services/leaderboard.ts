@@ -197,7 +197,7 @@ async function updateNftLeaderboard(raceId: BigNumberish, session: ClientSession
       earnings += weiToNumber(race.otherRocketsShare);
     }
 
-    let owner = '-';
+    let owner = '';
 
     try {
       const contract = makeErc721Contract(rocket.nft);
