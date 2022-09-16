@@ -5,6 +5,7 @@ import styled from 'styled-components';
 
 import { useSelectedRace } from '../../hooks';
 import { INftLeaderboardResult } from '../../types';
+import { orange } from '../../colors';
 import NftImage from '../NftImage';
 import { useNftLeaderboard } from './useNftLeaderboard';
 import NftName from '../NftName';
@@ -114,7 +115,7 @@ const Container = styled.div`
   }
 
   .ant-table-row.owned > td {
-    color: #f7931e;
+    color: ${orange};
   }
 `;
 
