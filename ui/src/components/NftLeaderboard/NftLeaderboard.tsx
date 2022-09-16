@@ -37,7 +37,7 @@ const columns: TableColumnsType<INftLeaderboardResult> = [
     title: 'Owner',
     dataIndex: 'owner',
     align: 'center',
-    render: (owner) => owner && shortenAddress(owner),
+    render: (owner) => (owner ? shortenAddress(owner) : '-'),
   },
   {
     title: 'Wins',
