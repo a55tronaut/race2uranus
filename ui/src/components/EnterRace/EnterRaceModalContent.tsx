@@ -2,10 +2,10 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { BigNumberish, ethers } from 'ethers';
 import { Button, Typography, Select, Input, Form, notification, Alert } from 'antd';
-import { TwitterOutlined } from '@ant-design/icons';
+import { CopyOutlined, TwitterOutlined } from '@ant-design/icons';
 
 import { useNftsForUser, useRaceContract, useEnsureMagicApproval, useSelectedRace, useNftMeta } from '../../hooks';
-import { formatNumber } from '../../utils';
+import { formatNumber, getNftConfig } from '../../utils';
 import { blue } from '../../colors';
 import { Race2Uranus } from '../../types';
 import NftImage from '../NftImage';
@@ -128,6 +128,11 @@ function EnterRaceModalContent({ onClose }: IProps) {
     }
   }, [contract, ensureApproval, form, race, selectedNft, stakeAmount]);
 
+  const handleCopy = useCallback(async () => {
+    await navigator.clipboard.writeText(`${shareMsg} ${window.location.href}`);
+    notification.success({ message: 'Copied!' });
+  }, [shareMsg]);
+
   const handleShare = useCallback(async () => {
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareMsg)}&url=${encodeURIComponent(
       window.location.href
@@ -180,9 +185,14 @@ function EnterRaceModalContent({ onClose }: IProps) {
           <Rocket className="rocket" address={selectedNft?.address!} nftId={selectedNft?.nftId!} />
         </RocketContainer>
         {entered ? (
-          <SharePreview>
+          <ShareCallToAction>
+            <div>
+              Share this message on the <strong>{getNftConfig(selectedNft?.address!)?.name}</strong> community Discord
+              to get others to stake on your rocket!
+            </div>
+            <br />
             <Alert type="info" message={shareMsg} />
-          </SharePreview>
+          </ShareCallToAction>
         ) : (
           <Form layout="vertical" form={form}>
             <Form.Item name="nft" label={nftSelectLabel} rules={[{ required: true, message: 'NFT is required' }]}>
@@ -210,7 +220,7 @@ function EnterRaceModalContent({ onClose }: IProps) {
                 {
                   min: minStake,
                   max: maxStake,
-                  message: `You must stake between ${formatNumber(minStake)} - ${formatNumber(maxStake)} $MAGIC`,
+                  message: `You must stake ${formatNumber(minStake)} - ${formatNumber(maxStake)} $MAGIC`,
                   type: 'number',
                   transform: Number,
                 },
@@ -257,9 +267,14 @@ function EnterRaceModalContent({ onClose }: IProps) {
       </Message>
       <ModalFooter>
         {entered ? (
-          <Button key="share" type="primary" size="middle" ghost onClick={handleShare}>
-            <TwitterOutlined /> SHARE
-          </Button>
+          <>
+            <Button key="copy" type="primary" size="middle" className="copyBtn" ghost onClick={handleCopy}>
+              <CopyOutlined /> COPY
+            </Button>
+            <Button key="share" type="primary" size="middle" ghost onClick={handleShare}>
+              <TwitterOutlined /> SHARE
+            </Button>
+          </>
         ) : (
           <Button
             key="enter"
@@ -292,18 +307,16 @@ const Container = styled.div`
     text-align: center;
     margin-bottom: 24px;
   }
+
+  .copyBtn {
+    margin-right: 36px;
+  }
 `;
 
 const Content = styled.div`
   display: flex;
   flex-direction: row;
-  padding: 24px;
-
-  .title {
-    color: ${blue};
-    text-align: center;
-    margin-bottom: 24px;
-  }
+  padding: 24px 24px 0 24px;
 
   .infoTooltip {
     margin-left: 8px;
@@ -315,9 +328,10 @@ const Content = styled.div`
   }
 `;
 
-const SharePreview = styled.div`
+const ShareCallToAction = styled.div`
   flex: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 `;

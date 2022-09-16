@@ -53,6 +53,7 @@ const Container = styled.span`
   .countup {
     display: inline-block;
     min-width: 70px;
+    text-align: left;
 
     &.digits2 {
       min-width: 85px;

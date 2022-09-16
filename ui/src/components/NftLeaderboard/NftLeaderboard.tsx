@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { shortenAddress, useEthers } from '@usedapp/core';
 import { Table, TableColumnsType, Typography } from 'antd';
 import styled from 'styled-components';
+import { ethers } from 'ethers';
 
 import { useSelectedRace } from '../../hooks';
 import { INftLeaderboardResult } from '../../types';
@@ -9,6 +10,7 @@ import { orange } from '../../colors';
 import NftImage from '../NftImage';
 import { useNftLeaderboard } from './useNftLeaderboard';
 import NftName from '../NftName';
+import MagicAmount from '../MagicAmount';
 
 const { Title } = Typography;
 
@@ -34,7 +36,7 @@ const columns: TableColumnsType<INftLeaderboardResult> = [
   {
     title: 'Owner',
     dataIndex: 'owner',
-    align: 'left',
+    align: 'center',
     render: (owner) => owner && shortenAddress(owner),
   },
   {
@@ -43,8 +45,7 @@ const columns: TableColumnsType<INftLeaderboardResult> = [
     align: 'right',
     render: (winnings) => (
       <div className="winnings">
-        <img src="/assets/magic.svg" alt="MAGIC" />
-        {winnings.toFixed(0)}
+        <MagicAmount amount={ethers.utils.parseEther(`${winnings}`)} />
       </div>
     ),
   },
@@ -108,6 +109,10 @@ const Container = styled.div`
     flex-direction: row;
     align-items: center;
     justify-content: flex-end;
+    span {
+      color: ${orange};
+    }
+
     > img {
       height: 20px;
       margin-right: 8px;

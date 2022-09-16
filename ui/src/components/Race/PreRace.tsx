@@ -21,7 +21,7 @@ function PreRace({ show, rewardPool }: IProps) {
             Welcome To The Launch Pad!
           </Title>
           <Paragraph className="paragraph">
-            You are about to enter the <strong>Race 2 Uranus</strong>.
+            You are about to enter the <strong>Race to Uranus</strong>.
             <br />
             Click the <strong>Enter Race</strong> button to join the race and earn a <strong>guaranteed</strong> share
             of the reward pool!

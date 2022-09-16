@@ -115,7 +115,7 @@ export function mapNftAddress(address: string): string {
 }
 
 export function getNftConfig(address: string): ISupportedNft {
-  const mappedAddress = mapNftAddress(address);
+  const mappedAddress = mapNftAddress(address || '') || '';
   const config = supportedNfts.find((nft) => nft.address.toLowerCase() === mappedAddress.toLowerCase())!;
 
   return config;
