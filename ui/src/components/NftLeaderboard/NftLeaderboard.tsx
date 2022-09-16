@@ -7,6 +7,7 @@ import { useSelectedRace } from '../../hooks';
 import { INftLeaderboardResult } from '../../types';
 import NftImage from '../NftImage';
 import { useNftLeaderboard } from './useNftLeaderboard';
+import NftName from '../NftName';
 
 const { Title } = Typography;
 
@@ -24,7 +25,8 @@ const columns: TableColumnsType<INftLeaderboardResult> = [
     align: 'left',
     render: (_, record) => (
       <div>
-        <NftImage className="nft" address={record.address} id={record.nftId} /> #{record.nftId}
+        <NftImage className="nft" address={record.address} id={record.nftId} />{' '}
+        <NftName address={record.address} id={record.nftId} />
       </div>
     ),
   },
