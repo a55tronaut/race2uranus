@@ -1,4 +1,4 @@
-import { SECOND_MILLIS } from '../constants';
+import { MINUTE_MILLIS } from '../constants';
 import { createLogger } from '../logger';
 import { RaceFinishedEvent, RaceStartedEvent } from '../types';
 import { sleep } from '../utils';
@@ -26,7 +26,7 @@ async function initRevealWatcher() {
 
 async function checkRacesPeriodically() {
   try {
-    await Promise.all([checkRaces(), sleep(10 * SECOND_MILLIS)]);
+    await Promise.all([checkRaces(), sleep(5 * MINUTE_MILLIS)]);
   } catch (e) {
     logger.error(e);
   }
