@@ -8,14 +8,17 @@ import 'express-async-errors';
 import { LOG_LEVEL, UI_URL } from './env';
 import { ApplicationError } from './errors';
 import { router } from './routes';
+import logger from './logger';
 
 const app = express();
 
 const corsOptions = {
   origin: (origin, callback) => {
     if (!origin || UI_URL.match(origin) || /https?:\/\/localhost/i.test(origin)) {
+      logger.debug(`CORS request allowed from origin ${origin} (UI URL: ${UI_URL})`);
       callback(null, true);
     } else {
+      logger.debug(`CORS request DENIED from origin ${origin} (UI URL: ${UI_URL})`);
       callback(new Error('Not allowed by CORS'));
     }
   },

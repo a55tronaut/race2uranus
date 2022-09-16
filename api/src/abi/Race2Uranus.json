@@ -187,6 +187,12 @@
       {
         "indexed": false,
         "internalType": "uint256",
+        "name": "blastOffTimestamp",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "revealBlockNumber",
         "type": "uint256"
       }
@@ -299,6 +305,25 @@
         "internalType": "uint32[]",
         "name": "_blastOffTimes",
         "type": "uint32[]"
+      }
+    ],
+    "name": "_calcClosestBlastOffTimestamp",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "blastOffTimestamp",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_blastOffTimestamp",
+        "type": "uint256"
       },
       {
         "internalType": "uint8",
@@ -704,6 +729,11 @@
             "internalType": "bool",
             "name": "finished",
             "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "blastOffTimestamp",
+            "type": "uint256"
           },
           {
             "internalType": "uint256",
@@ -1135,29 +1165,6 @@
   {
     "inputs": [],
     "name": "renounceOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "raceId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint8",
-        "name": "rocketCount",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint8",
-        "name": "boostCount",
-        "type": "uint8"
-      }
-    ],
-    "name": "revealBoosts",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

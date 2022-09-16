@@ -133,9 +133,9 @@ async function initEventWatcher() {
 
 async function syncPastRaceFinishedEvents() {
   logger.debug('Syncing past RaceFinished events...');
-  const minBlock = await getLastSyncedBlock();
-  logger.debug(`Last synced block is ${minBlock}`);
-  const events = await race2Uranus.queryFilter(race2Uranus.filters.RaceFinished(), minBlock);
+  const lastSyncedBlock = await getLastSyncedBlock();
+  logger.debug(`Last synced block is ${lastSyncedBlock}`);
+  const events = await race2Uranus.queryFilter(race2Uranus.filters.RaceFinished(), lastSyncedBlock + 1);
   logger.debug(`Found ${events.length} RaceFinished events. Processing...`);
 
   events.forEach(queueProcessRaceFinishedEvent);
@@ -169,11 +169,12 @@ async function processRaceFinishedEvent(raceId: BigNumberish, blockNumber: numbe
   }
 
   const session = await mongoose.startSession();
+  session.startTransaction();
 
   await updateUserLeaderboard(raceId, session);
   await updateNftLeaderboard(raceId, session);
 
-  await LeaderboardRace.create({ raceId: raceIdStr, blockNumber }, { session });
+  await LeaderboardRace.create({ raceId: raceIdStr, blockNumber, session });
 
   await session.commitTransaction();
   await session.endSession();
@@ -216,7 +217,7 @@ async function updateNftLeaderboard(raceId: BigNumberish, session: ClientSession
 
   const { nft, nftId } = winningRocket;
 
-  await UserLeaderboard.findOneAndUpdate(
+  await NftLeaderboard.findOneAndUpdate(
     { address: nft, nftId: nftId.toString() },
     { $inc: { winnings, races: 1 } },
     { upsert: true, session },
