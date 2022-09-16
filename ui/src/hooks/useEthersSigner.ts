@@ -2,6 +2,7 @@ import { useEthers } from '@usedapp/core';
 import { ethers } from 'ethers';
 import { useEffect } from 'react';
 import create from 'zustand';
+import debounce from 'lodash/debounce';
 
 import { useEthersProvider } from './useEthersProvider';
 
@@ -24,8 +25,16 @@ export function useEthersSigner(): IEthersSignerHook {
 
   useEffect(() => {
     const signer = provider?.getSigner(account);
-    useEthersSignerStore.setState({ signer });
+    const newSigner = !!signer?._address ? signer : undefined;
+    const { signer: prevSigner } = useEthersSignerStore.getState();
+    if (newSigner !== prevSigner) {
+      updateSignerDebounce(newSigner);
+    }
   }, [account, provider]);
 
   return storeState;
 }
+
+const updateSignerDebounce = debounce((signer?: ethers.providers.JsonRpcSigner) => {
+  useEthersSignerStore.setState({ signer });
+}, 300);

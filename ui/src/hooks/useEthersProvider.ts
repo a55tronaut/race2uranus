@@ -2,6 +2,7 @@ import { useEthers } from '@usedapp/core';
 import { ethers } from 'ethers';
 import { useEffect } from 'react';
 import create from 'zustand';
+import debounce from 'lodash/debounce';
 
 interface IEthersProviderStoreState {
   provider?: ethers.providers.JsonRpcProvider;
@@ -20,8 +21,12 @@ export function useEthersProvider(): IEthersProviderHook {
   const storeState = useEthersProviderStore();
 
   useEffect(() => {
-    useEthersProviderStore.setState({ provider: library });
+    updateProviderDebounce(library);
   }, [library]);
 
   return storeState;
 }
+
+const updateProviderDebounce = debounce((provider?: ethers.providers.JsonRpcProvider) => {
+  useEthersProviderStore.setState({ provider });
+}, 300);

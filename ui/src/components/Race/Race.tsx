@@ -32,7 +32,7 @@ function Race() {
             blastOffTimestamp={race?.blastOffTimestamp!}
           />
           <DestroyAsteroid race={race!} statusMeta={statusMeta!} />
-          <Winner show={statusMeta?.done!} rocket={race!.rockets[race!.winner]} />
+          <Winner show={statusMeta?.done!} rocket={race?.rockets[race!.winner]} />
         </>
       )}
     </Container>

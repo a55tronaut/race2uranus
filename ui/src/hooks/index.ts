@@ -1,4 +1,3 @@
-export * from './useMetamask';
 export * from './useScreen';
 export * from './useRace';
 export * from './useRaceContract';
