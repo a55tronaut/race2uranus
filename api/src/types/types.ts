@@ -16,6 +16,7 @@ export interface IUserLeaderboardResult {
 export interface INftLeaderboard extends Document {
   address: string;
   nftId: string;
+  owner: string;
   earnings: number;
   wins: number;
   races: number;
@@ -25,7 +26,7 @@ export interface INftLeaderboardResult {
   position: number;
   address: string;
   nftId: string;
-  owner?: string;
+  owner: string;
   earnings: number;
   wins: number;
   races: number;

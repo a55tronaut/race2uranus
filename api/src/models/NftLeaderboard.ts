@@ -13,6 +13,10 @@ const NftLeaderboardSchema = new Schema({
     required: true,
     index: true,
   },
+  owner: {
+    type: String,
+    required: true,
+  },
   earnings: {
     type: Number,
     required: true,

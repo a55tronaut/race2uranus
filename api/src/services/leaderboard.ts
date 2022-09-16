@@ -11,6 +11,7 @@ import { race2Uranus } from './race2Uranus';
 import { makeErc721Contract } from './erc721';
 
 const MAX_LEADERBOARD_ENTRIES = 1000;
+const MAX_LEADERBOARD_RESULTS = 30;
 const logger = createLogger('service:leaderboard');
 const q = queue({ autostart: true, concurrency: 1 });
 
@@ -80,44 +81,19 @@ async function getNftLeaderboard(): Promise<INftLeaderboardResult[]> {
 
   return getFromCacheOrFetch<INftLeaderboardResult[]>({
     key: cacheKey,
-    ttlMillis: 10 * MINUTE_MILLIS,
+    ttlMillis: 3 * MINUTE_MILLIS,
     fetchValue: buildNftLeaderboard,
   });
 }
 
 async function buildNftLeaderboard(): Promise<INftLeaderboardResult[]> {
-  const leaderboardLong = await getNftLeaderboardLong();
-  const leaderboard = leaderboardLong.slice(0, 30);
-
-  for (const item of leaderboard) {
-    try {
-      const contract = makeErc721Contract(item.address);
-      const owner = await contract.ownerOf(item.nftId);
-      item.owner = owner;
-    } catch (e) {
-      logger.error(e);
-    }
-  }
-
-  return leaderboard;
-}
-
-async function getNftLeaderboardLong(): Promise<INftLeaderboardResult[]> {
-  const cacheKey = 'leaderboard:nft:long';
-  return getFromCacheOrFetch<INftLeaderboardResult[]>({
-    key: cacheKey,
-    ttlMillis: 10 * MINUTE_MILLIS,
-    fetchValue: buildNftLeaderboardLong,
-  });
-}
-
-async function buildNftLeaderboardLong(): Promise<INftLeaderboardResult[]> {
-  const entries = await NftLeaderboard.find().sort({ earnings: 'desc' }).limit(MAX_LEADERBOARD_ENTRIES);
+  const entries = await NftLeaderboard.find().sort({ earnings: 'desc' }).limit(MAX_LEADERBOARD_RESULTS);
 
   return entries.map((entry, i) => ({
     position: i + 1,
     address: entry.address,
     nftId: entry.nftId,
+    owner: entry.owner,
     earnings: entry.earnings,
     wins: entry.wins,
     races: entry.races,
@@ -221,9 +197,18 @@ async function updateNftLeaderboard(raceId: BigNumberish, session: ClientSession
       earnings += weiToNumber(race.otherRocketsShare);
     }
 
+    let owner = '-';
+
+    try {
+      const contract = makeErc721Contract(rocket.nft);
+      owner = await contract.ownerOf(rocket.nftId);
+    } catch (e) {
+      logger.error(e);
+    }
+
     await NftLeaderboard.findOneAndUpdate(
       { address: rocket.nft, nftId: rocket.nftId.toString() },
-      { $inc: { earnings, wins, races: 1 } },
+      { owner, $inc: { earnings, wins, races: 1 } },
       { upsert: true, session },
     );
   }
