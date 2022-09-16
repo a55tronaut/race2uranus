@@ -13,7 +13,12 @@ const NftLeaderboardSchema = new Schema({
     required: true,
     index: true,
   },
-  winnings: {
+  earnings: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
+  wins: {
     type: Number,
     required: true,
     default: 0,

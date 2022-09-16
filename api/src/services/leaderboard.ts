@@ -6,7 +6,7 @@ import { MINUTE_MILLIS } from '../constants';
 import { createLogger } from '../logger';
 import { UserLeaderboard, LeaderboardRace, NftLeaderboard } from '../models';
 import { INftLeaderboardResult, IUserLeaderboardResult, RaceFinishedEvent } from '../types';
-import { getFromCacheOrFetch, waitForDb } from '../utils';
+import { getFromCacheOrFetch, waitForDb, weiToNumber } from '../utils';
 import { race2Uranus } from './race2Uranus';
 import { makeErc721Contract } from './erc721';
 
@@ -112,13 +112,14 @@ async function getNftLeaderboardLong(): Promise<INftLeaderboardResult[]> {
 }
 
 async function buildNftLeaderboardLong(): Promise<INftLeaderboardResult[]> {
-  const entries = await NftLeaderboard.find().sort({ winnings: 'desc' }).limit(MAX_LEADERBOARD_ENTRIES);
+  const entries = await NftLeaderboard.find().sort({ earnings: 'desc' }).limit(MAX_LEADERBOARD_ENTRIES);
 
   return entries.map((entry, i) => ({
     position: i + 1,
     address: entry.address,
     nftId: entry.nftId,
-    winnings: entry.winnings,
+    earnings: entry.earnings,
+    wins: entry.wins,
     races: entry.races,
   }));
 }
@@ -205,21 +206,25 @@ async function updateUserLeaderboard(raceId: BigNumberish, session: ClientSessio
 async function updateNftLeaderboard(raceId: BigNumberish, session: ClientSession) {
   const [race] = await race2Uranus.functions.getRace(raceId);
   const winningRocket = race.rockets[race.winner];
-  const devFee = race.rewardPool.mul(race.configSnapshot.devFeePercent).div(100);
-  const rewardPool = race.rewardPool.sub(race.configSnapshot.revealBounty).sub(devFee);
 
-  const rocketsShare = rewardPool.mul(race.configSnapshot.rocketsSharePercent).div(100);
-  const winningRocketShare = rocketsShare.mul(race.configSnapshot.winningRocketSharePercent).div(100);
-  const poolRemainder = rewardPool.sub(rocketsShare);
+  for (const rocket of race.rockets) {
+    const isWinner = rocket.id === winningRocket.id;
+    let earnings = 0;
+    const wins = isWinner ? 1 : 0;
 
-  const totalRewards = winningRocketShare.add(poolRemainder);
-  const winnings = Number(ethers.utils.formatEther(totalRewards));
+    if (isWinner) {
+      earnings += weiToNumber(race.winningRocketShare);
+      const rocketsShare = race.rewardPool.mul(race.configSnapshot.rocketsSharePercent).div(100);
+      const stakersShare = race.rewardPool.sub(rocketsShare);
+      earnings += weiToNumber(stakersShare);
+    } else {
+      earnings += weiToNumber(race.otherRocketsShare);
+    }
 
-  const { nft, nftId } = winningRocket;
-
-  await NftLeaderboard.findOneAndUpdate(
-    { address: nft, nftId: nftId.toString() },
-    { $inc: { winnings, races: 1 } },
-    { upsert: true, session },
-  );
+    await NftLeaderboard.findOneAndUpdate(
+      { address: rocket.nft, nftId: rocket.nftId.toString() },
+      { $inc: { earnings, wins, races: 1 } },
+      { upsert: true, session },
+    );
+  }
 }

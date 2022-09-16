@@ -1,3 +1,4 @@
+import { BigNumberish, ethers } from 'ethers';
 import { Cache } from 'memory-cache';
 import mongoose from 'mongoose';
 
@@ -55,4 +56,8 @@ export async function waitForDb(): Promise<void> {
     return;
   }
   return new Promise((resolve) => mongoose.connection.once('open', resolve));
+}
+
+export function weiToNumber(wei: BigNumberish): number {
+  return Number(ethers.utils.formatEther(wei));
 }
