@@ -17,12 +17,11 @@ export const API_URL = env('REACT_APP_API_URL', 'string');
 function parseNftMappings(rawMappins: string): { [key: string]: string } {
   const mappings: any = {};
 
-  rawMappins.split('\n').forEach((row) => {
-    const strippedRow = row.split('#')[0].trim();
-    if (strippedRow) {
-      const [from, to] = strippedRow.split(':').map((addr) => addr.toLowerCase());
-      mappings[from] = to;
-    }
+  rawMappins.split(',').forEach((row) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [label, from, to] = row.split(':').map((val) => val.trim().toLowerCase());
+    mappings[from] = to;
+    console.log(`mapping ${label} ${from} -> ${to}`);
   });
 
   return mappings;
