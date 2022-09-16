@@ -40,19 +40,24 @@ const columns: TableColumnsType<INftLeaderboardResult> = [
     render: (owner) => owner && shortenAddress(owner),
   },
   {
-    title: 'Winnings',
-    dataIndex: 'winnings',
+    title: 'Wins',
+    dataIndex: 'wins',
     align: 'right',
-    render: (winnings) => (
-      <div className="winnings">
-        <MagicAmount amount={ethers.utils.parseEther(`${winnings}`)} />
-      </div>
-    ),
   },
   {
     title: 'Races',
     dataIndex: 'races',
     align: 'right',
+  },
+  {
+    title: 'Earnings',
+    dataIndex: 'earnings',
+    align: 'right',
+    render: (earnings) => (
+      <div className="earnings">
+        <MagicAmount amount={ethers.utils.parseEther(`${earnings}`)} />
+      </div>
+    ),
   },
 ];
 
@@ -104,19 +109,8 @@ const Container = styled.div`
     width: 40px;
   }
 
-  .winnings {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-end;
-    span {
-      color: ${orange};
-    }
-
-    > img {
-      height: 20px;
-      margin-right: 8px;
-    }
+  .earnings span {
+    color: ${orange};
   }
 
   .ant-table-row.owned > td {

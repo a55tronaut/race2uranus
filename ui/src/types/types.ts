@@ -24,7 +24,8 @@ export interface INftLeaderboardResult {
   address: string;
   nftId: string;
   owner: string;
-  winnings: number;
+  earnings: number;
+  wins: number;
   races: number;
 }
 
