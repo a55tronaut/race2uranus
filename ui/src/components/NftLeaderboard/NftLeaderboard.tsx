@@ -7,9 +7,9 @@ import { ethers } from 'ethers';
 import { useSelectedRace } from '../../hooks';
 import { INftLeaderboardResult } from '../../types';
 import NftImage from '../NftImage';
-import { useNftLeaderboard } from './useNftLeaderboard';
 import NftName from '../NftName';
 import MagicAmount from '../MagicAmount';
+import { useNftLeaderboard } from './useNftLeaderboard';
 
 const { Title } = Typography;
 

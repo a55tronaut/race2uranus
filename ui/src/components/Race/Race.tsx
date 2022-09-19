@@ -1,7 +1,9 @@
+import { useMemo } from 'react';
 import styled from 'styled-components';
 import { Spin } from 'antd';
 
 import { useSelectedRace } from '../../hooks';
+import NotFound from '../NotFound';
 import DestroyAsteroid from '../DestroyAsteroid';
 import Background from './Background';
 import PreRace from './PreRace';
@@ -10,33 +12,39 @@ import Rockets from './Rockets';
 import Winner from './Winner';
 
 function Race() {
-  const { loading, race, statusMeta } = useSelectedRace();
+  const { loading, race, statusMeta, error } = useSelectedRace();
 
-  return (
-    <Container>
-      {loading ? (
-        <Spin className="loader" size="large" />
-      ) : (
-        <>
-          <Background race={race!} statusMeta={statusMeta!} />
-          <Rockets
-            rockets={race?.rockets || []}
-            maxRockets={race?.configSnapshot.maxRockets || 0}
-            canBoost={!statusMeta?.revealBlockReached}
-            move={!statusMeta?.waiting}
-            winner={statusMeta?.done ? race?.winner : undefined}
-          />
-          <PreRace show={statusMeta?.waiting! && !!race?.blastOffTimestamp.eq(0)} rewardPool={race?.rewardPool!} />
-          <LaunchCountdown
-            show={statusMeta?.waiting! && !!race?.blastOffTimestamp.gt(0)}
-            blastOffTimestamp={race?.blastOffTimestamp!}
-          />
-          <DestroyAsteroid race={race!} statusMeta={statusMeta!} />
-          <Winner show={statusMeta?.done!} rocket={race?.rockets[race!.winner]} />
-        </>
-      )}
-    </Container>
-  );
+  const content = useMemo(() => {
+    if (error) {
+      return <NotFound />;
+    }
+
+    if (loading) {
+      return <Spin className="loader" size="large" />;
+    }
+
+    return (
+      <>
+        <Background race={race!} statusMeta={statusMeta!} />
+        <Rockets
+          rockets={race?.rockets || []}
+          maxRockets={race?.configSnapshot.maxRockets || 0}
+          canBoost={!statusMeta?.revealBlockReached}
+          move={!statusMeta?.waiting}
+          winner={statusMeta?.done ? race?.winner : undefined}
+        />
+        <PreRace show={statusMeta?.waiting! && !!race?.blastOffTimestamp.eq(0)} rewardPool={race?.rewardPool!} />
+        <LaunchCountdown
+          show={statusMeta?.waiting! && !!race?.blastOffTimestamp.gt(0)}
+          blastOffTimestamp={race?.blastOffTimestamp!}
+        />
+        <DestroyAsteroid race={race!} statusMeta={statusMeta!} />
+        <Winner show={statusMeta?.done!} rocket={race?.rockets[race!.winner]} />
+      </>
+    );
+  }, [error, loading, race, statusMeta]);
+
+  return <Container>{content}</Container>;
 }
 
 const Container = styled.div`

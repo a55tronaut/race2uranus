@@ -35,6 +35,7 @@ const Wrapper = styled.div`
   width: 100vw;
   min-width: 1280px;
   z-index: 10;
+  backdrop-filter: blur(6px);
 `;
 
 const Container = styled.div`
