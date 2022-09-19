@@ -41,6 +41,7 @@ function BoostRocketModalContent({ race, onClose }: IProps) {
       let error = (e as any)?.message || 'Error';
       if (error.includes('execution reverted: Race already finished')) {
         error = 'Too late! Someone else has already destroyed the asteroid and snatched up the prize!';
+        onClose();
       }
       notification.error({ message: error });
     } finally {
