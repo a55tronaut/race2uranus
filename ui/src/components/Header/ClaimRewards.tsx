@@ -5,8 +5,8 @@ import { BigNumber, BigNumberish } from 'ethers';
 import { useEthers } from '@usedapp/core';
 
 import { useRaceContract, useSelectedRace } from '../../hooks';
+import { FINAL_APPROACH_SECONDS, SECOND_MILLIS } from '../../constants';
 import MagicAmount from '../MagicAmount';
-import { GAME_LOOP_INTERVAL_SECONDS, SECOND_MILLIS } from '../../constants';
 
 interface IProps {
   className?: string;
@@ -47,7 +47,7 @@ function ClaimRewards({ className }: IProps) {
     if (!raceDone.current && statusMeta?.done) {
       setTimeout(() => {
         refreshRewards();
-      }, 3 * GAME_LOOP_INTERVAL_SECONDS * SECOND_MILLIS);
+      }, FINAL_APPROACH_SECONDS * SECOND_MILLIS);
     } else if (statusMeta?.done) {
       refreshRewards();
     }

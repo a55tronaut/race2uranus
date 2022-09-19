@@ -23,7 +23,7 @@ function Planets() {
           endY: random(130, 250),
           x: random(-5, 100),
           size: random(25, 250),
-          rotation: random(0, 359),
+          rotation: random(-359, 359),
         });
       }
     }

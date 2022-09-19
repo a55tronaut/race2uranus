@@ -7,9 +7,10 @@ import DestroyAsteroidModalContent from './DestroyAsteroidModalContent';
 interface IProps {
   race: Race2Uranus.RaceStructOutput;
   statusMeta: IRaceStatusMeta;
+  refresh: () => Promise<void>;
 }
 
-function DestroyAsteroid({ race, statusMeta }: IProps) {
+function DestroyAsteroid({ race, statusMeta, refresh }: IProps) {
   const [showModal, setShowModal] = useState(false);
 
   const handleCloseModal = useCallback(() => {
@@ -22,7 +23,7 @@ function DestroyAsteroid({ race, statusMeta }: IProps) {
 
   return (
     <Modal centered open={showModal} width={650} destroyOnClose closable={false} footer={null}>
-      <DestroyAsteroidModalContent race={race} onClose={handleCloseModal} />
+      <DestroyAsteroidModalContent race={race} onClose={handleCloseModal} refresh={refresh} />
     </Modal>
   );
 }

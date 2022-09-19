@@ -13,9 +13,10 @@ import NftName from '../NftName';
 interface IProps {
   rocket: Race2Uranus.RocketStructOutput;
   onClose: () => void;
+  refresh: () => Promise<void>;
 }
 
-function BoostRocketModalContent({ rocket, onClose }: IProps) {
+function BoostRocketModalContent({ rocket, onClose, refresh }: IProps) {
   const { race } = useSelectedRace();
   const { contract } = useRaceContract();
   const { ensureApproval } = useEnsureMagicApproval();
@@ -28,6 +29,7 @@ function BoostRocketModalContent({ rocket, onClose }: IProps) {
       await ensureApproval(race!.configSnapshot.boostPrice);
       const res = await contract!.functions.applyBoost(race!.id, rocket.id);
       await res.wait(1);
+      await refresh();
 
       notification.success({
         message: (
@@ -49,7 +51,7 @@ function BoostRocketModalContent({ rocket, onClose }: IProps) {
     } finally {
       setLoading(false);
     }
-  }, [contract, ensureApproval, onClose, race, rocket.id, rocket.nft, rocket.nftId]);
+  }, [contract, ensureApproval, onClose, race, refresh, rocket.id, rocket.nft, rocket.nftId]);
 
   return (
     <Container>

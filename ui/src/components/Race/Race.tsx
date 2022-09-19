@@ -12,7 +12,7 @@ import Rockets from './Rockets';
 import Winner from './Winner';
 
 function Race() {
-  const { loading, race, statusMeta, error } = useSelectedRace();
+  const { loading, race, statusMeta, error, refresh } = useSelectedRace();
 
   const content = useMemo(() => {
     if (error) {
@@ -27,6 +27,7 @@ function Race() {
       <>
         <Background race={race!} statusMeta={statusMeta!} />
         <Rockets
+          refresh={refresh}
           rockets={race?.rockets || []}
           maxRockets={race?.configSnapshot.maxRockets || 0}
           canBoost={!statusMeta?.revealBlockReached}
@@ -38,11 +39,11 @@ function Race() {
           show={statusMeta?.waiting! && !!race?.blastOffTimestamp.gt(0)}
           blastOffTimestamp={race?.blastOffTimestamp!}
         />
-        <DestroyAsteroid race={race!} statusMeta={statusMeta!} />
+        <DestroyAsteroid race={race!} statusMeta={statusMeta!} refresh={refresh} />
         <Winner show={statusMeta?.done!} rocket={race?.rockets[race!.winner]} />
       </>
     );
-  }, [error, loading, race, statusMeta]);
+  }, [error, loading, race, refresh, statusMeta]);
 
   return <Container>{content}</Container>;
 }

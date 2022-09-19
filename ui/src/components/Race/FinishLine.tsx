@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import cn from 'classnames';
 
-import { GAME_LOOP_INTERVAL_SECONDS } from '../../constants';
+import { FINAL_APPROACH_SECONDS } from '../../constants';
 
 interface IProps {
   move: boolean;
@@ -22,7 +22,7 @@ const Container = styled.div`
   transform: translate(-50%, 0) skew(-15deg);
   opacity: 0.2;
   z-index: 2;
-  transition: top ${3 * GAME_LOOP_INTERVAL_SECONDS}s linear;
+  transition: top ${FINAL_APPROACH_SECONDS}s linear;
   background-image: url(/assets/checkered-flag.svg);
   background-position: center;
   background-size: contain;

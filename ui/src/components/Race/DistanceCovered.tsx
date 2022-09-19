@@ -60,7 +60,7 @@ function nFormatter(num: number) {
     .find(function (item) {
       return num >= item.value;
     });
-  return item ? (num / item.value).toFixed(3).replace(rx, '$1') + item.symbol : '0';
+  return item ? (num / item.value).toFixed(3).replace(rx, '$1') + ' ' + item.symbol : '0';
 }
 
 const Container = styled.div``;

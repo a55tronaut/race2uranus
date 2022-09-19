@@ -8,9 +8,10 @@ import BoostRocketModalContent from './BoostRocketModalContent';
 interface IProps {
   rocket: Race2Uranus.RocketStructOutput;
   className?: string;
+  refresh: () => Promise<void>;
 }
 
-function BoostRocket({ rocket, className }: IProps) {
+function BoostRocket({ rocket, className, refresh }: IProps) {
   const [showModal, setShowModal] = useState(false);
 
   const handleShowModal = useCallback(() => {
@@ -27,7 +28,7 @@ function BoostRocket({ rocket, className }: IProps) {
         Boost
       </Button>
       <Modal centered open={showModal} width={650} destroyOnClose onCancel={handleCloseModal} footer={null}>
-        <BoostRocketModalContent rocket={rocket} onClose={handleCloseModal} />
+        <BoostRocketModalContent rocket={rocket} refresh={refresh} onClose={handleCloseModal} />
       </Modal>
     </Container>
   );

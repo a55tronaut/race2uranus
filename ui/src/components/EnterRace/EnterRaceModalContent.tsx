@@ -25,9 +25,10 @@ interface INftOption {
 
 interface IProps {
   onClose: () => void;
+  refresh: () => Promise<void>;
 }
 
-function EnterRaceModalContent({ onClose }: IProps) {
+function EnterRaceModalContent({ refresh }: IProps) {
   const { race } = useSelectedRace();
   const { contract } = useRaceContract();
   const { ensureApproval } = useEnsureMagicApproval();
@@ -105,6 +106,7 @@ function EnterRaceModalContent({ onClose }: IProps) {
         stakeAmountWei
       );
       await res.wait(1);
+      await refresh();
 
       notification.success({
         message: (
@@ -126,7 +128,7 @@ function EnterRaceModalContent({ onClose }: IProps) {
     } finally {
       setLoading(false);
     }
-  }, [contract, ensureApproval, form, race, selectedNft, stakeAmount]);
+  }, [contract, ensureApproval, form, race, refresh, selectedNft, stakeAmount]);
 
   const handleCopy = useCallback(async () => {
     await navigator.clipboard.writeText(`${shareMsg} ${window.location.href}`);
@@ -187,11 +189,22 @@ function EnterRaceModalContent({ onClose }: IProps) {
         {entered ? (
           <ShareCallToAction>
             <div>
-              Share this message on the <strong>{getNftConfig(selectedNft?.address!)?.name}</strong> community Discord
-              to get others to stake on your rocket!
+              Share this message on the <strong>{getNftConfig(selectedNft?.address!)?.name}</strong> community{' '}
+              <img className="discord" src="/assets/discord.svg" alt="Discord" /> <strong>Discord</strong> to get others
+              to stake on your rocket!
             </div>
             <br />
-            <Alert type="info" message={shareMsg} />
+            <Alert
+              className="quote"
+              type="info"
+              message={
+                <span>
+                  {shareMsg}
+                  <br />
+                  {window.location.href}
+                </span>
+              }
+            />
           </ShareCallToAction>
         ) : (
           <Form layout="vertical" form={form}>
@@ -334,6 +347,28 @@ const ShareCallToAction = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
+  .discord {
+    height: 16px;
+    vertical-align: middle;
+  }
+
+  /* .quote::before {
+    content: '"';
+    display: block;
+    position: absolute;
+    top: -38px;
+    left: -38px;
+    font-size: 80px;
+  }
+  .quote::after {
+    content: '"';
+    display: block;
+    position: absolute;
+    bottom: -38px;
+    right: -38px;
+    font-size: 80px;
+  } */
 `;
 
 const RocketContainer = styled.div`

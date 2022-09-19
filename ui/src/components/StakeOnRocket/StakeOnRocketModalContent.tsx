@@ -14,9 +14,10 @@ import NftName from '../NftName';
 
 interface IProps {
   onClose: () => void;
+  refresh: () => Promise<void>;
 }
 
-function StakeOnRocketModalContent({ onClose }: IProps) {
+function StakeOnRocketModalContent({ onClose, refresh }: IProps) {
   const { race } = useSelectedRace();
   const { contract } = useRaceContract();
   const { ensureApproval } = useEnsureMagicApproval();
@@ -45,6 +46,7 @@ function StakeOnRocketModalContent({ onClose }: IProps) {
       await ensureApproval(stakeAmountWei);
       const res = await contract!.functions.stakeOnRocket(race!.id, selectedRocket!.id, stakeAmountWei);
       await res.wait(1);
+      await refresh();
 
       notification.success({
         message: (
@@ -66,7 +68,7 @@ function StakeOnRocketModalContent({ onClose }: IProps) {
     } finally {
       setLoading(false);
     }
-  }, [contract, ensureApproval, form, onClose, race, selectedRocket, stakeAmount]);
+  }, [contract, ensureApproval, form, onClose, race, refresh, selectedRocket, stakeAmount]);
 
   const rocketPickerLabel = (
     <>

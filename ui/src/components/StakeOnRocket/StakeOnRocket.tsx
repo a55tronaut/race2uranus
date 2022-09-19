@@ -5,7 +5,7 @@ import { useSelectedRace } from '../../hooks';
 import StakeOnRocketModalContent from './StakeOnRocketModalContent';
 
 function StakeOnRocket() {
-  const { race, statusMeta } = useSelectedRace();
+  const { race, statusMeta, refresh } = useSelectedRace();
   const [showModal, setShowModal] = useState(false);
   const disabled = !race || race?.rockets.length === 0 || statusMeta?.revealBlockReached;
 
@@ -23,7 +23,7 @@ function StakeOnRocket() {
         Stake
       </Button>
       <Modal centered open={showModal} width={650} destroyOnClose onCancel={handleCloseModal} footer={null}>
-        <StakeOnRocketModalContent onClose={handleCloseModal} />
+        <StakeOnRocketModalContent onClose={handleCloseModal} refresh={refresh} />
       </Modal>
     </>
   );

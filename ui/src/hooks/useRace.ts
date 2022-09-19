@@ -1,24 +1,14 @@
-import { BigNumberish, ethers } from 'ethers';
-import { useEffect } from 'react';
+import { BigNumberish } from 'ethers';
+import { useCallback, useEffect } from 'react';
 import create from 'zustand';
-import queue from 'queue';
-import { deepmergeCustom } from 'deepmerge-ts';
-import deepEqual from 'deep-equal';
 
-import {
-  BoostAppliedEvent,
-  IRaceStatusMeta,
-  Race2Uranus,
-  RaceEnteredEvent,
-  RaceFinishedEvent,
-  RaceStartedEvent,
-  StakedOnRocketEvent,
-  TypedListener,
-} from '../types';
+import { IRaceStatusMeta, Race2Uranus } from '../types';
+import { SECOND_MILLIS } from '../constants';
 import { useRaceContract, useRaceContractStore } from './useRaceContract';
 import { useWaitUntilL1Block } from './useWaitUntilL1Block';
 import { useL1Block, useL1BlockStore } from './useL1Block';
 import { useWaitUntil } from './useWaitUntil';
+import { useEthersProviderStore } from './useEthersProvider';
 
 interface IRaceStoreState {
   [key: string]: IRace;
@@ -31,54 +21,45 @@ interface IRace {
   statusMeta?: IRaceStatusMeta;
 }
 
-// to handle merging contract structOutputs (arrays with props)
-const customMerge = deepmergeCustom({
-  mergeOthers(records, utils) {
-    if (records.some((r) => Array.isArray(r))) {
-      const res: any = [];
-      records.forEach((r: any) => {
-        Object.keys(r).forEach((key) => {
-          res[key] = r[key];
-        });
-      });
-
-      return res;
-    }
-
-    return utils.defaultMergeFunctions.mergeOthers(records);
-  },
-});
-
-const q = queue({ autostart: true, concurrency: 1 });
+const jsonDeepEqual = (a: any, b: any): boolean => {
+  return JSON.stringify(a) === JSON.stringify(b);
+};
 
 const defaultState: IRaceStoreState = {};
 const defaultRace: IRace = { loading: true, error: false };
 
+interface IRaceMethods {
+  refresh: () => Promise<void>;
+}
+
+interface IRaceHook extends IRace, IRaceMethods {}
+
 const useRaceStore = create<IRaceStoreState>(() => defaultState);
 
-export function useRace(id?: BigNumberish): IRace {
+export function useRace(id?: BigNumberish): IRaceHook {
   useL1Block(); // ensure hook is called so its state and store is properly initialized (we use the store below)
   const { contract } = useRaceContract();
   const race = useRaceStore((state) => state[id?.toString()!]) || defaultRace;
   const revealBlockReached = useWaitUntilL1Block(race.race?.revealBlock!);
   const blastOffReached = useWaitUntil(race.race?.blastOffTimestamp.toNumber()! * 1000);
 
+  const refresh = useCallback(async () => {
+    try {
+      const [race] = await contract!.functions.getRace(id!)!;
+      updateRaceInStore(id!, { loading: false, race });
+    } catch (e) {
+      console.error(e);
+      updateRaceInStore(id!, { loading: false, error: true });
+    }
+  }, [contract, id]);
+
   useEffect(() => {
     const shouldLoadRace = id && !getRaceFromStore(id) && !!contract;
     if (shouldLoadRace) {
       updateRaceInStore(id, defaultRace);
-      refreshRaceData();
+      refresh();
     }
-    async function refreshRaceData() {
-      try {
-        const [race] = await contract!.functions.getRace(id!)!;
-        updateRaceInStore(id!, { loading: false, race });
-      } catch (e) {
-        console.error(e);
-        updateRaceInStore(id!, { loading: false, error: true });
-      }
-    }
-  }, [contract, id, race]);
+  }, [contract, id, race, refresh]);
 
   useEffect(() => {
     if (blastOffReached) {
@@ -92,7 +73,10 @@ export function useRace(id?: BigNumberish): IRace {
     }
   }, [blastOffReached, id, race.race, revealBlockReached]);
 
-  return race;
+  return {
+    ...race,
+    refresh,
+  };
 }
 
 function calcStatusMeta(race: Race2Uranus.RaceStructOutput): IRaceStatusMeta {
@@ -124,20 +108,47 @@ function calcStatusMeta(race: Race2Uranus.RaceStructOutput): IRaceStatusMeta {
   };
 }
 
+updateRacesPeriodically();
+
+function updateRacesPeriodically() {
+  setInterval(updateRaces, 30 * SECOND_MILLIS);
+}
+
+async function updateRaces() {
+  const state = useRaceStore.getState();
+  let updated = false;
+  const raceIds = Object.keys(state);
+  for (const raceId of raceIds) {
+    const changed = await updateRace(raceId);
+    if (changed) {
+      updated = true;
+    }
+  }
+  return updated;
+}
+
+async function updateRace(id: BigNumberish) {
+  const { contract } = useRaceContractStore.getState();
+  if (contract) {
+    const [race] = await contract!.functions.getRace(id!)!;
+    return updateRaceInStore(id!, { loading: false, race });
+  }
+
+  return false;
+}
+
 useRaceContractStore.subscribe(({ contract }) => {
   if (contract) {
     addEventListeners(contract as Race2Uranus);
   }
 });
 
-const processedEvents: { [key: string]: boolean } = {};
-
 function addEventListeners(contract: Race2Uranus) {
-  ensureOneContractListener(contract, contract.filters.RaceEntered(), wrappedHandleRaceEnteredEvent);
-  ensureOneContractListener(contract, contract.filters.StakedOnRocket(), wrappedHandleStakedOnRocketEvent);
-  ensureOneContractListener(contract, contract.filters.BoostApplied(), wrappedHandleBoostAppliedEvent);
-  ensureOneContractListener(contract, contract.filters.RaceStarted(), wrappedHandleRaceStartedEvent);
-  ensureOneContractListener(contract, contract.filters.RaceFinished(), wrappedHandleRaceFinishedEvent);
+  ensureOneContractListener(contract, contract.filters.RaceEntered(), updateNextBlock);
+  ensureOneContractListener(contract, contract.filters.StakedOnRocket(), updateNextBlock);
+  ensureOneContractListener(contract, contract.filters.BoostApplied(), updateNextBlock);
+  ensureOneContractListener(contract, contract.filters.RaceStarted(), updateNextBlock);
+  ensureOneContractListener(contract, contract.filters.RaceFinished(), updateNextBlock);
 }
 
 function ensureOneContractListener(contract: Race2Uranus, filter: any, handler: any) {
@@ -145,145 +156,47 @@ function ensureOneContractListener(contract: Race2Uranus, filter: any, handler: 
   contract.on(filter, handler);
 }
 
-const wrappedHandleRaceEnteredEvent = wrapEventHandler(handleRaceEnteredEvent);
-async function handleRaceEnteredEvent(ev: RaceEnteredEvent) {
-  const { args } = ev;
-  const { raceId, rocketId, rocketeer, nft, nftId } = args;
-  const race = getRaceStructFromStore(raceId);
-
-  if (race) {
-    const newRockets = [...(race.rockets || [])];
-
-    newRockets.push({
-      id: rocketId,
-      nft,
-      nftId,
-      rocketeer,
-      totalBoosts: 0,
-      totalStake: ethers.BigNumber.from('0'),
-      rocketeerRewardClaimed: false,
-    } as any);
-
-    updateRaceStructInStore(raceId, { rockets: newRockets });
-  }
-}
-
-const wrappedHandleStakedOnRocketEvent = wrapEventHandler(handleStakedOnRocketEvent);
-async function handleStakedOnRocketEvent(ev: StakedOnRocketEvent) {
-  const { args } = ev;
-  const { raceId, rocketId, amount } = args;
-  const race = getRaceStructFromStore(raceId);
-
-  if (race) {
-    const updatedRockets = race.rockets?.map((r) => {
-      let updatedRocket = r;
-      if (updatedRocket.id === rocketId) {
-        updatedRocket = {
-          ...updatedRocket,
-          totalStake: updatedRocket.totalStake.add(amount),
-        };
-      }
-
-      return updatedRocket;
-    });
-
-    updateRaceStructInStore(raceId, { rockets: updatedRockets, rewardPool: race.rewardPool?.add(amount) });
-  }
-}
-
-const wrappedHandleBoostAppliedEvent = wrapEventHandler(handleBoostAppliedEvent);
-async function handleBoostAppliedEvent(ev: BoostAppliedEvent) {
-  const { args } = ev;
-  const { raceId, rocketId } = args;
-  const race = getRaceStructFromStore(raceId);
-
-  if (race) {
-    const updatedRockets = race.rockets?.map((r) => {
-      let updatedRocket = r;
-      if (updatedRocket.id === rocketId) {
-        updatedRocket = {
-          ...updatedRocket,
-          totalBoosts: updatedRocket.totalBoosts + 1,
-        };
-      }
-
-      return updatedRocket;
-    });
-
-    updateRaceStructInStore(raceId, {
-      rockets: updatedRockets,
-      rewardPool: race.rewardPool?.add(race.configSnapshot?.boostPrice || '0'),
-    });
-  }
-}
-
-const wrappedHandleRaceStartedEvent = wrapEventHandler(handleRaceStartedEvent);
-async function handleRaceStartedEvent(ev: RaceStartedEvent) {
-  const { args } = ev;
-  const { raceId, blastOffTimestamp, revealBlockNumber } = args;
-  const race = getRaceStructFromStore(raceId);
-
-  if (race) {
-    updateRaceStructInStore(raceId, { started: true, blastOffTimestamp, revealBlock: revealBlockNumber });
-  }
-}
-
-const wrappedHandleRaceFinishedEvent = wrapEventHandler(handleRaceFinishedEvent);
-async function handleRaceFinishedEvent(ev: RaceFinishedEvent) {
-  const { args } = ev;
-  const { raceId, winningRocketId } = args;
-  const race = getRaceStructFromStore(raceId);
-
-  if (race) {
-    updateRaceStructInStore(raceId, { finished: true, winner: winningRocketId });
-  }
-}
-
-function wrapEventHandler(handler: (ev: any) => Promise<void>): TypedListener<any> {
-  const wrappedHandler: TypedListener<any> = (...all) => {
-    const ev = all[all.length - 1];
-    const eventKey = `${ev.event}.${ev.transactionHash}`;
-
-    if (!processedEvents[eventKey]) {
-      processedEvents[eventKey] = true;
-      q.push(async () => {
-        await handler(ev);
-      });
-    }
-  };
-  return wrappedHandler;
-}
-
-function getRaceStructFromStore(raceId: BigNumberish): Race2Uranus.RaceStructOutput | undefined {
-  return useRaceStore.getState()[raceId?.toString()].race;
+function updateNextBlock() {
+  const { provider } = useEthersProviderStore.getState();
+  provider?.once('block', updateRaces);
 }
 
 function getRaceFromStore(raceId: BigNumberish): IRace {
   return useRaceStore.getState()[raceId?.toString()];
 }
 
-function updateRaceStructInStore(raceId: BigNumberish, raceStruct: Partial<Race2Uranus.RaceStructOutput>) {
-  updateRaceInStore(raceId, { race: raceStruct } as any);
-}
-
 function updateRaceInStore(raceId: BigNumberish, race: Partial<IRace>) {
   const existingRace = getRaceFromStore(raceId) || {};
-  const newRace = customMerge(existingRace, race);
+  const newRace = { ...existingRace, ...race };
 
-  if (deepEqual(existingRace, newRace)) {
+  if (jsonDeepEqual(existingRace, newRace)) {
     return;
   }
   const statusMeta = calcStatusMeta(newRace.race!);
-  const newRaceWithMeta = customMerge(newRace, { statusMeta });
+  const newRaceWithMeta = {
+    ...newRace,
+    statusMeta,
+  };
   useRaceStore.setState({ [raceId.toString()]: newRaceWithMeta as any });
+
+  const changed = true;
+
+  return changed;
 }
 
 function updateStatusMetaInStore(raceId: BigNumberish, statusMeta: Partial<IRaceStatusMeta>) {
   const existingRace = getRaceFromStore(raceId) || {};
-  const newStatusMeta = customMerge(existingRace.statusMeta || {}, statusMeta);
-  if (deepEqual(existingRace.statusMeta, newStatusMeta)) {
+  const newStatusMeta = { ...existingRace.statusMeta, ...statusMeta };
+  if (jsonDeepEqual(existingRace.statusMeta, newStatusMeta)) {
     return;
   }
-  const newRaceWithMeta = customMerge(existingRace, { statusMeta: newStatusMeta });
+  const newRaceWithMeta = {
+    ...existingRace,
+    statusMeta,
+  };
   useRaceStore.setState({ [raceId.toString()]: newRaceWithMeta as any });
+
+  const changed = true;
+
+  return changed;
 }

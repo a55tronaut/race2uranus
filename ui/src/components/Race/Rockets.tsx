@@ -15,6 +15,7 @@ interface IProps {
   canBoost: boolean;
   move: boolean;
   winner?: number;
+  refresh: () => Promise<void>;
 }
 interface IGameRocketProps {
   style?: React.CSSProperties;
@@ -29,7 +30,7 @@ const MAX_ROCKET_OFFSET = 60;
 
 const emptyRocket: Partial<Race2Uranus.RocketStructOutput> = {};
 
-function Rockets({ rockets, maxRockets, canBoost, move, winner }: IProps) {
+function Rockets({ rockets, maxRockets, canBoost, move, winner, refresh }: IProps) {
   const [gameRockets, setGameRockets] = useState<GameRocket[]>([]);
 
   const updateRocketPositions = useCallback(
@@ -84,7 +85,7 @@ function Rockets({ rockets, maxRockets, canBoost, move, winner }: IProps) {
           <RocketWrapper style={rocket.style}>
             <Rocket className="rocket" address={rocket.nft} nftId={rocket.nftId} boostCount={rocket.totalBoosts} />
           </RocketWrapper>
-          {rocket.rocketeer && canBoost && <BoostRocket className="boostBtn" rocket={rocket} />}
+          {rocket.rocketeer && canBoost && <BoostRocket className="boostBtn" rocket={rocket} refresh={refresh} />}
         </RocketWithTrack>
       ))}
     </Container>

@@ -4,7 +4,7 @@ import { Typography } from 'antd';
 import styled from 'styled-components';
 import cn from 'classnames';
 
-import { GAME_LOOP_INTERVAL_SECONDS } from '../../constants';
+import { FINAL_APPROACH_SECONDS } from '../../constants';
 import { Race2Uranus } from '../../types';
 import Layout from '../Layout';
 import Rocket from '../Rocket';
@@ -61,14 +61,11 @@ const Container = styled.div`
 
   &.animate {
     opacity: 0;
-    animation: appear ${3 * GAME_LOOP_INTERVAL_SECONDS}s ease forwards;
+    animation: appear ${FINAL_APPROACH_SECONDS}s ease forwards;
   }
 
   @keyframes appear {
     0% {
-      opacity: 0;
-    }
-    80% {
       opacity: 0;
     }
     90% {

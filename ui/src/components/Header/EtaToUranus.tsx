@@ -1,10 +1,12 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Countdown from 'react-countdown';
 import { Typography } from 'antd';
 import styled from 'styled-components';
+import cn from 'classnames';
 
 import { useSelectedRace, useTimeToL1Block } from '../../hooks';
 import { orange } from '../../colors';
+import { FINAL_APPROACH_SECONDS, SECOND_MILLIS } from '../../constants';
 
 interface IProps {
   className?: string;
@@ -12,13 +14,41 @@ interface IProps {
 
 function EtaToUranus({ className }: IProps) {
   const { loading: raceLoading, race, statusMeta } = useSelectedRace();
-  const { loading: timeLoading, timestamp, timeLeft } = useTimeToL1Block(race?.revealBlock!);
+  const {
+    loading: timeLoading,
+    timestamp: blockTimestamp,
+    timeLeft: timeToBlock,
+  } = useTimeToL1Block(race?.revealBlock!);
+  const [showFinalApproach, setShowFinalApproach] = useState(false);
   const loading = raceLoading || timeLoading;
+  const hidden = loading || !race || statusMeta?.waiting;
+  const timeUnknown = statusMeta?.revealBlockReached && !statusMeta?.done;
+
+  const timeLeft = useMemo(() => {
+    if (showFinalApproach && statusMeta?.done) {
+      return FINAL_APPROACH_SECONDS * SECOND_MILLIS;
+    }
+    return timeToBlock + FINAL_APPROACH_SECONDS * SECOND_MILLIS;
+  }, [showFinalApproach, statusMeta?.done, timeToBlock]);
+
+  const timestamp = useMemo(() => {
+    if (showFinalApproach && statusMeta?.done) {
+      return Date.now() + FINAL_APPROACH_SECONDS * SECOND_MILLIS;
+    }
+    return blockTimestamp + FINAL_APPROACH_SECONDS * SECOND_MILLIS;
+  }, [blockTimestamp, showFinalApproach, statusMeta?.done]);
+
+  useEffect(() => {
+    if (!loading && !statusMeta?.done) {
+      setShowFinalApproach(true);
+    }
+  }, [loading, statusMeta?.done]);
 
   const renderer = useCallback(
     ({
       hours,
       formatted,
+      completed,
     }: {
       hours: number;
       minutes: number;
@@ -31,24 +61,28 @@ function EtaToUranus({ className }: IProps) {
       milliseconds: number;
       completed: boolean;
     }) => {
+      if (timeUnknown) {
+        return '???';
+      }
+      if (completed) {
+        return '-';
+      }
       let formattedTime = `${formatted.minutes}:${formatted.seconds}`;
       if (hours) {
         formattedTime = `${formatted.hours}:${formattedTime}`;
       }
       return formattedTime;
     },
-    []
+    [timeUnknown]
   );
 
+  console.log();
+
   return (
-    <Container className={className}>
+    <Container className={cn(className, { hidden })}>
       <div>ETA to Uranus</div>
       <Typography.Title level={4} className="time">
-        {loading || !race || statusMeta?.waiting ? (
-          '-'
-        ) : (
-          <Countdown key={timeLeft} date={timestamp || Date.now()} daysInHours renderer={renderer} />
-        )}
+        <Countdown key={timeLeft} date={timestamp || Date.now()} daysInHours renderer={renderer} />
       </Typography.Title>
     </Container>
   );
@@ -60,6 +94,10 @@ const Container = styled.div`
   align-items: center;
   justify-content: center;
   min-width: 130px;
+
+  .hidden {
+    visibility: hidden;
+  }
 
   .time.time {
     color: ${orange};

@@ -5,7 +5,7 @@ import { useSelectedRace } from '../../hooks';
 import EnterRaceModalContent from './EnterRaceModalContent';
 
 function EnterRace() {
-  const { race } = useSelectedRace();
+  const { race, refresh } = useSelectedRace();
   const [showModal, setShowModal] = useState(false);
   const disabled = !race || race.rockets.length === race.configSnapshot.maxRockets;
 
@@ -23,7 +23,7 @@ function EnterRace() {
         Enter Race
       </Button>
       <Modal centered open={showModal} width={650} destroyOnClose onCancel={handleCloseModal} footer={null}>
-        <EnterRaceModalContent onClose={handleCloseModal} />
+        <EnterRaceModalContent onClose={handleCloseModal} refresh={refresh} />
       </Modal>
     </>
   );

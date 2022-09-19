@@ -13,9 +13,10 @@ import MagicAmount from '../MagicAmount';
 interface IProps {
   race: Race2Uranus.RaceStructOutput;
   onClose: () => void;
+  refresh: () => Promise<void>;
 }
 
-function BoostRocketModalContent({ race, onClose }: IProps) {
+function BoostRocketModalContent({ race, onClose, refresh }: IProps) {
   const { contract } = useRaceContract();
   const [loading, setLoading] = useState(false);
 
@@ -25,6 +26,7 @@ function BoostRocketModalContent({ race, onClose }: IProps) {
     try {
       const res = await contract!.functions.finishRace(race!.id);
       await res.wait(1);
+      await refresh();
 
       notification.success({
         message: (
@@ -47,7 +49,7 @@ function BoostRocketModalContent({ race, onClose }: IProps) {
     } finally {
       setLoading(false);
     }
-  }, [contract, onClose, race]);
+  }, [contract, onClose, race, refresh]);
 
   return (
     <Container>

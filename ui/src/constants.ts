@@ -21,6 +21,7 @@ export const ethereum = (window as any).ethereum as MetaMaskInpageProvider;
 export const ETH_ADDRESS = 'eth';
 
 export const GAME_LOOP_INTERVAL_SECONDS = 7;
+export const FINAL_APPROACH_SECONDS = GAME_LOOP_INTERVAL_SECONDS * 3;
 
 export const supportedNfts: ISupportedNft[] = (() => {
   return [
