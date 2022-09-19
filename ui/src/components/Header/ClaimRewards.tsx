@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, Typography, notification } from 'antd';
 import styled from 'styled-components';
 import { BigNumber, BigNumberish } from 'ethers';
@@ -6,6 +6,7 @@ import { useEthers } from '@usedapp/core';
 
 import { useRaceContract, useSelectedRace } from '../../hooks';
 import MagicAmount from '../MagicAmount';
+import { GAME_LOOP_INTERVAL_SECONDS, SECOND_MILLIS } from '../../constants';
 
 interface IProps {
   className?: string;
@@ -20,6 +21,7 @@ function ClaimRewards({ className }: IProps) {
   const [rewards, setRewards] = useState<BigNumberish>(0);
   const [initialRefresh, setInitialRefresh] = useState(false);
   const [loading, setLoading] = useState(false);
+  const raceDone = useRef(true);
 
   const refreshRewards = useCallback(async () => {
     if (contract && account) {
@@ -42,9 +44,14 @@ function ClaimRewards({ className }: IProps) {
   }, [contract, refreshRewards]);
 
   useEffect(() => {
-    if (statusMeta?.done) {
+    if (!raceDone.current && statusMeta?.done) {
+      setTimeout(() => {
+        refreshRewards();
+      }, 3 * GAME_LOOP_INTERVAL_SECONDS * SECOND_MILLIS);
+    } else if (statusMeta?.done) {
       refreshRewards();
     }
+    raceDone.current = !!statusMeta?.done;
   }, [refreshRewards, statusMeta?.done]);
 
   const handleClaimRewards = useCallback(async () => {
