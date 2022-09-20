@@ -20,7 +20,7 @@ function EnterRace() {
   return (
     <>
       <Button type="primary" size="large" disabled={disabled} ghost onClick={handleShowModal}>
-        Enter Race
+        🚀 Enter Race
       </Button>
       <Modal centered open={showModal} width={650} destroyOnClose onCancel={handleCloseModal} footer={null}>
         <EnterRaceModalContent onClose={handleCloseModal} refresh={refresh} />

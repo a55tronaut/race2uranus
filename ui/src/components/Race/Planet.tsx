@@ -36,12 +36,12 @@ function Planet({ id, src, startY, endY, x, size, rotation }: IProps) {
     });
   }, [endY, rotation, size, startY, x]);
 
-  return <Container key={id} src={src} style={style} />;
+  return <Container key={id} id={id} src={src} style={style} />;
 }
 
 const Container = styled.img`
   position: absolute;
-  transition: all ${GAME_LOOP_INTERVAL_SECONDS * 3}s linear;
+  transition: all ${5 * GAME_LOOP_INTERVAL_SECONDS}s linear;
   visibility: hidden;
 `;
 

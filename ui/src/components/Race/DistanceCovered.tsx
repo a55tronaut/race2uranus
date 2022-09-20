@@ -67,14 +67,14 @@ const Container = styled.div``;
 
 const Distance = styled.div`
   position: absolute;
-  top: -50%;
+  top: -30%;
   left: 50%;
   transform: translate(-50%, -50%) scale(1.4);
   opacity: 0.25;
   transition: top ${GAME_LOOP_INTERVAL_SECONDS}s linear;
 
   &.animate {
-    top: 150%;
+    top: 130%;
   }
 
   .text {

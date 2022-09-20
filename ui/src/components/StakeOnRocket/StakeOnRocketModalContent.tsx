@@ -13,17 +13,18 @@ import ModalFooter from '../ModalFooter';
 import NftName from '../NftName';
 
 interface IProps {
+  rocket?: Race2Uranus.RocketStructOutput;
   onClose: () => void;
   refresh: () => Promise<void>;
 }
 
-function StakeOnRocketModalContent({ onClose, refresh }: IProps) {
+function StakeOnRocketModalContent({ rocket, onClose, refresh }: IProps) {
   const { race } = useSelectedRace();
   const { contract } = useRaceContract();
   const { ensureApproval } = useEnsureMagicApproval();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const [selectedRocket, setSelectedRocket] = useState<Race2Uranus.RocketStructOutput>();
+  const [selectedRocket, setSelectedRocket] = useState<Race2Uranus.RocketStructOutput>(rocket!);
   const [stakeAmount, setStakeAmount] = useState<number>();
 
   const minStake = useMemo(() => {
@@ -112,6 +113,7 @@ function StakeOnRocketModalContent({ onClose, refresh }: IProps) {
             label={rocketPickerLabel}
             validateFirst
             rules={[{ required: true, message: 'Rocket is required' }]}
+            initialValue={rocket}
           >
             <RocketPicker rockets={race!.rockets || []} onChange={setSelectedRocket} />
           </Form.Item>

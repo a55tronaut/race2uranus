@@ -1,11 +1,10 @@
-import { Header, Layout, Lore, NftLeaderboard } from '../components';
+import { Header, Layout, Lore } from '../components';
 
 function LorePage() {
   return (
     <Layout>
       <Header />
       <Lore />
-      <NftLeaderboard />
     </Layout>
   );
 }

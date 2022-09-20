@@ -8,11 +8,12 @@ import { GAME_LOOP_INTERVAL_SECONDS, SECOND_MILLIS } from '../../constants';
 import Rocket from '../Rocket';
 import BoostRocket from '../BoostRocket';
 import Track from './Track';
+import StakeOnRocket from '../StakeOnRocket';
 
 interface IProps {
   rockets: Race2Uranus.RocketStructOutput[];
   maxRockets: number;
-  canBoost: boolean;
+  canTx: boolean;
   move: boolean;
   winner?: number;
   refresh: () => Promise<void>;
@@ -30,7 +31,7 @@ const MAX_ROCKET_OFFSET = 60;
 
 const emptyRocket: Partial<Race2Uranus.RocketStructOutput> = {};
 
-function Rockets({ rockets, maxRockets, canBoost, move, winner, refresh }: IProps) {
+function Rockets({ rockets, maxRockets, canTx, move, winner, refresh }: IProps) {
   const [gameRockets, setGameRockets] = useState<GameRocket[]>([]);
 
   const updateRocketPositions = useCallback(
@@ -85,7 +86,12 @@ function Rockets({ rockets, maxRockets, canBoost, move, winner, refresh }: IProp
           <RocketWrapper style={rocket.style}>
             <Rocket className="rocket" address={rocket.nft} nftId={rocket.nftId} boostCount={rocket.totalBoosts} />
           </RocketWrapper>
-          {rocket.rocketeer && canBoost && <BoostRocket className="boostBtn" rocket={rocket} refresh={refresh} />}
+          {rocket.rocketeer && canTx && (
+            <Buttons>
+              <StakeOnRocket className="stakeBtn" emojiOnly rocket={rocket} />
+              <BoostRocket className="boostBtn" rocket={rocket} refresh={refresh} />
+            </Buttons>
+          )}
         </RocketWithTrack>
       ))}
     </Container>
@@ -113,11 +119,17 @@ const RocketWithTrack = styled.div`
     bottom: 0;
     left: -20px;
   }
+`;
 
-  .boostBtn {
-    position: absolute;
-    bottom: 16px;
-    left: -13px;
+const Buttons = styled.div`
+  position: absolute;
+  bottom: 16px;
+  left: -19px;
+  display: flex;
+  flex-direction: row;
+
+  .stakeBtn {
+    margin-right: 10px;
   }
 `;
 

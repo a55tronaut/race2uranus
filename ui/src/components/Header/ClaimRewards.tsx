@@ -75,8 +75,8 @@ function ClaimRewards({ className }: IProps) {
             <br />
             <MagicAmount amount={rewards} />
           </div>
-          <Button className="claimBtn" type="ghost" size="large" loading={loading} onClick={handleClaimRewards}>
-            Claim
+          <Button className="claimBtn" type="ghost" size="small" loading={loading} onClick={handleClaimRewards}>
+            💰 Claim
           </Button>
         </>
       )}
@@ -98,6 +98,11 @@ const Container = styled.div`
     flex: 0;
     white-space: nowrap;
     margin-right: 8px;
+  }
+
+  .claimBtn {
+    position: absolute;
+    bottom: 10px;
   }
 `;
 

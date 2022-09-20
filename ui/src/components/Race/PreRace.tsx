@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { CSSTransition } from 'react-transition-group';
 
 import MagicAmount from '../MagicAmount';
+import EnterRace from '../EnterRace';
 
 const { Title, Paragraph } = Typography;
 
@@ -23,11 +24,11 @@ function PreRace({ show, rewardPool }: IProps) {
           <Paragraph className="paragraph">
             You are about to enter the <strong>Race to Uranus</strong>.
             <br />
-            Click the <strong>Enter Race</strong> button to join the race and earn a <strong>guaranteed</strong> share
-            of the reward pool!
+            Click the <strong>🚀 Enter Race</strong> button to join the race and earn a <strong>guaranteed</strong>{' '}
+            share of the reward pool!
             <br />
-            You can also <strong>Stake</strong> on any rocket or <strong>Boost</strong> its propulsion system with your{' '}
-            <strong>$MAGIC</strong>!
+            You can also <strong>✨ Stake</strong> on any rocket or <strong>🔥 Boost</strong> its propulsion system with
+            your <strong>$MAGIC</strong>!
           </Paragraph>
           <div className="poolBg">
             <Title level={5} className="poolHeader">
@@ -35,6 +36,9 @@ function PreRace({ show, rewardPool }: IProps) {
             </Title>
             <MagicAmount amount={rewardPool} />
           </div>
+          <br />
+          <br />
+          <EnterRace />
         </Content>
       </CSSTransition>
     </Container>

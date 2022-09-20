@@ -38,7 +38,7 @@ function RocketPicker({ rockets, value, onChange }: IProps) {
 
   return (
     <Container>
-      <Radio.Group onChange={handleRocketChange}>
+      <Radio.Group value={selectedRocket?.id} onChange={handleRocketChange}>
         {rockets.map((rocket) => (
           <RadioWrapper key={rocket.id}>
             <Radio value={rocket.id}>

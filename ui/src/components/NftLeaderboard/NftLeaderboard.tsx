@@ -92,7 +92,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 48px 32px 96px 32px;
+  padding: 160px 32px 96px 32px;
 
   .title {
     text-align: center;

@@ -1,11 +1,10 @@
-import { About, Header, Layout, NftLeaderboard } from '../components';
+import { About, Header, Layout } from '../components';
 
 function AboutPage() {
   return (
     <Layout>
       <Header />
       <About />
-      <NftLeaderboard />
     </Layout>
   );
 }

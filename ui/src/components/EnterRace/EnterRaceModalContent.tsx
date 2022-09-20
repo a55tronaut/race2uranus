@@ -262,6 +262,8 @@ function EnterRaceModalContent({ refresh }: IProps) {
                 <br />
                 You can only use NFTs from these collections:{' '}
                 <WhitelistedNfts whitelist={race!.configSnapshot.whitelistedNfts!} />
+                <br />
+                Or you can always <strong>✨ Stake</strong> on a rocket with your <strong>$MAGIC</strong>!
               </>
             }
           />
@@ -273,6 +275,8 @@ function EnterRaceModalContent({ refresh }: IProps) {
               <>
                 You've already used all of your eligible NFTs to enter this race, but you can get more from the approved
                 collections: <WhitelistedNfts whitelist={race!.configSnapshot.whitelistedNfts!} />
+                <br />
+                Or you can always <strong>✨ Stake</strong> on a rocket with your <strong>$MAGIC</strong>!
               </>
             }
           />

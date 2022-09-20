@@ -30,7 +30,7 @@ function Race() {
           refresh={refresh}
           rockets={race?.rockets || []}
           maxRockets={race?.configSnapshot.maxRockets || 0}
-          canBoost={!statusMeta?.revealBlockReached}
+          canTx={!statusMeta?.revealBlockReached}
           move={!statusMeta?.waiting}
           winner={statusMeta?.done ? race?.winner : undefined}
         />

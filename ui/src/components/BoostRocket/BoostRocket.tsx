@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { Button, Modal } from 'antd';
+import { Button, Modal, Tooltip } from 'antd';
 import styled from 'styled-components';
 
 import { Race2Uranus } from '../../types';
@@ -24,9 +24,11 @@ function BoostRocket({ rocket, className, refresh }: IProps) {
 
   return (
     <Container className={className}>
-      <Button type="primary" size="large" disabled={!rocket} ghost onClick={handleShowModal}>
-        Boost
-      </Button>
+      <Tooltip title="Boost!" placement="top">
+        <Button type="primary" size="large" disabled={!rocket} ghost onClick={handleShowModal}>
+          🔥
+        </Button>
+      </Tooltip>
       <Modal centered open={showModal} width={650} destroyOnClose onCancel={handleCloseModal} footer={null}>
         <BoostRocketModalContent rocket={rocket} refresh={refresh} onClose={handleCloseModal} />
       </Modal>

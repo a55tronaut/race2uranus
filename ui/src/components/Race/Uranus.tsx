@@ -19,7 +19,7 @@ const Img = styled.img`
   left: 50%;
   top: -400vw;
   transform: translate(-50%, 0);
-  opacity: 1;
+  opacity: 0;
   z-index: 1;
   transition: top ${FINAL_APPROACH_SECONDS}s linear;
 

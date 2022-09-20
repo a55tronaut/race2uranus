@@ -12,19 +12,21 @@ function Header() {
   return (
     <Wrapper>
       <Container>
-        <Content>
-          <div className="space">
-            <StakeOnRocket />
-            <EtaToUranus className="eta" />
-            <RewardPool />
-          </div>
-          <Logo />
-          <div className="space right">
-            <ClaimRewards className="claim" />
-            <EnterRace />
-            <BurMenu />
-          </div>
-        </Content>
+        <Backdrop>
+          <Content>
+            <div className="space">
+              <StakeOnRocket />
+              <EtaToUranus className="eta" />
+              <ClaimRewards />
+            </div>
+            <Logo />
+            <div className="space right">
+              <RewardPool />
+              <EnterRace />
+              <BurMenu />
+            </div>
+          </Content>
+        </Backdrop>
       </Container>
     </Wrapper>
   );
@@ -35,7 +37,6 @@ const Wrapper = styled.div`
   width: 100vw;
   min-width: 1280px;
   z-index: 10;
-  backdrop-filter: blur(6px);
 `;
 
 const Container = styled.div`
@@ -54,13 +55,20 @@ const Container = styled.div`
     }
 
     .eta {
-      margin-left: 70px;
+      margin-left: 60px;
+      margin-right: 20px;
     }
 
     .claim {
       margin-right: 70px;
     }
   }
+`;
+
+const Backdrop = styled.div`
+  width: 100%;
+  height: 120px;
+  backdrop-filter: blur(10px);
 `;
 
 const Content = styled.div`

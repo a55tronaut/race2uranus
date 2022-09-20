@@ -14,6 +14,10 @@ const menu = (
         key: '2',
         label: <Link to="/lore">LORE</Link>,
       },
+      {
+        key: '3',
+        label: <Link to="/leaderboard">LEADERBOARD</Link>,
+      },
     ]}
   />
 );
