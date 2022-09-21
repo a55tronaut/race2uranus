@@ -109,7 +109,7 @@ export async function waitUntil(timestamp: number): Promise<void> {
 
 export function mapNftAddress(address: string): string {
   const normalizedAddress = address.toLowerCase();
-  const mappedAddress = NFT_MAPPINGS[normalizedAddress];
+  const mappedAddress = NFT_MAPPINGS[normalizedAddress] || address;
 
   return mappedAddress;
 }

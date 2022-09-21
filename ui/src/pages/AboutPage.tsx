@@ -1,11 +1,11 @@
-import { About, Header, Layout } from '../components';
+import { About } from '../components';
+import BasePage from './BasePage';
 
 function AboutPage() {
   return (
-    <Layout>
-      <Header />
+    <BasePage>
       <About />
-    </Layout>
+    </BasePage>
   );
 }
 

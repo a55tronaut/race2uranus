@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Typography } from 'antd';
 import styled from 'styled-components';
 
-import { Header, Layout } from '../components';
 import { useRaceContract } from '../hooks';
+import BasePage from './BasePage';
 
 function LandingPage() {
   const navigate = useNavigate();
@@ -27,8 +27,7 @@ function LandingPage() {
   }, [contract, navigate]);
 
   return (
-    <Layout>
-      <Header />
+    <BasePage>
       {noActiveRaces && (
         <NoRaces>
           <Typography.Title level={3}>
@@ -38,7 +37,7 @@ function LandingPage() {
           </Typography.Title>
         </NoRaces>
       )}
-    </Layout>
+    </BasePage>
   );
 }
 

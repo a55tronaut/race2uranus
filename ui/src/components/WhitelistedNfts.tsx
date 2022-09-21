@@ -1,15 +1,19 @@
 import { useMemo } from 'react';
 import styled from 'styled-components';
+import { supportedNfts } from '../constants';
 
-import { getNftConfig } from '../utils';
+import { mapNftAddress } from '../utils';
 
 interface IProps {
-  whitelist: string[];
+  whitelist?: string[];
 }
+
+const allAddresses = supportedNfts.map((item) => item.address);
 
 function WhitelistedNfts({ whitelist }: IProps) {
   const nfts = useMemo(() => {
-    return (whitelist || []).map(getNftConfig);
+    const mappedWhitelist = (whitelist || allAddresses).map(mapNftAddress).map((address) => address.toLowerCase());
+    return supportedNfts.filter((nft) => mappedWhitelist.includes(nft.address.toLowerCase()));
   }, [whitelist]);
 
   return (

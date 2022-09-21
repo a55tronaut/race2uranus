@@ -29,6 +29,12 @@ function PreRace({ show, rewardPool }: IProps) {
             <br />
             You can also <strong>✨ Stake</strong> on any rocket or <strong>🔥 Boost</strong> its propulsion system with
             your <strong>$MAGIC</strong>!
+            <br />
+            And be sure to join our community on{' '}
+            <a href="https://discord.gg/TdkFpqnAch" rel="noreferrer" target="_blank">
+              <img className="discord" src="/assets/discord.svg" alt="Discord" /> Discord
+            </a>
+            !
           </Paragraph>
           <div className="poolBg">
             <Title level={5} className="poolHeader">
@@ -87,6 +93,10 @@ const Content = styled.div`
   .paragraph {
     text-align: center;
     line-height: 200%;
+  }
+
+  .discord {
+    height: 20px;
   }
 
   .poolBg {

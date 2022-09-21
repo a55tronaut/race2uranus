@@ -1,11 +1,11 @@
-import { Header, Layout, NftLeaderboard } from '../components';
+import { NftLeaderboard } from '../components';
+import BasePage from './BasePage';
 
 function LeaderboardPage() {
   return (
-    <Layout>
-      <Header />
+    <BasePage>
       <NftLeaderboard />
-    </Layout>
+    </BasePage>
   );
 }
 

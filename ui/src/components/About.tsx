@@ -1,5 +1,7 @@
 import styled from 'styled-components';
-import { Typography } from 'antd';
+import { Tooltip, Typography } from 'antd';
+
+import WhitelistedNfts from './WhitelistedNfts';
 
 const { Title, Paragraph } = Typography;
 
@@ -10,21 +12,55 @@ function About() {
         About
       </Title>
       <Paragraph>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque lobortis nulla sed est vulputate varius vel in
-        odio. Nunc ut erat sit amet magna facilisis dictum at ut arcu. Duis elementum finibus rutrum. Mauris sit amet
-        aliquam elit. Duis varius lacus nulla, eu auctor massa sodales quis. Duis tristique nunc metus, at molestie
-        magna pharetra et. Vestibulum gravida purus sed odio ullamcorper laoreet. Morbi eu condimentum lacus. Morbi
-        feugiat ut arcu a viverra. Nam tincidunt pretium diam, sed egestas elit imperdiet vel. Proin mollis nibh in diam
-        lacinia, in dignissim arcu hendrerit. Sed ornare blandit nisl sed faucibus. Mauris molestie, diam vitae eleifend
-        facilisis, nibh metus lacinia leo, a mollis eros nibh at nisi. Etiam ut porttitor ante.
+        <strong>Race 2 Uranus</strong> is an on-chain racing game set in the{' '}
+        <strong>
+          <a href="https://treasure.lol/" rel="noreferrer" target="_blank">
+            Treasure
+          </a>
+        </strong>{' '}
+        metaverse that lets you turn your favorite <strong>Treasure NFTs</strong> into <i>Asstronauts</i> and
+        participate in the glorious <strong>Race 2 Uranus</strong>!
       </Paragraph>
       <Paragraph>
-        Suspendisse sit amet orci sed tellus consequat pretium. Integer a leo justo. Proin mauris ipsum, vulputate vitae
-        ornare quis, sodales placerat ante. Fusce iaculis ex ac odio ullamcorper tempus. Suspendisse porta neque dolor,
-        sit amet feugiat quam tristique sed. Proin eu odio et elit sodales tempus quis nec neque. Vivamus porta sem
-        mauris, et tincidunt justo hendrerit in. Nulla in dictum enim. Pellentesque non tortor maximus, ornare leo ac,
-        fermentum mauris. Cras fringilla ut dui at pretium. Mauris ut ornare diam. Cras diam neque, posuere nec nibh ut,
-        ornare pharetra nisi. In auctor venenatis mollis. Nulla non mollis leo. Nam blandit non purus et auctor.
+        We created the game with interoperability in mind, combined with the CC0 nature of <strong>Treasure</strong>{' '}
+        collections, it is possible to have them interact with each other and battle for glory! We have also released
+        our tooling <strong>open-source</strong> for all <i>buildooors</i> in the <strong>Treasure</strong> ecosystem,
+        check it out{' '}
+        <a href="https://github.com/a55tronaut/race2uranus" rel="noreferrer" target="_blank">
+          here
+        </a>
+        !
+      </Paragraph>
+      <Paragraph>
+        There are <strong>two</strong> ways to win: Verify your{' '}
+        <Tooltip
+          title={
+            <div>
+              Depending on the race, it will be some subset of the following:
+              <WhitelistedNfts />
+            </div>
+          }
+        >
+          <strong>supported NFT</strong>
+        </Tooltip>{' '}
+        and stake <strong>$MAGIC</strong> to become an <i>Asstronaut</i>, or simply stake <strong>$MAGIC</strong> on an{' '}
+        <i>Asstronaut</i> to become a believer!
+      </Paragraph>
+      <Paragraph>
+        To join a race, simply press <strong>🚀 Enter Race</strong>. Once the empty rockets are filled up, the countdown
+        to launch will begin! During this time, believers can stake <strong>$MAGIC</strong> on any of the{' '}
+        <i>Asstronauts</i> at any time by clicking <strong>✨ Stake</strong>. You can also boost a rocket by clicking{' '}
+        <strong>🔥 Boost</strong>! Be aware though, <strong>$MAGIC</strong> being used as rocket propulsion is still in
+        its early stages and might end up backfiring!
+      </Paragraph>
+      <Paragraph>
+        After the race, <strong>all</strong> <i>Asstronauts</i> get a <strong>guaranteed</strong> share of the pool,
+        while the winning <i>Asstronaut</i> and its believers will split the rest of the pool based on the amount of{' '}
+        <strong>$MAGIC</strong> that they have staked.
+      </Paragraph>
+      <Paragraph>
+        Compete with other <i>Asstronauts</i> to become the first to step foot on <strong>Uranus</strong>! Show your
+        favorite cartridge some love by repping your favorite <strong>$MAGIC</strong> <i>Asstronaut</i> now!
       </Paragraph>
     </Container>
   );
@@ -38,6 +74,10 @@ const Container = styled.div`
   flex-direction: column;
 
   .ant-typography.title {
+    text-align: center;
+  }
+
+  .ant-typography {
     text-align: center;
   }
 `;

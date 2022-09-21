@@ -18,6 +18,14 @@ const menu = (
         key: '3',
         label: <Link to="/leaderboard">LEADERBOARD</Link>,
       },
+      {
+        key: '4',
+        label: (
+          <a href="https://discord.gg/TdkFpqnAch" rel="noreferrer" target="_blank">
+            COMMUNITY <img className="discord" src="/assets/discord.svg" alt="Discord" style={{ height: '20px' }} />
+          </a>
+        ),
+      },
     ]}
   />
 );

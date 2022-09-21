@@ -166,8 +166,8 @@ function EnterRaceModalContent({ refresh }: IProps) {
         className="infoTooltip"
         message={
           <>
-            The $MAGIC you stake will be added to the race reward pool. The more you stake the bigger share of the pool
-            you will get if your rocket wins!
+            The <strong>$MAGIC</strong> you stake will be added to the race reward pool. The more you stake the bigger
+            share of the pool you will get if your rocket wins!
             <br />
             <strong>{race!.configSnapshot.rocketsSharePercent}%</strong> of the reward pool will be split between all
             rockets as a guaranteed reward on top of staking rewards!

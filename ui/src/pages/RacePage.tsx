@@ -1,11 +1,11 @@
-import { Header, Layout, Race } from '../components';
+import { Race } from '../components';
+import BasePage from './BasePage';
 
 function RacePage() {
   return (
-    <Layout>
-      <Header />
+    <BasePage>
       <Race />
-    </Layout>
+    </BasePage>
   );
 }
 

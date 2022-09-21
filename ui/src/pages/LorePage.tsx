@@ -1,11 +1,11 @@
-import { Header, Layout, Lore } from '../components';
+import { Lore } from '../components';
+import BasePage from './BasePage';
 
 function LorePage() {
   return (
-    <Layout>
-      <Header />
+    <BasePage>
       <Lore />
-    </Layout>
+    </BasePage>
   );
 }
 
