@@ -9,6 +9,7 @@ import Rocket from '../Rocket';
 import BoostRocket from '../BoostRocket';
 import Track from './Track';
 import StakeOnRocket from '../StakeOnRocket';
+import { runAfterRender } from '../../utils';
 
 interface IProps {
   rockets: Race2Uranus.RocketStructOutput[];
@@ -67,6 +68,7 @@ function Rockets({ rockets, maxRockets, canTx, move, winner, refresh }: IProps) 
 
   useEffect(() => {
     updateRocketPositions(move);
+    runAfterRender(() => updateRocketPositions(move));
 
     if (move) {
       const intervalId = setInterval(

@@ -12,6 +12,8 @@ interface IProps {
   className?: string;
 }
 
+const finalApproachMillis = FINAL_APPROACH_SECONDS * SECOND_MILLIS * 0.8;
+
 function EtaToUranus({ className }: IProps) {
   const { loading: raceLoading, race, statusMeta } = useSelectedRace();
   const {
@@ -25,18 +27,24 @@ function EtaToUranus({ className }: IProps) {
   const timeUnknown = statusMeta?.revealBlockReached && !statusMeta?.done;
 
   const timeLeft = useMemo(() => {
-    if (showFinalApproach && statusMeta?.done) {
-      return FINAL_APPROACH_SECONDS * SECOND_MILLIS;
+    if (statusMeta?.waiting) {
+      return 0;
     }
-    return timeToBlock + FINAL_APPROACH_SECONDS * SECOND_MILLIS;
-  }, [showFinalApproach, statusMeta?.done, timeToBlock]);
+    if (showFinalApproach && statusMeta?.done) {
+      return finalApproachMillis;
+    }
+    return timeToBlock + finalApproachMillis;
+  }, [showFinalApproach, statusMeta?.done, statusMeta?.waiting, timeToBlock]);
 
   const timestamp = useMemo(() => {
-    if (showFinalApproach && statusMeta?.done) {
-      return Date.now() + FINAL_APPROACH_SECONDS * SECOND_MILLIS;
+    if (statusMeta?.waiting) {
+      return 0;
     }
-    return blockTimestamp + FINAL_APPROACH_SECONDS * SECOND_MILLIS;
-  }, [blockTimestamp, showFinalApproach, statusMeta?.done]);
+    if (showFinalApproach && statusMeta?.done) {
+      return Date.now() + finalApproachMillis;
+    }
+    return blockTimestamp + finalApproachMillis;
+  }, [blockTimestamp, showFinalApproach, statusMeta?.done, statusMeta?.waiting]);
 
   useEffect(() => {
     if (!loading && !statusMeta?.done) {
@@ -75,8 +83,6 @@ function EtaToUranus({ className }: IProps) {
     },
     [timeUnknown]
   );
-
-  console.log();
 
   return (
     <Container className={cn(className, { hidden })}>
