@@ -36,6 +36,6 @@ function RewardPool({ className }: IProps) {
 
 const Container = styled.div`
   text-align: center;
-  min-width: 160px;
+  min-width: 200px;
 `;
 export default RewardPool;

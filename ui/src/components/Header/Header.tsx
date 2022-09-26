@@ -15,13 +15,13 @@ function Header() {
 
   return (
     <Wrapper>
+      <ClaimRewards />
       <Container>
         <Backdrop>
           <Content>
             <div className="space">
               {hasRace && <Countdowns className="countdowns" />}
               {hasRace && <RewardPool className="rewardPool" />}
-              <ClaimRewards />
             </div>
             <Logo />
             <div className="space right">
@@ -59,7 +59,7 @@ const Container = styled.div`
     }
 
     .countdowns {
-      margin-right: 30px;
+      margin-right: 72px;
     }
 
     .enterRace {

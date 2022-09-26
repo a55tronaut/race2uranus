@@ -10,24 +10,18 @@ interface IProps {
 function FinishLine({ move }: IProps) {
   const classNames = cn({ move });
 
-  return <Container className={classNames} />;
+  return <Container src="/assets/finish.svg" className={classNames} />;
 }
 
-const Container = styled.div`
+const Container = styled.img`
   position: absolute;
-  width: 120vw;
-  height: 50px;
+  width: 1280px;
   left: 50%;
   top: -400vh;
-  transform: translate(-50%, 0) skew(-15deg);
-  opacity: 0.2;
+  transform: translate(-50%, 0);
+  opacity: 0.8;
   z-index: 2;
   transition: top ${FINAL_APPROACH_SECONDS}s linear;
-  background-image: url(/assets/checkered-flag.svg);
-  background-position: center;
-  background-size: contain;
-  background-repeat: repeat-x;
-  background-attachment: fixed;
 
   &.move {
     top: 100vh;

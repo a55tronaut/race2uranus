@@ -4,13 +4,23 @@ import random from 'lodash/random';
 import { GAME_LOOP_INTERVAL_SECONDS, SECOND_MILLIS } from '../../constants';
 import Planet, { IProps as IPlanet } from './Planet';
 
-const planetPaths = [`/assets/planet1.svg`, `/assets/planet2.svg`, `/assets/planet3.svg`];
+const planetPaths = [
+  `/assets/planet1.svg`,
+  `/assets/planet2.svg`,
+  `/assets/planet3.svg`,
+  `/assets/planet4.svg`,
+  `/assets/planet5.svg`,
+  `/assets/planet6.svg`,
+  `/assets/planet7.svg`,
+];
 
 const MIN_SIZE = 25;
 const MAX_SIZE = 250;
+const SIZE_DIFF = MAX_SIZE - MIN_SIZE;
 
-const MIN_OFFSET = -50;
-const MAX_OFFSET = -300;
+const MIN_DISTANCE = 300;
+const MAX_DISTANCE = 800;
+const SCREEN_DISTANCE = 150;
 
 function Planets() {
   const planets = useRef<IPlanet[]>([]);
@@ -20,24 +30,30 @@ function Planets() {
     const newPlanets: IPlanet[] = [];
 
     if (!document.hidden) {
-      for (const src of planetPaths) {
-        const numOfPlanets = random(0, 1);
+      const numPlanets = random(0, 2);
+      let availablePlanets = planetPaths;
+      const numSizes = numPlanets + random(2, 7);
+      const sizeIncrement = SIZE_DIFF / numSizes;
+      let availableSizes = new Array(numSizes).fill(null).map((_, i) => MIN_SIZE + sizeIncrement * i);
+      for (let i = 0; i < numPlanets; i++) {
+        const [src, remainingPlanets] = extractRandomArrayItem(availablePlanets);
+        availablePlanets = remainingPlanets;
+        const [size, remainingSizes] = extractRandomArrayItem(availableSizes);
+        availableSizes = remainingSizes;
+        const totalDistance = calcDistanceToCover(size);
+        const availableDistance = (totalDistance - SCREEN_DISTANCE) / 2;
+        const startY = random(-availableDistance, -25);
+        const endY = startY + totalDistance;
 
-        for (let i = 0; i < numOfPlanets; i++) {
-          const size = random(25, 250);
-          const startY = calcStartPosition(size);
-          const endY = -startY + 100;
-
-          newPlanets.push({
-            id: `${Date.now()}.${src}.${i}`,
-            src,
-            startY,
-            endY,
-            x: random(-5, 100),
-            size,
-            rotation: random(-359, 359),
-          });
-        }
+        newPlanets.push({
+          id: `${Date.now()}.${src}.${i}`,
+          src,
+          startY,
+          endY,
+          x: random(-5, 100),
+          size,
+          rotation: random(-359, 359),
+        });
       }
     }
 
@@ -84,13 +100,21 @@ function Planets() {
   );
 }
 
-function calcStartPosition(size: number): number {
+function calcDistanceToCover(size: number): number {
   const minSizeDiff = 0 - MIN_SIZE;
   const normalizedMaxSize = MAX_SIZE - minSizeDiff;
   const proportionalSize = (size - minSizeDiff) / normalizedMaxSize;
-  const offsetDiff = MAX_OFFSET - MIN_OFFSET;
+  const distanceDiff = MAX_DISTANCE - MIN_DISTANCE;
 
-  return MIN_OFFSET + proportionalSize * offsetDiff;
+  return MIN_DISTANCE + proportionalSize * distanceDiff;
+}
+
+function extractRandomArrayItem<T>(arr: T[]): [T, T[]] {
+  const index = random(0, arr.length - 1);
+  const item = arr[index];
+  const remainder = arr.filter((_, i) => i !== index);
+
+  return [item, remainder];
 }
 
 export default Planets;

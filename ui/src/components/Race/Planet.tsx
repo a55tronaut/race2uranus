@@ -41,7 +41,7 @@ function Planet({ id, src, startY, endY, x, size, rotation }: IProps) {
 
 const Container = styled.img`
   position: absolute;
-  transition: all ${5 * GAME_LOOP_INTERVAL_SECONDS}s linear;
+  transition: all ${7 * GAME_LOOP_INTERVAL_SECONDS}s linear;
   visibility: hidden;
 `;
 

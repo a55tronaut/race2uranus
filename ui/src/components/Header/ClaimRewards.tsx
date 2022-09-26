@@ -1,10 +1,12 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Button, Typography, notification } from 'antd';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Button, notification } from 'antd';
 import styled from 'styled-components';
 import { BigNumber, BigNumberish } from 'ethers';
 import { useEthers } from '@usedapp/core';
+import debounce from 'lodash/debounce';
+import cn from 'classnames';
 
-import { useRaceContract, useSelectedRace } from '../../hooks';
+import { useRaceContract, useRaceMetaWitness, useSelectedRace } from '../../hooks';
 import { FINAL_APPROACH_SECONDS, SECOND_MILLIS } from '../../constants';
 import { extractRpcError } from '../../utils';
 import MagicAmount from '../MagicAmount';
@@ -13,30 +15,32 @@ interface IProps {
   className?: string;
 }
 
-const { Text } = Typography;
-
 function ClaimRewards({ className }: IProps) {
-  const { statusMeta } = useSelectedRace();
   const { account } = useEthers();
+  const { statusMeta } = useSelectedRace();
+  const { seenPreDone } = useRaceMetaWitness();
   const { contract } = useRaceContract();
   const [rewards, setRewards] = useState<BigNumberish>(0);
-  const [initialRefresh, setInitialRefresh] = useState(false);
   const [loading, setLoading] = useState(false);
-  const raceDone = useRef(true);
 
-  const refreshRewards = useCallback(async () => {
-    if (contract && account) {
-      setInitialRefresh(true);
-      const [amount] = await contract.functions.calcClaimableAmountAll(account);
-      setRewards(amount);
-    }
-  }, [account, contract]);
+  const visible = useMemo(() => BigNumber.from(rewards || '0').gt(0), [rewards]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const refreshRewards = useCallback(
+    debounce(async () => {
+      if (contract && account) {
+        const [amount] = await contract.functions.calcClaimableAmountAll(account);
+        setRewards(amount);
+      }
+    }, 300),
+    [account, contract]
+  );
 
   useEffect(() => {
-    if (!initialRefresh && contract && account) {
+    if (contract && account) {
       refreshRewards();
     }
-  }, [account, contract, initialRefresh, refreshRewards]);
+  }, [account, contract, refreshRewards]);
 
   useEffect(() => {
     contract?.on(contract.filters!.RaceFinished(), refreshRewards);
@@ -45,15 +49,14 @@ function ClaimRewards({ className }: IProps) {
   }, [contract, refreshRewards]);
 
   useEffect(() => {
-    if (!raceDone.current && statusMeta?.done) {
+    if (statusMeta?.done && seenPreDone) {
       setTimeout(() => {
         refreshRewards();
       }, FINAL_APPROACH_SECONDS * SECOND_MILLIS);
     } else if (statusMeta?.done) {
       refreshRewards();
     }
-    raceDone.current = !!statusMeta?.done;
-  }, [refreshRewards, statusMeta?.done]);
+  }, [refreshRewards, seenPreDone, statusMeta?.done]);
 
   const handleClaimRewards = useCallback(async () => {
     try {
@@ -72,42 +75,41 @@ function ClaimRewards({ className }: IProps) {
   }, [contract]);
 
   return (
-    <Container className={className}>
-      {BigNumber.from(rewards || '0').gt(0) && (
-        <>
-          <div className="rewards">
-            <Text>Your Rewards</Text>
-            <br />
-            <MagicAmount amount={rewards} />
-          </div>
-          <Button className="claimBtn" type="ghost" size="small" loading={loading} onClick={handleClaimRewards}>
-            💰 Claim
-          </Button>
-        </>
-      )}
+    <Container className={cn(className, { visible })}>
+      <strong>
+        You have <MagicAmount amount={rewards} /> in unclaimed rewards!
+      </strong>{' '}
+      <Button className="claimBtn" type="ghost" size="small" loading={loading} onClick={handleClaimRewards}>
+        💰 Claim
+      </Button>
     </Container>
   );
 }
 
 const Container = styled.div`
   text-align: center;
-  margin: 8px;
+  padding: 12px 24px;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  flex: 0;
-  min-width: 160px;
+  width: 100%;
+  background-image: linear-gradient(to right, rgb(91, 66, 254), rgb(89, 0, 176));
+  transition: all 0.4s ease;
+  height: 54px;
+  margin-top: -54px;
 
-  .rewards {
-    flex: 0;
-    white-space: nowrap;
-    margin-right: 8px;
+  &.visible {
+    margin-top: 0px;
   }
 
   .claimBtn {
-    position: absolute;
-    bottom: 10px;
+    margin-left: 16px;
+    height: 30px;
+
+    &:not(:hover) {
+      border: 1px solid white;
+    }
   }
 `;
 

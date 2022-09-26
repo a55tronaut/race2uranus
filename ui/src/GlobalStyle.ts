@@ -6,6 +6,8 @@ import { black, blue } from './colors';
 const GlobalStyle = createGlobalStyle`
   body,
   html {
+    min-width: 1280px;
+    min-height: 860px;
     height: 100%;
     font-family: Roboto Mono;
     font-size: 10px;

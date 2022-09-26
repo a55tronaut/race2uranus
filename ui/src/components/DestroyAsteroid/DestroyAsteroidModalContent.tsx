@@ -59,7 +59,7 @@ function BoostRocketModalContent({ race, onClose, refresh }: IProps) {
       </Typography.Title>
       <Content>
         <AsteroidContainer>
-          <img src="/assets/planet1.svg" alt="Asteroid" className="asteroid" />
+          <img src="/assets/asteroid.svg" alt="Asteroid" className="asteroid" />
           <img src="/assets/boost.svg" alt="Plume" className="plume" />
         </AsteroidContainer>
         <DetailsContainer>
@@ -104,8 +104,7 @@ const AsteroidContainer = styled.div`
 
   .asteroid {
     width: 120px;
-    filter: grayscale(0.4);
-    transform: skew(-10deg);
+    transform: skew(-10deg) rotate(45deg);
   }
   .plume {
     position: absolute;
@@ -113,8 +112,8 @@ const AsteroidContainer = styled.div`
     left: -40px;
     top: -70px;
     transform: rotate(-140deg) scaleY(0.7);
-    opacity: 0.9;
-    filter: grayscale(1);
+    opacity: 0.8;
+    filter: grayscale(0.7);
   }
 `;
 

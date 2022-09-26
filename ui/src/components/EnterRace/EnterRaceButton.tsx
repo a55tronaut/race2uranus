@@ -8,9 +8,9 @@ interface IProps {
 }
 
 function EnterRaceButton({ className }: IProps) {
-  const { race } = useSelectedRace();
+  const { race, statusMeta } = useSelectedRace();
   const { open } = useEnterRaceModal();
-  const disabled = !race || race.rockets.length === race.configSnapshot.maxRockets;
+  const disabled = !race || !statusMeta?.waiting || race.rockets.length === race.configSnapshot.maxRockets;
 
   return (
     <Button
