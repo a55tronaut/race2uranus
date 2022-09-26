@@ -7,7 +7,11 @@ import MagicAmount from '../MagicAmount';
 
 const { Text } = Typography;
 
-function RewardPool() {
+interface IProps {
+  className?: string;
+}
+
+function RewardPool({ className }: IProps) {
   const { race } = useSelectedRace();
 
   const rewardPool = useMemo(() => {
@@ -22,7 +26,7 @@ function RewardPool() {
   }, [race?.configSnapshot.maxRockets, race?.configSnapshot.minStakeAmount, race?.rewardPool]);
 
   return (
-    <Container>
+    <Container className={className}>
       <Text>Reward Pool</Text>
       <br />
       <MagicAmount amount={rewardPool} />
@@ -32,7 +36,6 @@ function RewardPool() {
 
 const Container = styled.div`
   text-align: center;
-  margin: 0 3em;
   min-width: 160px;
 `;
 export default RewardPool;

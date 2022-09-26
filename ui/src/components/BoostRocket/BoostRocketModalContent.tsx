@@ -59,22 +59,22 @@ function BoostRocketModalContent({ rocket, onClose, refresh }: IProps) {
       <Typography.Title level={4} className="title">
         Boost Rocket
       </Typography.Title>
+      <Alert
+        type="info"
+        showIcon
+        className="info"
+        message={
+          <>
+            Boosting affects the chances of the rocket winning the race. Any rocket can be boosted by anyone at any
+            point during the race.
+          </>
+        }
+      />
       <Content>
         <RocketContainer>
           <Rocket className="rocket" address={rocket.nft} nftId={rocket.nftId!} />
         </RocketContainer>
         <DetailsContainer>
-          <Alert
-            type="info"
-            showIcon
-            message={
-              <>
-                Any rocket can be boosted by anyone at any point during the race. Boosting affects the chances of the
-                rocket winning the race.
-              </>
-            }
-          />
-          <br />
           <div>
             Boost the rocket's propulsion systems with a bit of <strong>$MAGIC</strong>! The substance is inherently
             unstable so its full effects will not be known until the end of the race - it may speed up the rocket but it
@@ -103,6 +103,10 @@ const Container = styled.div`
     color: ${blue};
     text-align: center;
     margin-bottom: 24px;
+  }
+
+  .info {
+    margin: 0 24px;
   }
 `;
 

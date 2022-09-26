@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { BigNumberish, ethers } from 'ethers';
-import { Button, Typography, Select, Input, Form, notification, Alert } from 'antd';
+import { Button, Typography, Select, Input, Form, notification, Alert, Tooltip } from 'antd';
 import { CopyOutlined, TwitterOutlined } from '@ant-design/icons';
 
 import { useNftsForUser, useRaceContract, useEnsureMagicApproval, useSelectedRace, useNftMeta } from '../../hooks';
@@ -156,7 +156,7 @@ function EnterRaceModalContent() {
 
   const stakeAmountLabel = (
     <>
-      Stake $MAGIC on your rocket{' '}
+      Stake on your rocket{' '}
       <InfoTooltip
         className="infoTooltip"
         message={
@@ -165,7 +165,7 @@ function EnterRaceModalContent() {
             share of the pool you will get if your rocket wins!
             <br />
             <strong>{race!.configSnapshot.rocketsSharePercent}%</strong> of the reward pool will be split between all
-            rockets as a guaranteed reward on top of staking rewards!
+            rocket owners as a <strong>guaranteed</strong> reward on top of staking rewards!
           </>
         }
       />
@@ -177,106 +177,137 @@ function EnterRaceModalContent() {
       <Typography.Title level={4} className="title">
         {entered ? 'Welcome Aboard!' : 'Enter Race'}
       </Typography.Title>
+      {!entered && (
+        <Alert
+          type="info"
+          showIcon
+          className="info"
+          message={
+            <>
+              Enter your{' '}
+              <Tooltip
+                title={
+                  <>
+                    You can only use NFTs from these collections:{' '}
+                    <WhitelistedNfts whitelist={race!.configSnapshot.whitelistedNfts!} />
+                  </>
+                }
+              >
+                <span className="blue">eligible NFT</span>
+              </Tooltip>{' '}
+              into the race!
+              <br />
+              If you don't have any NFTs, you can always stake <strong>$MAGIC</strong> on any rocket by clicking the{' '}
+              <strong>✨&nbsp;Stake</strong> button!
+            </>
+          }
+        />
+      )}
       <Content>
         <RocketContainer>
           <Rocket animate className="rocket" address={selectedNft?.address!} nftId={selectedNft?.nftId!} />
         </RocketContainer>
-        {entered ? (
-          <ShareCallToAction>
-            <div>
-              Share this message on the <strong>{getNftConfig(selectedNft?.address!)?.name}</strong> community{' '}
-              <img className="discord" src="/assets/discord.svg" alt="Discord" /> <strong>Discord</strong> to get others
-              to stake on your rocket!
-            </div>
-            <br />
+        <FormContainer>
+          {entered ? (
+            <ShareCallToAction>
+              <div>
+                Share this message on the <strong>{getNftConfig(selectedNft?.address!)?.name}</strong> community{' '}
+                <img className="discord" src="/assets/discord.svg" alt="Discord" /> <strong>Discord</strong> to get
+                others to stake on your rocket!
+              </div>
+              <br />
+              <Alert
+                className="quote"
+                type="info"
+                message={
+                  <span>
+                    {shareMsg}
+                    <br />
+                    {window.location.href}
+                  </span>
+                }
+              />
+            </ShareCallToAction>
+          ) : (
+            <Form layout="vertical" form={form}>
+              <Form.Item name="nft" label={nftSelectLabel} rules={[{ required: true, message: 'NFT is required' }]}>
+                <Select
+                  placeholder="Select NFT"
+                  loading={nftsLoading}
+                  disabled={loading}
+                  size="large"
+                  onChange={handleNftChange}
+                >
+                  {nftOptions.map((nft, index) => (
+                    <Option value={index} key={nft.address + nft.nftId} disabled={nft.disabled}>
+                      <NftImage className="nftOptionImg" address={nft.address} id={nft.nftId} />{' '}
+                      <NftName address={nft.address} id={nft.nftId} />
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+              <Form.Item
+                name="stakeAmount"
+                label={stakeAmountLabel}
+                validateFirst
+                rules={[
+                  { required: true, message: 'Stake amount is required' },
+                  {
+                    min: minStake,
+                    max: maxStake,
+                    message: `You must stake ${formatNumber(minStake)} - ${formatNumber(maxStake)} $MAGIC`,
+                    type: 'number',
+                    transform: Number,
+                  },
+                ]}
+              >
+                <Input
+                  type="number"
+                  size="large"
+                  placeholder={`${formatNumber(minStake)} - ${formatNumber(maxStake)}`}
+                  addonAfter="$MAGIC"
+                  value={stakeAmount}
+                  disabled={loading}
+                  onChange={handleAmountChange}
+                />
+              </Form.Item>
+            </Form>
+          )}
+        </FormContainer>
+      </Content>
+      {(noValidNfts || allNftsUsed) && (
+        <Message>
+          {noValidNfts && (
             <Alert
-              className="quote"
               type="info"
               message={
-                <span>
-                  {shareMsg}
+                <>
+                  You don't have any eligible NFTs to enter the race.
                   <br />
-                  {window.location.href}
-                </span>
+                  You can only use NFTs from these collections:{' '}
+                  <WhitelistedNfts whitelist={race!.configSnapshot.whitelistedNfts!} />
+                  <br />
+                  Remember that you can always <strong>✨&nbsp;Stake</strong> on a rocket with your{' '}
+                  <strong>$MAGIC</strong>!
+                </>
               }
             />
-          </ShareCallToAction>
-        ) : (
-          <Form layout="vertical" form={form}>
-            <Form.Item name="nft" label={nftSelectLabel} rules={[{ required: true, message: 'NFT is required' }]}>
-              <Select
-                placeholder="Select NFT"
-                loading={nftsLoading}
-                disabled={loading}
-                size="large"
-                onChange={handleNftChange}
-              >
-                {nftOptions.map((nft, index) => (
-                  <Option value={index} key={nft.address + nft.nftId} disabled={nft.disabled}>
-                    <NftImage className="nftOptionImg" address={nft.address} id={nft.nftId} />{' '}
-                    <NftName address={nft.address} id={nft.nftId} />
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
-            <Form.Item
-              name="stakeAmount"
-              label={stakeAmountLabel}
-              validateFirst
-              rules={[
-                { required: true, message: 'Stake amount is required' },
-                {
-                  min: minStake,
-                  max: maxStake,
-                  message: `You must stake ${formatNumber(minStake)} - ${formatNumber(maxStake)} $MAGIC`,
-                  type: 'number',
-                  transform: Number,
-                },
-              ]}
-            >
-              <Input
-                type="number"
-                size="large"
-                placeholder={`${formatNumber(minStake)} - ${formatNumber(maxStake)}`}
-                addonAfter="$MAGIC"
-                value={stakeAmount}
-                disabled={loading}
-                onChange={handleAmountChange}
-              />
-            </Form.Item>
-          </Form>
-        )}
-      </Content>
-      <Message>
-        {noValidNfts && (
-          <Alert
-            type="info"
-            message={
-              <>
-                You don't have any eligible NFTs to enter the race.
-                <br />
-                You can only use NFTs from these collections:{' '}
-                <WhitelistedNfts whitelist={race!.configSnapshot.whitelistedNfts!} />
-                <br />
-                Or you can always <strong>✨ Stake</strong> on a rocket with your <strong>$MAGIC</strong>!
-              </>
-            }
-          />
-        )}
-        {allNftsUsed && (
-          <Alert
-            type="info"
-            message={
-              <>
-                You've already used all of your eligible NFTs to enter this race, but you can get more from the approved
-                collections: <WhitelistedNfts whitelist={race!.configSnapshot.whitelistedNfts!} />
-                <br />
-                Or you can always <strong>✨ Stake</strong> on a rocket with your <strong>$MAGIC</strong>!
-              </>
-            }
-          />
-        )}
-      </Message>
+          )}
+          {allNftsUsed && (
+            <Alert
+              type="info"
+              message={
+                <>
+                  You've already used all of your eligible NFTs to enter this race, but you can get more from the
+                  approved collections: <WhitelistedNfts whitelist={race!.configSnapshot.whitelistedNfts!} />
+                  <br />
+                  Or you can always <strong>✨&nbsp;Stake</strong> on a rocket with your <strong>$MAGIC</strong>!
+                </>
+              }
+            />
+          )}
+        </Message>
+      )}
       <ModalFooter>
         {entered ? (
           <>
@@ -322,6 +353,15 @@ const Container = styled.div`
 
   .copyBtn {
     margin-right: 36px;
+  }
+
+  .info {
+    margin: 0 24px 24px 24px;
+  }
+
+  .blue {
+    color: ${blue};
+    cursor: pointer;
   }
 `;
 
@@ -380,6 +420,17 @@ const RocketContainer = styled.div`
 
   .rocket {
     width: 100px;
+  }
+`;
+
+const FormContainer = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  form {
+    width: 100%;
   }
 `;
 

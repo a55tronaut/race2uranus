@@ -19,14 +19,14 @@ function Header() {
         <Backdrop>
           <Content>
             <div className="space">
-              {hasRace && <StakeOnRocket />}
               {hasRace && <Countdowns className="countdowns" />}
+              {hasRace && <RewardPool className="rewardPool" />}
               <ClaimRewards />
             </div>
             <Logo />
             <div className="space right">
-              {hasRace && <RewardPool />}
-              {hasRace && <EnterRaceButton />}
+              {hasRace && <EnterRaceButton className="enterRace" />}
+              {hasRace && <StakeOnRocket />}
               <BurMenu />
             </div>
           </Content>
@@ -59,8 +59,11 @@ const Container = styled.div`
     }
 
     .countdowns {
-      margin-left: 60px;
-      margin-right: 20px;
+      margin-right: 30px;
+    }
+
+    .enterRace {
+      margin-right: 30px;
     }
 
     .claim {

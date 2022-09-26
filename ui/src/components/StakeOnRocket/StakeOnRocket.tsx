@@ -27,7 +27,15 @@ function StakeOnRocket({ className, emojiOnly, rocket }: IProps) {
   return (
     <>
       <Tooltip title="Stake!" placement="top" open={emojiOnly ? undefined : false}>
-        <Button className={className} type="primary" size="large" disabled={disabled} ghost onClick={handleShowModal}>
+        <Button
+          className={className}
+          type="primary"
+          size="large"
+          disabled={disabled}
+          style={{ visibility: disabled ? 'hidden' : 'visible' }}
+          ghost
+          onClick={handleShowModal}
+        >
           ✨{!emojiOnly && ' Stake'}
         </Button>
       </Tooltip>

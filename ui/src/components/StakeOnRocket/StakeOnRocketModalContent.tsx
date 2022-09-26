@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { ethers } from 'ethers';
-import { Button, Typography, Input, Form, notification } from 'antd';
+import { Button, Typography, Input, Form, notification, Alert } from 'antd';
 
 import { useRaceContract, useEnsureMagicApproval, useSelectedRace } from '../../hooks';
 import { formatNumber } from '../../utils';
@@ -88,7 +88,7 @@ function StakeOnRocketModalContent({ rocket, onClose, refresh }: IProps) {
 
   const stakeAmountLabel = (
     <>
-      Select amount of $MAGIC to stake{' '}
+      Select amount to stake{' '}
       <InfoTooltip
         className="infoTooltip"
         message={
@@ -106,6 +106,20 @@ function StakeOnRocketModalContent({ rocket, onClose, refresh }: IProps) {
       <Typography.Title level={4} className="title">
         Stake on a rocket
       </Typography.Title>
+      <Alert
+        type="info"
+        showIcon
+        className="info"
+        message={
+          <>
+            Stake on any rocket in the race for a chance to win!
+            <br />
+            You can stake even while the race is in progress.
+            <br />
+            You can also boost any rocket by clicking the <strong>🔥</strong> button!
+          </>
+        }
+      />
       <Content>
         <Form layout="vertical" form={form}>
           <Form.Item
@@ -160,6 +174,10 @@ const Container = styled.div`
     color: ${blue};
     text-align: center;
     margin-bottom: 24px;
+  }
+
+  .info {
+    margin: 0 24px 12px 24px;
   }
 `;
 

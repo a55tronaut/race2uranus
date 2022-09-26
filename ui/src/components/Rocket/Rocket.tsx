@@ -99,6 +99,7 @@ const Boost = styled.img`
   transform: translateX(-50%);
   opacity: 0;
   transition: opacity 4s ease;
+  pointer-events: none;
 
   &.boosting {
     transition: opacity 2s ease;
