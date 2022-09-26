@@ -2,7 +2,6 @@ import { useCallback, useMemo } from 'react';
 import Countdown from 'react-countdown';
 import { Typography } from 'antd';
 import styled from 'styled-components';
-import cn from 'classnames';
 
 import { useRaceMetaWitness, useSelectedRace, useTimeToL1Block } from '../../hooks';
 import { orange } from '../../colors';
@@ -23,7 +22,6 @@ function EtaToUranus({ className }: IProps) {
     timeLeft: timeToBlock,
   } = useTimeToL1Block(race?.revealBlock!);
   const loading = raceLoading || timeLoading;
-  const hidden = loading || !race || statusMeta?.waiting;
   const timeUnknown = statusMeta?.revealBlockReached && !statusMeta?.done;
 
   const timeLeft = useMemo(() => {
@@ -98,7 +96,7 @@ function EtaToUranus({ className }: IProps) {
       completed: boolean;
     }) => {
       if (completed) {
-        return 'Destination Reached';
+        return '-';
       }
       let formattedTime = `${formatted.minutes}:${formatted.seconds}`;
       if (hours) {
@@ -110,7 +108,7 @@ function EtaToUranus({ className }: IProps) {
   );
 
   return (
-    <Container className={cn(className, { hidden })}>
+    <Container className={className}>
       <div>ETA to Uranus</div>
       {!loading && (
         <Typography.Title level={4} className="time">

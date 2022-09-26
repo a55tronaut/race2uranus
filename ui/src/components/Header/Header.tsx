@@ -7,7 +7,7 @@ import Logo from './Logo';
 import RewardPool from './RewardPool';
 import BurMenu from './BurMenu';
 import ClaimRewards from './ClaimRewards';
-import EtaToUranus from './EtaToUranus';
+import Countdowns from './Countdowns';
 
 function Header() {
   const { race } = useSelectedRace();
@@ -20,7 +20,7 @@ function Header() {
           <Content>
             <div className="space">
               {hasRace && <StakeOnRocket />}
-              {hasRace && <EtaToUranus className="eta" />}
+              {hasRace && <Countdowns className="countdowns" />}
               <ClaimRewards />
             </div>
             <Logo />
@@ -58,7 +58,7 @@ const Container = styled.div`
       justify-content: flex-end;
     }
 
-    .eta {
+    .countdowns {
       margin-left: 60px;
       margin-right: 20px;
     }

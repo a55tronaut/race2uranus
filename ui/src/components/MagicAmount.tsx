@@ -8,11 +8,12 @@ import cn from 'classnames';
 interface IProps {
   amount: BigNumberish;
   withName?: boolean;
+  duration?: number;
 }
 
 const { Title } = Typography;
 
-function MagicAmount({ amount, withName }: IProps) {
+function MagicAmount({ amount, withName, duration = 1.5 }: IProps) {
   const [digits, setDigits] = useState(1);
 
   const numAmount = useMemo(() => {
@@ -28,7 +29,13 @@ function MagicAmount({ amount, withName }: IProps) {
     <Container>
       <Title level={4}>
         <img src="/assets/magic.svg" alt="MAGIC" />{' '}
-        <CountUp className={cn('countup', `digits${digits}`)} end={numAmount} decimals={2} preserveValue />{' '}
+        <CountUp
+          className={cn('countup', `digits${digits}`)}
+          end={numAmount}
+          decimals={2}
+          preserveValue
+          duration={duration}
+        />{' '}
         {withName && 'MAGIC'}
       </Title>
     </Container>

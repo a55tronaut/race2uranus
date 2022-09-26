@@ -34,7 +34,7 @@ function Race() {
           move={!statusMeta?.waiting}
           winner={statusMeta?.done ? race?.winner : undefined}
         />
-        <PreRace show={statusMeta?.waiting! && !!race?.blastOffTimestamp.eq(0)} rewardPool={race?.rewardPool!} />
+        <PreRace show={statusMeta?.waiting! && !!race?.blastOffTimestamp.eq(0)} race={race!} />
         <LaunchCountdown
           show={statusMeta?.waiting! && !!race?.blastOffTimestamp.gt(0)}
           blastOffTimestamp={race?.blastOffTimestamp!}

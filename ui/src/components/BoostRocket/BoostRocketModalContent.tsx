@@ -66,15 +66,24 @@ function BoostRocketModalContent({ rocket, onClose, refresh }: IProps) {
         <DetailsContainer>
           <Alert
             type="info"
+            showIcon
             message={
               <>
-                Boost the rocket's propulsion systems with a bit of <strong>$MAGIC</strong>! The substance is inherently
-                unstable so it may speed up the rocket but it can also slow it down!
+                Any rocket can be boosted by anyone at any point during the race. Boosting affects the chances of the
+                rocket winning the race.
               </>
             }
           />
+          <br />
+          <div>
+            Boost the rocket's propulsion systems with a bit of <strong>$MAGIC</strong>! The substance is inherently
+            unstable so its full effects will not be known until the end of the race - it may speed up the rocket but it
+            can also slow it down!
+            <br />
+            You can only boost a rocket up to <strong>3</strong> times!
+          </div>
           <PriceContainer>
-            Boost price: <MagicAmount withName amount={race!.configSnapshot.boostPrice!} />
+            Boost price: <MagicAmount withName duration={0} amount={race!.configSnapshot.boostPrice!} />
           </PriceContainer>
         </DetailsContainer>
       </Content>
@@ -101,6 +110,7 @@ const Content = styled.div`
   display: flex;
   flex-direction: row;
   padding: 24px;
+  align-items: center;
 `;
 
 const RocketContainer = styled.div`

@@ -2,6 +2,7 @@ export * from './useScreen';
 export * from './useRace';
 export * from './useRaceMetaWitness';
 export * from './useRaceContract';
+export * from './useRaceTimeParams';
 export * from './useNftMeta';
 export * from './useEnsureMagicApproval';
 export * from './useNftsForUser';

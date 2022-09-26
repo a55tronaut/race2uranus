@@ -1,8 +1,9 @@
 import { Typography } from 'antd';
-import { BigNumber } from 'ethers';
 import styled from 'styled-components';
 import { CSSTransition } from 'react-transition-group';
+import { useMemo } from 'react';
 
+import { Race2Uranus } from '../../types';
 import MagicAmount from '../MagicAmount';
 import { EnterRaceButton } from '../EnterRace';
 
@@ -10,10 +11,21 @@ const { Title, Paragraph } = Typography;
 
 interface IProps {
   show: boolean;
-  rewardPool: BigNumber;
+  race: Race2Uranus.RaceStructOutput;
 }
 
-function PreRace({ show, rewardPool }: IProps) {
+function PreRace({ show, race }: IProps) {
+  const rewardPool = useMemo(() => {
+    const maxRacerStake = race?.configSnapshot.maxStakeAmount.mul(race?.configSnapshot.maxRockets);
+    const currentPool = race?.rewardPool;
+
+    if (maxRacerStake && currentPool) {
+      return currentPool.gt(maxRacerStake) ? currentPool : maxRacerStake;
+    }
+
+    return 0;
+  }, [race?.configSnapshot.maxRockets, race?.configSnapshot.maxStakeAmount, race?.rewardPool]);
+
   return (
     <Container>
       <CSSTransition in={show} timeout={500} classNames="welcome" unmountOnExit>
@@ -96,7 +108,7 @@ const Content = styled.div`
   }
 
   .discord {
-    height: 20px;
+    width: 18px;
   }
 
   .poolBg {
