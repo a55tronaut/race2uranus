@@ -1,28 +1,32 @@
 import styled from 'styled-components';
 
+import { useSelectedRace } from '../../hooks';
 import StakeOnRocket from '../StakeOnRocket';
+import { EnterRaceButton } from '../EnterRace';
 import Logo from './Logo';
 import RewardPool from './RewardPool';
-import EnterRace from '../EnterRace';
 import BurMenu from './BurMenu';
 import ClaimRewards from './ClaimRewards';
 import EtaToUranus from './EtaToUranus';
 
 function Header() {
+  const { race } = useSelectedRace();
+  const hasRace = !!race;
+
   return (
     <Wrapper>
       <Container>
         <Backdrop>
           <Content>
             <div className="space">
-              <StakeOnRocket />
-              <EtaToUranus className="eta" />
+              {hasRace && <StakeOnRocket />}
+              {hasRace && <EtaToUranus className="eta" />}
               <ClaimRewards />
             </div>
             <Logo />
             <div className="space right">
-              <RewardPool />
-              <EnterRace />
+              {hasRace && <RewardPool />}
+              {hasRace && <EnterRaceButton />}
               <BurMenu />
             </div>
           </Content>

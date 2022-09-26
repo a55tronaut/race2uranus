@@ -40,7 +40,7 @@ function Race() {
           blastOffTimestamp={race?.blastOffTimestamp!}
         />
         <DestroyAsteroid race={race!} statusMeta={statusMeta!} refresh={refresh} />
-        <Winner show={statusMeta?.done!} rocket={race?.rockets[race!.winner]} />
+        <Winner show={statusMeta?.done!} raceId={race?.id!} rocket={race?.rockets[race!.winner]} />
       </>
     );
   }, [error, loading, race, refresh, statusMeta]);

@@ -4,6 +4,7 @@ import { Chain, useConfig, useEthers } from '@usedapp/core';
 import styled, { CSSProperties } from 'styled-components';
 
 import { CHAIN_ID } from '../env';
+import { orange } from '../colors';
 import Logo from './Logo';
 
 const maskStyle: CSSProperties = {
@@ -40,7 +41,13 @@ function WalletConnector() {
         <ModalContent>
           <Logo className="logo" />
           <Button onClick={accountConnected ? changeNetwork : activateBrowserWallet}>
-            {accountConnected ? `Please switch network to ${chainName}` : 'Connect your wallet to begin'}
+            {accountConnected ? (
+              <span>
+                Switch network to <span className="orange">{chainName}</span> to get started
+              </span>
+            ) : (
+              'Connect your wallet to begin'
+            )}
           </Button>
         </ModalContent>
       )}
@@ -59,6 +66,10 @@ const ModalContent = styled.div`
   .logo {
     height: 100px;
     margin-bottom: 32px;
+  }
+
+  .orange {
+    color: ${orange};
   }
 `;
 

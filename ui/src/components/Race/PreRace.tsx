@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { CSSTransition } from 'react-transition-group';
 
 import MagicAmount from '../MagicAmount';
-import EnterRace from '../EnterRace';
+import { EnterRaceButton } from '../EnterRace';
 
 const { Title, Paragraph } = Typography;
 
@@ -44,7 +44,7 @@ function PreRace({ show, rewardPool }: IProps) {
           </div>
           <br />
           <br />
-          <EnterRace />
+          <EnterRaceButton />
         </Content>
       </CSSTransition>
     </Container>

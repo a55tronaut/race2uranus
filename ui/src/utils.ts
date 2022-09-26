@@ -124,3 +124,7 @@ export function getNftConfig(address: string): ISupportedNft {
 export function runAfterRender(fn: Function) {
   window.requestAnimationFrame(() => window.requestAnimationFrame(() => fn()));
 }
+
+export function extractRpcError(e: any): string {
+  return e?.error?.data?.message?.replace('execution reverted: ', '') || e?.message || 'Error';
+}

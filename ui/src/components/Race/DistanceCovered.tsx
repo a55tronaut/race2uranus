@@ -20,14 +20,16 @@ function DistanceCovered({ race }: IProps) {
   const [animate, setAnimate] = useState(false);
 
   const updateDistance = useCallback(() => {
-    setAnimate(false);
-    const start = race?.blastOffTimestamp.toNumber() * 1000;
-    const totalTime = end - start;
-    const timeElapsed = Date.now() - start;
-    const progress = Math.min(timeElapsed / totalTime, 1);
-    const _distance = progress * MAX_DISTANCE_MILES;
-    setDistance(_distance);
-    runAfterRender(() => setAnimate(true));
+    if (!document.hidden) {
+      setAnimate(false);
+      const start = race?.blastOffTimestamp.toNumber() * 1000;
+      const totalTime = end - start;
+      const timeElapsed = Date.now() - start;
+      const progress = Math.min(timeElapsed / totalTime, 1);
+      const _distance = progress * MAX_DISTANCE_MILES;
+      setDistance(_distance);
+      runAfterRender(() => setAnimate(true));
+    }
   }, [end, race?.blastOffTimestamp]);
 
   useEffect(() => {

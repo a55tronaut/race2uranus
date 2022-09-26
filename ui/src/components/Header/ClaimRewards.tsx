@@ -6,6 +6,7 @@ import { useEthers } from '@usedapp/core';
 
 import { useRaceContract, useSelectedRace } from '../../hooks';
 import { FINAL_APPROACH_SECONDS, SECOND_MILLIS } from '../../constants';
+import { extractRpcError } from '../../utils';
 import MagicAmount from '../MagicAmount';
 
 interface IProps {
@@ -60,7 +61,11 @@ function ClaimRewards({ className }: IProps) {
       const res = await contract!.functions.claimAll();
       await res.wait(1);
       setRewards(0);
-      notification.success({ message: 'Succesfully claimed rewards' });
+      notification.success({ message: 'Succesfully claimed rewards!' });
+    } catch (e) {
+      console.error(e);
+      const message = extractRpcError(e);
+      notification.error({ message });
     } finally {
       setLoading(false);
     }

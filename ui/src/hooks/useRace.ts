@@ -79,7 +79,11 @@ export function useRace(id?: BigNumberish): IRaceHook {
   };
 }
 
-function calcStatusMeta(race: Race2Uranus.RaceStructOutput): IRaceStatusMeta {
+function calcStatusMeta(race: Race2Uranus.RaceStructOutput): IRaceStatusMeta | undefined {
+  if (!race) {
+    return;
+  }
+
   let waiting = false;
   let inProgress = false;
   let done = false;
@@ -184,7 +188,7 @@ function updateRaceInStore(raceId: BigNumberish, race: Partial<IRace>) {
   return changed;
 }
 
-function updateStatusMetaInStore(raceId: BigNumberish, statusMeta: Partial<IRaceStatusMeta>) {
+function updateStatusMetaInStore(raceId: BigNumberish, statusMeta?: Partial<IRaceStatusMeta>) {
   const existingRace = getRaceFromStore(raceId) || {};
   const newStatusMeta = { ...existingRace.statusMeta, ...statusMeta };
   if (jsonDeepEqual(existingRace.statusMeta, newStatusMeta)) {

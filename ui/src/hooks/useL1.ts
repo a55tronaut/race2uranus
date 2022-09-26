@@ -11,13 +11,13 @@ interface IL1StoreState {
 
 interface IL1StoreMethods {}
 
-interface IRaceContractHook extends IL1StoreState, IL1StoreMethods {}
+interface IL1Hook extends IL1StoreState, IL1StoreMethods {}
 
 const defaultState: IL1StoreState = {};
 
 export const useL1Store = create<IL1StoreState>(() => defaultState);
 
-export function useL1(): IRaceContractHook {
+export function useL1(): IL1Hook {
   const { provider } = useReadonlyNetwork({ chainId: L1_CHAIN_ID }) || ({} as any);
   const storeState = useL1Store();
 

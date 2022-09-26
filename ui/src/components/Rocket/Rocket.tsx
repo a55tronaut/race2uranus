@@ -2,6 +2,7 @@ import { Tooltip } from 'antd';
 import { BigNumberish } from 'ethers';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import cn from 'classnames';
 
 import { SECOND_MILLIS } from '../../constants';
 import { useNftDominantColor } from '../../hooks';
@@ -14,9 +15,10 @@ interface IProps {
   nftId?: BigNumberish;
   className?: string;
   boostCount?: number;
+  animate?: boolean;
 }
 
-function Rocket({ address, nftId, className, boostCount }: IProps) {
+function Rocket({ address, nftId, className, boostCount, animate }: IProps) {
   const { color } = useNftDominantColor(address, nftId);
   const [boostClassName, setBoostClassName] = useState('');
   const [prevBoostCount, setPrevBoostCount] = useState(boostCount);
@@ -34,7 +36,7 @@ function Rocket({ address, nftId, className, boostCount }: IProps) {
 
   return (
     <Tooltip title={address && nftId ? <NftName address={address!} id={nftId!} /> : undefined} placement="top">
-      <Container color={color} className={className}>
+      <Container color={color} className={cn(className, { animate })}>
         <Porthole>{!!address && !!nftId && <NftImage address={address} id={nftId} className="nftImg" />}</Porthole>
         <RocketSvg className="rocket" />
         <Boost className={boostClassName} src="/assets/boost.svg" />
@@ -47,6 +49,10 @@ const Container = styled.div`
   width: 100%;
   position: relative;
 
+  &.animate {
+    animation: bobbing 7s ease-in-out infinite;
+  }
+
   .st6,
   .st10 {
     transition: fill 0.2s ease;
@@ -58,6 +64,18 @@ const Container = styled.div`
   }
   .nftImg {
     width: 100%;
+  }
+
+  @keyframes bobbing {
+    0% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-5%);
+    }
+    100% {
+      transform: translateY(0);
+    }
   }
 `;
 

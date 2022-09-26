@@ -1,5 +1,6 @@
 export * from './useScreen';
 export * from './useRace';
+export * from './useRaceMetaWitness';
 export * from './useRaceContract';
 export * from './useNftMeta';
 export * from './useEnsureMagicApproval';

@@ -5,7 +5,7 @@ import { Button, Typography, Select, Input, Form, notification, Alert } from 'an
 import { CopyOutlined, TwitterOutlined } from '@ant-design/icons';
 
 import { useNftsForUser, useRaceContract, useEnsureMagicApproval, useSelectedRace, useNftMeta } from '../../hooks';
-import { formatNumber, getNftConfig } from '../../utils';
+import { extractRpcError, formatNumber, getNftConfig } from '../../utils';
 import { blue } from '../../colors';
 import { Race2Uranus } from '../../types';
 import NftImage from '../NftImage';
@@ -23,13 +23,8 @@ interface INftOption {
   disabled: boolean;
 }
 
-interface IProps {
-  onClose: () => void;
-  refresh: () => Promise<void>;
-}
-
-function EnterRaceModalContent({ refresh }: IProps) {
-  const { race } = useSelectedRace();
+function EnterRaceModalContent() {
+  const { race, refresh } = useSelectedRace();
   const { contract } = useRaceContract();
   const { ensureApproval } = useEnsureMagicApproval();
   const { nfts, loading: nftsLoading } = useNftsForUser(race?.configSnapshot.whitelistedNfts!);
@@ -123,8 +118,8 @@ function EnterRaceModalContent({ refresh }: IProps) {
       setEntered(true);
     } catch (e) {
       console.error(e);
-      const error = (e as any)?.message || 'Error';
-      notification.error({ message: error });
+      const message = extractRpcError(e);
+      notification.error({ message });
     } finally {
       setLoading(false);
     }
@@ -184,7 +179,7 @@ function EnterRaceModalContent({ refresh }: IProps) {
       </Typography.Title>
       <Content>
         <RocketContainer>
-          <Rocket className="rocket" address={selectedNft?.address!} nftId={selectedNft?.nftId!} />
+          <Rocket animate className="rocket" address={selectedNft?.address!} nftId={selectedNft?.nftId!} />
         </RocketContainer>
         {entered ? (
           <ShareCallToAction>

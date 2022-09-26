@@ -7,22 +7,26 @@ const menu = (
   <Menu
     items={[
       {
+        key: '0',
+        label: <Link to="/">🚀 RACE</Link>,
+      },
+      {
         key: '1',
-        label: <Link to="/about">ABOUT</Link>,
+        label: <Link to="/about">🤔 ABOUT</Link>,
       },
       {
         key: '2',
-        label: <Link to="/lore">LORE</Link>,
+        label: <Link to="/lore">📜 LORE</Link>,
       },
       {
         key: '3',
-        label: <Link to="/leaderboard">LEADERBOARD</Link>,
+        label: <Link to="/leaderboard">📊 LEADERBOARD</Link>,
       },
       {
         key: '4',
         label: (
           <a href="https://discord.gg/TdkFpqnAch" rel="noreferrer" target="_blank">
-            COMMUNITY <img className="discord" src="/assets/discord.svg" alt="Discord" style={{ height: '20px' }} />
+            <img className="discord" src="/assets/discord.svg" alt="Discord" style={{ width: '16px' }} /> COMMUNITY
           </a>
         ),
       },
@@ -44,6 +48,7 @@ function BurMenu() {
 
 const BurgerMenu = styled.div`
   margin-left: 1em;
+
   .ant-btn {
     border: none;
   }

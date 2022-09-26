@@ -5,6 +5,7 @@ import { Button, Typography, notification, Alert } from 'antd';
 import { useRaceContract, useEnsureMagicApproval, useSelectedRace } from '../../hooks';
 import { blue } from '../../colors';
 import { Race2Uranus } from '../../types';
+import { extractRpcError } from '../../utils';
 import Rocket from '../Rocket';
 import ModalFooter from '../ModalFooter';
 import MagicAmount from '../MagicAmount';
@@ -46,8 +47,8 @@ function BoostRocketModalContent({ rocket, onClose, refresh }: IProps) {
       onClose();
     } catch (e) {
       console.error(e);
-      const error = (e as any)?.message || 'Error';
-      notification.error({ message: error });
+      const message = extractRpcError(e);
+      notification.error({ message });
     } finally {
       setLoading(false);
     }

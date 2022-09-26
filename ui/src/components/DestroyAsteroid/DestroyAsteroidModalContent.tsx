@@ -4,7 +4,7 @@ import { Button, Typography, notification } from 'antd';
 import { ethers } from 'ethers';
 
 import { useRaceContract } from '../../hooks';
-import { formatNumber } from '../../utils';
+import { extractRpcError, formatNumber } from '../../utils';
 import { blue } from '../../colors';
 import { Race2Uranus } from '../../types';
 import ModalFooter from '../ModalFooter';
@@ -25,6 +25,7 @@ function BoostRocketModalContent({ race, onClose, refresh }: IProps) {
 
     try {
       const res = await contract!.functions.finishRace(race!.id);
+      console.log({ res });
       await res.wait(1);
       await refresh();
 
@@ -40,12 +41,12 @@ function BoostRocketModalContent({ race, onClose, refresh }: IProps) {
       onClose();
     } catch (e) {
       console.error(e);
-      let error = (e as any)?.message || 'Error';
-      if (error.includes('execution reverted: Race already finished')) {
-        error = 'Too late! Someone else has already destroyed the asteroid and snatched up the prize!';
+      let message = extractRpcError(e);
+      if (message.includes('Race already finished')) {
+        message = 'Too late! Someone else has already destroyed the asteroid and snatched up the prize!';
         onClose();
       }
-      notification.error({ message: error });
+      notification.error({ message });
     } finally {
       setLoading(false);
     }

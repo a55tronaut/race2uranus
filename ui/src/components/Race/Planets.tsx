@@ -19,23 +19,25 @@ function Planets() {
   const updatePlanets = useCallback(() => {
     const newPlanets: IPlanet[] = [];
 
-    for (const src of planetPaths) {
-      const numOfPlanets = random(0, 1);
+    if (!document.hidden) {
+      for (const src of planetPaths) {
+        const numOfPlanets = random(0, 1);
 
-      for (let i = 0; i < numOfPlanets; i++) {
-        const size = random(25, 250);
-        const startY = calcStartPosition(size);
-        const endY = -startY + 100;
+        for (let i = 0; i < numOfPlanets; i++) {
+          const size = random(25, 250);
+          const startY = calcStartPosition(size);
+          const endY = -startY + 100;
 
-        newPlanets.push({
-          id: `${Date.now()}.${src}.${i}`,
-          src,
-          startY,
-          endY,
-          x: random(-5, 100),
-          size,
-          rotation: random(-359, 359),
-        });
+          newPlanets.push({
+            id: `${Date.now()}.${src}.${i}`,
+            src,
+            startY,
+            endY,
+            x: random(-5, 100),
+            size,
+            rotation: random(-359, 359),
+          });
+        }
       }
     }
 

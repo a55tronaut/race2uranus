@@ -1,7 +1,7 @@
 import 'antd/dist/antd.css';
 import { Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Spin } from 'antd';
+import { Spin, notification } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 
@@ -9,6 +9,8 @@ import GlobalStyle from './GlobalStyle';
 import { DappProvider } from './providers';
 import { NotFound, WalletConnector } from './components';
 import { AboutPage, LandingPage, LeaderboardPage, LorePage, RacePage } from './pages';
+
+notification.config({ duration: 15 });
 
 function AppWrapper() {
   return (

@@ -3,19 +3,29 @@ import { Link } from 'react-router-dom';
 import { Typography } from 'antd';
 import styled from 'styled-components';
 import cn from 'classnames';
+import { useEthers } from '@usedapp/core';
+import { BigNumberish } from 'ethers';
 
 import { FINAL_APPROACH_SECONDS } from '../../constants';
 import { Race2Uranus } from '../../types';
+import { orange } from '../../colors';
+import { useRaceContract } from '../../hooks';
 import Layout from '../Layout';
 import Rocket from '../Rocket';
+import NftName from '../NftName';
 
 interface IProps {
   show: boolean;
   rocket?: Race2Uranus.RocketStructOutput;
+  raceId?: BigNumberish;
 }
 
-function Winner({ show, rocket }: IProps) {
+function Winner({ show, rocket, raceId }: IProps) {
+  const { account } = useEthers();
+  const { contract } = useRaceContract();
   const [animate, setAnimate] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  const [hasReward, setHasReward] = useState(false);
 
   useEffect(() => {
     if (!show) {
@@ -23,22 +33,49 @@ function Winner({ show, rocket }: IProps) {
     }
   }, [show]);
 
+  useEffect(() => {
+    if (raceId && show && account && contract && rocket) {
+      checkRewards();
+    }
+
+    async function checkRewards() {
+      const [amount] = await contract!.functions.getStakeAmountForStaker(raceId!, rocket!.id, account!);
+
+      setHasReward(amount.gt(0));
+      setLoaded(true);
+    }
+  }, [account, contract, raceId, rocket, show]);
+
   return (
     <Container className={cn({ show, animate })}>
       <Layout>
         <Content>
           <RocketWrapper>
-            <Rocket className="rocket" address={rocket?.nft} nftId={rocket?.nftId} />
+            <Rocket className="rocket" animate address={rocket?.nft} nftId={rocket?.nftId} />
           </RocketWrapper>
-          <Description>
-            <Typography.Title level={1} className="title">
-              Winner!
-            </Typography.Title>
-            <div>Congratulations to the owner and stakers! You can claim your rewards now!</div>
-            <div>
-              Everyone can join another Race to Uranus <Link to="/">here</Link>!
-            </div>
-          </Description>
+          {loaded && (
+            <Description>
+              <Typography.Title level={1} className="title">
+                {hasReward ? '🎉 Congratulations!' : '🍭 Better luck next time!'}
+              </Typography.Title>
+              <div>
+                The Winner is{' '}
+                <strong className="orange">
+                  <NftName address={rocket?.nft!} id={rocket?.nftId!} />
+                </strong>
+                !
+              </div>
+              {hasReward && (
+                <div>
+                  You can use the <strong>💰 Claim</strong> button above to get your rewards!
+                </div>
+              )}
+              <br />
+              <div>
+                Join another Race to Uranus <Link to="/">here</Link>!
+              </div>
+            </Description>
+          )}
         </Content>
       </Layout>
     </Container>
@@ -99,6 +136,10 @@ const Description = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
+  .orange {
+    color: ${orange};
+  }
 `;
 
 export default Winner;
