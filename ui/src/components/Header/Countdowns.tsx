@@ -11,7 +11,7 @@ interface IProps {
 function Countdowns({ className }: IProps) {
   const { loading, statusMeta } = useSelectedRace();
 
-  const component = statusMeta?.waiting ? <LaunchWindow /> : <EtaToUranus />;
+  const component = statusMeta?.waiting && !statusMeta?.rosterFull ? <LaunchWindow /> : <EtaToUranus />;
 
   return <Container className={className}>{!loading && component}</Container>;
 }

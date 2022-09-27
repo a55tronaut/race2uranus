@@ -10,6 +10,7 @@ import PreRace from './PreRace';
 import LaunchCountdown from './LaunchCountdown';
 import Rockets from './Rockets';
 import Winner from './Winner';
+import Reminders from './Reminders';
 
 function Race() {
   const { loading, race, statusMeta, error, refresh } = useSelectedRace();
@@ -41,6 +42,10 @@ function Race() {
         />
         <DestroyAsteroid race={race!} statusMeta={statusMeta!} refresh={refresh} />
         <Winner show={statusMeta?.done!} raceId={race?.id!} rocket={race?.rockets[race!.winner]} />
+        <Reminders
+          enabled={statusMeta?.inProgress! && !statusMeta?.revealBlockReached!}
+          revealBlockNumber={race?.revealBlock.toNumber()!}
+        />
       </>
     );
   }, [error, loading, race, refresh, statusMeta]);

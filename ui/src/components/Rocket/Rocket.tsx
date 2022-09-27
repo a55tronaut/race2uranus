@@ -1,6 +1,6 @@
 import { Tooltip } from 'antd';
 import { BigNumberish } from 'ethers';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import cn from 'classnames';
 
@@ -21,18 +21,18 @@ interface IProps {
 function Rocket({ address, nftId, className, boostCount, animate }: IProps) {
   const { color } = useNftDominantColor(address, nftId);
   const [boostClassName, setBoostClassName] = useState('');
-  const [prevBoostCount, setPrevBoostCount] = useState(boostCount);
+  const prevBoostCount = useRef(boostCount || 0);
 
   useEffect(() => {
-    if (boostCount && boostCount > prevBoostCount!) {
+    if (boostCount && boostCount > prevBoostCount.current) {
       setBoostClassName('boosting');
-      setPrevBoostCount(boostCount);
+      prevBoostCount.current = boostCount;
 
       setTimeout(() => {
         setBoostClassName('');
       }, 4 * SECOND_MILLIS);
     }
-  }, [boostCount, prevBoostCount]);
+  }, [boostCount]);
 
   return (
     <Tooltip title={address && nftId ? <NftName address={address!} id={nftId!} /> : undefined} placement="top">

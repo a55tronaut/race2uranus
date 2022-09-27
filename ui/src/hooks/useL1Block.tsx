@@ -60,7 +60,9 @@ async function updateBlocks() {
   const { provider, contract } = useL1BlockStore.getState();
 
   const [currentBlockBn] = await contract.functions.getBlockNumber();
-  const currentBlock = currentBlockBn.toNumber();
+  // sometimes RPCs are out of sync
+  // get latest block -1 to try to mitigate this
+  const currentBlock = currentBlockBn.toNumber() - 1;
   const now = Date.now();
   const oldBlock = await provider.getBlock(currentBlock - numBlocks);
   const timeDiff = now - oldBlock.timestamp * SECOND_MILLIS;

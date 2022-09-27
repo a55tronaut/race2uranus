@@ -18,7 +18,7 @@ interface IProps {
 function ClaimRewards({ className }: IProps) {
   const { account } = useEthers();
   const { statusMeta } = useSelectedRace();
-  const { seenPreDone } = useRaceMetaWitness();
+  const { seenInProgress } = useRaceMetaWitness(statusMeta!);
   const { contract } = useRaceContract();
   const [rewards, setRewards] = useState<BigNumberish>(0);
   const [loading, setLoading] = useState(false);
@@ -43,20 +43,14 @@ function ClaimRewards({ className }: IProps) {
   }, [account, contract, refreshRewards]);
 
   useEffect(() => {
-    contract?.on(contract.filters!.RaceFinished(), refreshRewards);
-
-    return () => contract?.off(contract.filters!.RaceFinished(), refreshRewards) as any;
-  }, [contract, refreshRewards]);
-
-  useEffect(() => {
-    if (statusMeta?.done && seenPreDone) {
+    if (statusMeta?.done && seenInProgress) {
       setTimeout(() => {
         refreshRewards();
       }, FINAL_APPROACH_SECONDS * SECOND_MILLIS);
     } else if (statusMeta?.done) {
       refreshRewards();
     }
-  }, [refreshRewards, seenPreDone, statusMeta?.done]);
+  }, [refreshRewards, seenInProgress, statusMeta?.done]);
 
   const handleClaimRewards = useCallback(async () => {
     try {

@@ -2,11 +2,10 @@ import { useEffect, useState } from 'react';
 
 import { IRaceStatusMeta } from '../types';
 
-export function useRaceMetaWitness(statusMeta?: IRaceStatusMeta) {
+export function useRaceMetaWitness(statusMeta: IRaceStatusMeta) {
   const [seenWaiting, setSeenWaiting] = useState(false);
   const [seenInProgress, setSeenInProgress] = useState(false);
   const [seenRevealBlockHidden, setSeenRevealBlockHidden] = useState(false);
-  const [seenPreDone, setSeenPreDone] = useState(false);
 
   useEffect(() => {
     if (statusMeta?.waiting) {
@@ -26,11 +25,5 @@ export function useRaceMetaWitness(statusMeta?: IRaceStatusMeta) {
     }
   }, [statusMeta?.revealBlockReached]);
 
-  useEffect(() => {
-    if (statusMeta?.done === false) {
-      setSeenPreDone(true);
-    }
-  }, [statusMeta?.done]);
-
-  return { seenWaiting, seenInProgress, seenRevealBlockHidden, seenPreDone };
+  return { seenWaiting, seenInProgress, seenRevealBlockHidden };
 }

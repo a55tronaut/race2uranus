@@ -80,6 +80,7 @@ function BoostRocketModalContent({ rocket, onClose, refresh }: IProps) {
             unstable so its full effects will not be known until the end of the race - it may speed up the rocket but it
             also has a chance to slow it down!
             <br />
+            <br />
             You can only boost a rocket up to <strong>3</strong> times!
           </div>
           <PriceContainer>

@@ -85,6 +85,7 @@ function calcStatusMeta(race: Race2Uranus.RaceStructOutput): IRaceStatusMeta | u
   }
 
   let waiting = false;
+  let rosterFull = false;
   let inProgress = false;
   let done = false;
   let revealBlockReached = false;
@@ -99,6 +100,8 @@ function calcStatusMeta(race: Race2Uranus.RaceStructOutput): IRaceStatusMeta | u
     }
   }
 
+  rosterFull = race && race?.rockets.length === race?.configSnapshot.maxRockets;
+
   const { currentBlock } = useL1BlockStore.getState();
   if (currentBlock > 0 && race?.revealBlock.gt(0) && race?.revealBlock.lte(currentBlock)) {
     revealBlockReached = true;
@@ -106,6 +109,7 @@ function calcStatusMeta(race: Race2Uranus.RaceStructOutput): IRaceStatusMeta | u
 
   return {
     waiting,
+    rosterFull,
     inProgress,
     done,
     revealBlockReached,

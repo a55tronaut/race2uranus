@@ -25,7 +25,6 @@ function BoostRocketModalContent({ race, onClose, refresh }: IProps) {
 
     try {
       const res = await contract!.functions.finishRace(race!.id);
-      console.log({ res });
       await res.wait(1);
       await refresh();
 

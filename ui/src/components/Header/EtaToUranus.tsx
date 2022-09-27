@@ -15,7 +15,7 @@ const finalApproachMillis = FINAL_APPROACH_SECONDS * SECOND_MILLIS * 0.8;
 
 function EtaToUranus({ className }: IProps) {
   const { loading: raceLoading, race, statusMeta } = useSelectedRace();
-  const { seenPreDone } = useRaceMetaWitness(statusMeta);
+  const { seenInProgress } = useRaceMetaWitness(statusMeta!);
   const {
     loading: timeLoading,
     timestamp: blockTimestamp,
@@ -39,12 +39,12 @@ function EtaToUranus({ className }: IProps) {
   }, [blockTimestamp, statusMeta?.waiting]);
 
   const finalApproachTimestamp = useMemo(() => {
-    if (statusMeta?.done && seenPreDone) {
+    if (statusMeta?.done && seenInProgress) {
       return Date.now() + finalApproachMillis;
     }
 
     return Date.now();
-  }, [seenPreDone, statusMeta?.done]);
+  }, [seenInProgress, statusMeta?.done]);
 
   const renderer = useCallback(
     ({
