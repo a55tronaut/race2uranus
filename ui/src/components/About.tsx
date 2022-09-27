@@ -53,6 +53,7 @@ function About() {
         <strong>🔥 Boost</strong>! Be aware though, <strong>$MAGIC</strong> being used as rocket propulsion is still in
         its early stages and might end up backfiring!
       </Paragraph>
+      <Paragraph>The rockets can only take off during optimal launch windows which occur once every hour!</Paragraph>
       <Paragraph>
         After the race, <strong>all</strong> <i>Asstronauts</i> get a <strong>guaranteed</strong> share of the pool,
         while the winning <i>Asstronaut</i> and its believers will split the rest of the pool based on the amount of{' '}

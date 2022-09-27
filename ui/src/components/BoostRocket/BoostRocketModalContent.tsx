@@ -78,7 +78,7 @@ function BoostRocketModalContent({ rocket, onClose, refresh }: IProps) {
           <div>
             Boost the rocket's propulsion systems with a bit of <strong>$MAGIC</strong>! The substance is inherently
             unstable so its full effects will not be known until the end of the race - it may speed up the rocket but it
-            can also slow it down!
+            also has a chance to slow it down!
             <br />
             You can only boost a rocket up to <strong>3</strong> times!
           </div>

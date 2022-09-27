@@ -114,8 +114,6 @@ function StakeOnRocketModalContent({ rocket, onClose, refresh }: IProps) {
           <>
             Stake on any rocket in the race for a chance to win!
             <br />
-            You can stake even while the race is in progress.
-            <br />
             You can also boost any rocket by clicking the <strong>🔥</strong> button!
           </>
         }

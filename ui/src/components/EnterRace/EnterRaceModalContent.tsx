@@ -184,7 +184,7 @@ function EnterRaceModalContent() {
           className="info"
           message={
             <>
-              Enter your{' '}
+              Put your{' '}
               <Tooltip
                 title={
                   <>
@@ -195,9 +195,9 @@ function EnterRaceModalContent() {
               >
                 <span className="blue">eligible NFT</span>
               </Tooltip>{' '}
-              into the race!
+              into a rocket to enter the race!
               <br />
-              If you don't have any NFTs, you can always stake <strong>$MAGIC</strong> on any rocket by clicking the{' '}
+              No NFTs? No problem! Simply stake your <strong>$MAGIC</strong> on anyone's rocket by clicking the{' '}
               <strong>✨&nbsp;Stake</strong> button!
             </>
           }

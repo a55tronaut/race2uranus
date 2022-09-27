@@ -7,7 +7,7 @@ import { Race2Uranus } from '../../types';
 import MagicAmount from '../MagicAmount';
 import { EnterRaceButton } from '../EnterRace';
 
-const { Title, Paragraph } = Typography;
+const { Title } = Typography;
 
 interface IProps {
   show: boolean;
@@ -33,21 +33,28 @@ function PreRace({ show, race }: IProps) {
           <Title level={2} className="title">
             Welcome To The Launch Pad!
           </Title>
-          <Paragraph className="paragraph">
-            You are about to enter the <strong>Race to Uranus</strong>.
-            <br />
-            Click the <strong>🚀 Enter Race</strong> button to join the race and earn a <strong>guaranteed</strong>{' '}
-            share of the reward pool!
-            <br />
-            You can also <strong>✨ Stake</strong> on any rocket or <strong>🔥 Boost</strong> its propulsion system with
-            your <strong>$MAGIC</strong>!
-            <br />
-            And be sure to join our community on{' '}
+          <span className="subtitle">
+            You are about to enter the <strong>Race to Uranus</strong>:
+          </span>
+          <ul className="list">
+            <li>
+              Click the <strong>🚀 Enter Race</strong> button to put your NFT into a rocket and earn a{' '}
+              <strong>guaranteed</strong> share of the reward pool!
+            </li>
+            <li>
+              No NFTs? No problem! Simply click the <strong>✨ Stake</strong> button to stake on anyone's rocket!
+            </li>
+            <li>
+              You can also <strong>🔥 Boost</strong> any rocket's propulsion system with your <strong>$MAGIC</strong>!
+            </li>
+          </ul>
+          <span>
+            Be sure to join our community on{' '}
             <a href="https://discord.gg/TdkFpqnAch" rel="noreferrer" target="_blank">
               <img className="discord" src="/assets/discord.svg" alt="Discord" /> Discord
             </a>
             !
-          </Paragraph>
+          </span>
           <div className="poolBg">
             <Title level={5} className="poolHeader">
               Join to Earn Up To
@@ -97,12 +104,21 @@ const Content = styled.div`
   justify-content: center;
   align-items: center;
   min-width: 800px;
+  text-align: center;
 
   .title {
     margin-bottom: 36px;
   }
 
-  .paragraph {
+  .subtitle {
+    font-size: 18px;
+  }
+
+  .list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 24px;
     text-align: center;
     line-height: 200%;
   }
@@ -112,7 +128,7 @@ const Content = styled.div`
   }
 
   .poolBg {
-    margin-top: 36px;
+    margin-top: 42px;
     padding: 4px 72px 6px 72px;
     background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgba(96, 0, 198, 0.6) 50%, rgba(0, 0, 0, 0) 100%);
     display: flex;
