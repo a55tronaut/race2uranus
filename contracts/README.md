@@ -1,31 +1,23 @@
 # Race2Uranus contracts
 
-🚀 This repository contains Contract source code for Race2Uranus game.
-
-Try running some of the following tasks:
-
-```shell
-npx hardhat help
-npx hardhat test
-GAS_REPORT=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.ts
-```
+🚀 This repository contains Contract source code for the Race2Uranus game.
 
 ## Installation
 
 Run `npm install`
 
-## Scripts
+## Available scripts
 
-- **Run Tests for the project:** `npm test`
-- **Compile project:** `npm run compile`
-- **Estimate deployment cost:** `npm run estimateGas`
-- **Deploy the contract:** `npm run deploy:<network_name>`, see `networks` section in `hardhat.config.ts` for a list of valid network names. Example `npm run deploy:arbrin` deploys the contract to arbitrum rinkeby.
-- **[To verify](https://hardhat.org/hardhat-runner/plugins/nomiclabs-hardhat-etherscan) the contract on a given network:** `npm run verify:<network_name>`. Example `npm run verify:arb` verifies the contract in arbitrum mainnet.
-- **To update time parameters of the contract:** `npm run setTimeParams`see `setTimeParams` section in `scripts/setTimeParams.ts`. Example you can change `blockTimeMillis` in `setTimeParams` file and then run `npm run setTimeParams` to update blockTime (in milliseconds) parameter of the race.
-- **To update race parameters of the contract:** `npm run setRaceConfig` see `setRaceConfig` section in `scripts/setRaceConfig.ts`. Example you can change `maxRockets` in `setRaceConfig` file and then run `npm run setRaceConfig` to update maxRocket parameter of the race.
-- //: **Commnet to explain how to pass network variable** `--network <name>` into scripts. For example, you can verifiy the contract on arbitrum mainnet, `npm run verify:arb` The network names and their networks are, arbrin: Arbitrum Rinkeby testnet, goerli: Arbitrum Goerli testnet, arb:Arbitrum Mainnet
+For convenience, there's a number of predefined scripts in `package.json`:
+
+- `npm test` - run the full automated test suite
+- `npm run compile` - compile all contracts
+- `npm run estimateGas` - estimate how much it would cost to deploy the contracts
+- `npm run deploy:<network_name>` - deploy to the specified network.See `networks` section in `hardhat.config.ts` for a list of valid network names. For example `npm run deploy:arbrin` deploys the contracts to arbitrum rinkeby.
+- `npm run verify:<network_name>` - [verify](https://hardhat.org/hardhat-runner/plugins/nomiclabs-hardhat-etherscan) contract source code on the specified network's explorer. For example `npm run verify:arb` verifies the contract on arbitrum mainnet. If that doesn't work, then you might need to run this command: `npx hardhat verify <proxy_address> --network arbrin` where `<proxy_address>` is the proxy address of the Race2Uranus contract.
+- `npm run setTimeParams -- --network <network_name>` - set the time params of the Race2Uranus contract. See `scripts/setTimeParams.ts` for details.
+- `npm run setRaceConfig -- --network <network_name>` - set the race params of the Race2Uranus contract. See `scripts/setRaceConfig.ts` for details.
+- `npm run sendTestTokens -- --network <network_name>` - send some test tokens (MAGIC and NFTs) to a given address. This is great for testing purposes.
 
 ## Environment variables
 
@@ -41,8 +33,4 @@ Below is a list of possible environment variables.
 | --------------------- | -------- | ------- | --------------------------------------------------------------- |
 | `TESTNET_DEPLOYER_PK` | `string` |         | Private key used to deploy the contract to testnet              |
 | `MAINNET_DEPLOYER_PK` | `string` |         | Private key used to deploy the contract to mainnet              |
-| `ARBISCAN_API_KEY`    | `string` |         | Arbitrum Developer API KEY used to submit code for verification |
-
-## Contract verification
-
-`npx hardhat verify <proxy_address> --network arbrin`
+| `ARBISCAN_API_KEY`    | `string` |         | Arbiscan Developer API KEY used to submit code for verification |
