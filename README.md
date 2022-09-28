@@ -8,6 +8,8 @@ Treasure NFT holders can become brave rocketeers known as _Asstronauts_ and join
 
 Meanwhile, fans known as _Believers_ can stake their [$MAGIC](https://coinmarketcap.com/currencies/magic-token/) to support their idols and partake in their bounty!
 
+The live version of the game can be found at [race2uranus.lol](https://race2uranus.lol/)
+
 ## Motivation
 
 We are huge fans of the Treasure ecosystem and we wanted to contribute to it in some way. We're also avid gamers and builders so creating our own game was the perfect choice.
