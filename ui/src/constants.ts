@@ -28,6 +28,12 @@ export const FINAL_APPROACH_SECONDS = GAME_LOOP_INTERVAL_SECONDS * 3;
 export const supportedNfts: ISupportedNft[] = (() => {
   return [
     {
+      name: 'Imbued Souls',
+      img: 'https://trove.treasure.lol/images/fetch/f_auto,c_limit,w_96,q_auto/https://djmahssgw62sw.cloudfront.net/0/imbuedsoul.png',
+      url: 'https://trove.treasure.lol/collection/imbued-souls',
+      address: '0xDc758b92c7311280aeeB48096a3bf4D1C1f936d4',
+    },
+    {
       name: 'Legion Genesis',
       img: 'https://trove.treasure.lol/images/fetch/f_auto,c_limit,w_96,q_auto/https://djmahssgw62sw.cloudfront.net/0/GenesisThumbnail2.png',
       url: 'https://trove.treasure.lol/collection/legion-genesis',

@@ -40,7 +40,7 @@ async function fetchMeta(address: string, id: BigNumberish) {
     try {
       const mappedAddress = mapNftAddress(address);
       const { data } = await metaApi.get(`${mappedAddress}/${id.toString()}`);
-      const url = data.image?.imageUri || getNftConfig(mappedAddress).url;
+      const url = data.image?.imageUri || getNftConfig(mappedAddress).img;
       const name = data.metadata?.name || `${getNftConfig(mappedAddress).name} #${id.toString()}`;
       const meta: INftMeta = { name, url };
       addMeta(address, id, meta);
