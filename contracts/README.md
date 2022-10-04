@@ -14,10 +14,26 @@ For convenience, there's a number of predefined scripts in `package.json`:
 - `npm run compile` - compile all contracts
 - `npm run estimateGas` - estimate how much it would cost to deploy the contracts
 - `npm run deploy:<network_name>` - deploy to the specified network.See `networks` section in `hardhat.config.ts` for a list of valid network names. For example `npm run deploy:arbrin` deploys the contracts to arbitrum rinkeby.
-- `npm run verify:<network_name>` - [verify](https://hardhat.org/hardhat-runner/plugins/nomiclabs-hardhat-etherscan) contract source code on the specified network's explorer. For example `npm run verify:arb` verifies the contract on arbitrum mainnet. If that doesn't work, then you might need to run this command: `npx hardhat verify <proxy_address> --network arbrin` where `<proxy_address>` is the proxy address of the Race2Uranus contract.
 - `npm run setTimeParams -- --network <network_name>` - set the time params of the Race2Uranus contract. See `scripts/setTimeParams.ts` for details.
 - `npm run setRaceConfig -- --network <network_name>` - set the race params of the Race2Uranus contract. See `scripts/setRaceConfig.ts` for details.
 - `npm run sendTestTokens -- --network <network_name>` - send some test tokens (MAGIC and NFTs) to a given address. This is great for testing purposes.
+
+## Contract [verification](https://hardhat.org/hardhat-runner/plugins/nomiclabs-hardhat-etherscan)
+
+The contracts should be automatically verified during the deployment process. However, manual steps are described below in case there is an error.
+
+To verify contract source code on the specified network's explorer, you need to run `npx hardhat verify <contract_address> --network <network_name>`. Depending on the contract, some additional parameters might be required, as documented below.
+
+To verify `Race2Uranus.sol` you need to provide its [proxy address](https://docs.openzeppelin.com/contracts/4.x/api/proxy#UUPSUpgradeable) (not implementation address). You don't need to provide constructor args - they will be automatically detected.
+Depending on the explorer, the proxy verification might fail, e.g. on [BlockScout](https://forum.openzeppelin.com/t/verify-hardhat-upgradeable-proxy-on-blockscout/15436) which is used by [Arbitrum Goerli](https://goerli-rollup-explorer.arbitrum.io/).
+
+So the command to verify `Race2Uranus.sol` will be e.g. `npx hardhat verify 0xC167C8c53bb248158B9AAAAb442fCBAf413d87fe --network arbrin`.
+
+To verify other contracts in this project, you need to specify the source file and constructor arguments that were used to deploy them.
+
+For MAGIC, the example command would be `npx hardhat verify --network arbgor --contract contracts/SimpleToken.sol:SimpleToken 0x46beCf6735d3ef798307035AD91cb709970bF321 MAGIC MAGIC 100000000000000000000000000`.
+
+For SMOL, the example command would be `npx hardhat verify --network arbgor --contract contracts/SimpleNft.sol:SimpleNft 0x0CDd4aB6A82D8B4EFcAB7EeE8F6722b20df61592 SmolBrains SMOL`.
 
 ## Environment variables
 
