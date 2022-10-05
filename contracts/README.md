@@ -17,6 +17,7 @@ For convenience, there's a number of predefined scripts in `package.json`:
 - `npm run setTimeParams -- --network <network_name>` - set the time params of the Race2Uranus contract. See `scripts/setTimeParams.ts` for details.
 - `npm run setRaceConfig -- --network <network_name>` - set the race params of the Race2Uranus contract. See `scripts/setRaceConfig.ts` for details.
 - `npm run sendTestTokens -- --network <network_name>` - send some test tokens (MAGIC and NFTs) to a given address. This is great for testing purposes.
+- `npm run createFirstRace -- --network <network_name>` - creates a race if none exist. By default the contract is deployed without any active races to give you a chance to perform final checks and adjust parameters if needed before kicking off the first race.
 
 ## Contract [verification](https://hardhat.org/hardhat-runner/plugins/nomiclabs-hardhat-etherscan)
 

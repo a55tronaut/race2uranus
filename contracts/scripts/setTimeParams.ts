@@ -20,7 +20,23 @@ async function main() {
   );
   await setTimeParams({
     contract: race2Uranus,
-    blockTimeMillis: 13000,
+    blockTimeMillis: 15000,
+    revealDelayMinutes: 5,
+    // every 10 minutes
+    blastOffTimes: (() => {
+      const minuteSeconds = 60;
+      const hourSeconds = 60 * minuteSeconds;
+      const startTime = 0 * hourSeconds;
+      const endTime = 23.95 * hourSeconds;
+      const step = 10 * minuteSeconds;
+
+      const times = [];
+      for (let t = startTime; t <= endTime; t += step) {
+        times.push(t);
+      }
+
+      return times;
+    })(),
   });
 
   console.log("✅ updated");

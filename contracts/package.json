@@ -10,7 +10,8 @@
     "//": "pass network to these like: -- --network <name>",
     "setTimeParams": "npx hardhat run scripts/setTimeParams.ts",
     "setRaceConfig": "npx hardhat run scripts/setRaceConfig.ts",
-    "sendTestTokens": "npx hardhat run scripts/sendTestTokens.ts"
+    "sendTestTokens": "npx hardhat run scripts/sendTestTokens.ts",
+    "createFirstRace": "npx hardhat run scripts/createFirstRace.ts"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^1.0.1",

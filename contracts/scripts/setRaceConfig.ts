@@ -21,7 +21,7 @@ async function main() {
   );
   await setRaceConfig({
     contract: race2Uranus,
-    maxRockets: 8,
+    maxRockets: 5,
   });
 
   console.log("✅ updated");

@@ -8,6 +8,7 @@ const SMOLBRAINS_ADDRESS = "0x4bB8209cC9122Ea8536C7Ae3cF67F3EcF8f4D103";
 const BATTLEFLY_ADDRESS = "0x0aF85A5624D24E2C6e7Af3c0a0b102a28E36CeA3";
 const WHITELISTED_NFTS = [SMOLBRAINS_ADDRESS, BATTLEFLY_ADDRESS];
 const ARBITRUM_CHAIN_ID = 42161;
+const VERIFY = true;
 
 // We recommend this pattern to be able to use async/await everywhere
 // and properly handle errors.
@@ -39,13 +40,15 @@ async function main() {
 
   await ethBalanceEnd("", "Race2Uranus deployment cost");
 
-  try {
-    await run("verify:verify", {
-      address: race2Uranus.address,
-      // constructorArguments: [magic, whitelistedNfts, deployer.address],
-    });
-  } catch (e) {
-    console.error(e);
+  if (VERIFY) {
+    try {
+      await run("verify:verify", {
+        address: race2Uranus.address,
+        // constructorArguments: [magic, whitelistedNfts, deployer.address],
+      });
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   console.log("Race2Uranus deployed to:", race2Uranus.address);
@@ -90,18 +93,20 @@ async function deployMagic() {
     ethers.utils.parseEther("100000000")
   );
 
-  try {
-    await run("verify:verify", {
-      address: magic.address,
-      constructorArguments: [
-        "MAGIC",
-        "MAGIC",
-        ethers.utils.parseEther("100000000"),
-      ],
-      contract: "contracts/SimpleToken.sol:SimpleToken",
-    });
-  } catch (e) {
-    console.error(e);
+  if (VERIFY) {
+    try {
+      await run("verify:verify", {
+        address: magic.address,
+        constructorArguments: [
+          "MAGIC",
+          "MAGIC",
+          ethers.utils.parseEther("100000000"),
+        ],
+        contract: "contracts/SimpleToken.sol:SimpleToken",
+      });
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   return magic;
@@ -110,13 +115,15 @@ async function deploySmolBrains() {
   const SimpleNft = await ethers.getContractFactory("SimpleNft");
   const smolBrains = await SimpleNft.deploy("SmolBrains", "SMOL");
 
-  try {
-    await run("verify:verify", {
-      address: smolBrains.address,
-      constructorArguments: ["SmolBrains", "SMOL"],
-    });
-  } catch (e) {
-    console.error(e);
+  if (VERIFY) {
+    try {
+      await run("verify:verify", {
+        address: smolBrains.address,
+        constructorArguments: ["SmolBrains", "SMOL"],
+      });
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   return smolBrains;
@@ -125,13 +132,15 @@ async function deployBattlefly() {
   const SimpleNft = await ethers.getContractFactory("SimpleNft");
   const battlefly = await SimpleNft.deploy("Battlefly", "BTLFLY");
 
-  try {
-    await run("verify:verify", {
-      address: battlefly.address,
-      constructorArguments: ["Battlefly", "BTLFLY"],
-    });
-  } catch (e) {
-    console.error(e);
+  if (VERIFY) {
+    try {
+      await run("verify:verify", {
+        address: battlefly.address,
+        constructorArguments: ["Battlefly", "BTLFLY"],
+      });
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   return battlefly;
