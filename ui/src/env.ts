@@ -63,7 +63,7 @@ function env<T extends EnvDataType>(key: string, dataType: T, defaultVal?: EnvVa
       return num as any;
     }
     case 'boolean': {
-      const normalizedVal = val.toLowerCase();
+      const normalizedVal = `${val}`.toLowerCase();
       const truthyVals = ['true', '1'];
       const falsyVals = ['false', '0'];
       const acceptedVals = [...truthyVals, ...falsyVals];
