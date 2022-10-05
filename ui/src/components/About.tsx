@@ -63,6 +63,15 @@ function About() {
         Compete with other <i>Asstronauts</i> to become the first to step foot on <strong>Uranus</strong>! Show your
         favorite cartridge some love by repping your favorite <strong>$MAGIC</strong> <i>Asstronaut</i> now!
       </Paragraph>
+      <br />
+      <Paragraph>
+        Still not sure what to do? Check out the instructional video below!
+        <br />
+        <br />
+        <video width="1100" controls>
+          <source src="/media/demo.mp4" type="video/mp4" />
+        </video>
+      </Paragraph>
     </Container>
   );
 }

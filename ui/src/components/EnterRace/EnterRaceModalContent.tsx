@@ -8,6 +8,7 @@ import { useNftsForUser, useRaceContract, useEnsureMagicApproval, useSelectedRac
 import { extractRpcError, formatNumber, getNftConfig } from '../../utils';
 import { blue } from '../../colors';
 import { Race2Uranus } from '../../types';
+import sorter from '../../sorter';
 import NftImage from '../NftImage';
 import InfoTooltip from '../InfoTooltip';
 import Rocket from '../Rocket';
@@ -61,7 +62,7 @@ function EnterRaceModalContent() {
       );
     });
 
-    const sortedOpts = opts.sort((a, b) => (a.disabled ? 1 : -1));
+    const sortedOpts = opts.sort(sorter.compose(sorter.bool('disabled', true), sorter.textMulti('address', 'nftId')));
 
     setNftOptions(sortedOpts);
   }, [nfts, race]);
