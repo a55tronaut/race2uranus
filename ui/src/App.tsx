@@ -8,7 +8,8 @@ import styled from 'styled-components';
 import GlobalStyle from './GlobalStyle';
 import { DappProvider } from './providers';
 import { NotFound, WalletConnector } from './components';
-import { AboutPage, LandingPage, LeaderboardPage, LorePage, RacePage } from './pages';
+import { AboutPage, ComingSoonPage, LandingPage, LeaderboardPage, LorePage, RacePage } from './pages';
+import { COMING_SOON } from './env';
 
 notification.config({ duration: 15 });
 
@@ -16,7 +17,7 @@ function AppWrapper() {
   return (
     <DappProvider>
       <App />
-      <WalletConnector />
+      {!COMING_SOON && <WalletConnector />}
     </DappProvider>
   );
 }
@@ -33,12 +34,17 @@ function App() {
       <GlobalStyle />
       <BrowserRouter>
         <Routes>
-          <Route path="/race/:raceId" element={<RacePage />} />
-          <Route path="/lore" element={<LorePage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/leaderboard" element={<LeaderboardPage />} />
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/*" element={<NotFound />} />
+          {COMING_SOON && <Route path="/*" element={<ComingSoonPage />} />}
+          {!COMING_SOON && (
+            <>
+              <Route path="/race/:raceId" element={<RacePage />} />
+              <Route path="/lore" element={<LorePage />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/leaderboard" element={<LeaderboardPage />} />
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/*" element={<NotFound />} />
+            </>
+          )}
         </Routes>
       </BrowserRouter>
     </Suspense>

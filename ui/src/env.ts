@@ -12,6 +12,10 @@ export const NFT_MAPPINGS = parseNftMappings(env('REACT_APP_NFT_MAPPINGS', 'stri
 
 export const API_URL = env('REACT_APP_API_URL', 'string');
 
+export const SENTRY_DSN = env('REACT_APP_SENTRY_DSN', 'string', '');
+
+export const COMING_SOON = env('REACT_APP_COMING_SOON', 'boolean', false);
+
 ///////////////////////////////////////////////////////
 
 function parseNftMappings(rawMappins: string): { [key: string]: string } {

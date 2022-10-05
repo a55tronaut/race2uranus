@@ -7,3 +7,4 @@ export { default as Lore } from './Lore';
 export { default as NftLeaderboard } from './NftLeaderboard';
 export { default as WalletConnector } from './WalletConnector';
 export { default as NotFound } from './NotFound';
+export { default as ComingSoon } from './ComingSoon';
