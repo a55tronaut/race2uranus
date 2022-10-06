@@ -3,6 +3,7 @@ export * from './useRace';
 export * from './useRaceMetaWitness';
 export * from './useRaceContract';
 export * from './useRaceTimeParams';
+export * from './useRaceConfig';
 export * from './useNftMeta';
 export * from './useEnsureMagicApproval';
 export * from './useNftsForUser';

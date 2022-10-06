@@ -1,11 +1,14 @@
 import styled from 'styled-components';
 import { Tooltip, Typography } from 'antd';
 
+import { useRaceConfig } from '../hooks';
 import WhitelistedNfts from './WhitelistedNfts';
 
 const { Title, Paragraph } = Typography;
 
 function About() {
+  const { config } = useRaceConfig();
+
   return (
     <Container>
       <Title level={2} className="title">
@@ -37,7 +40,7 @@ function About() {
           title={
             <div>
               Depending on the race, it will be some subset of the following:
-              <WhitelistedNfts />
+              <WhitelistedNfts whitelist={config?.whitelistedNfts} />
             </div>
           }
         >
