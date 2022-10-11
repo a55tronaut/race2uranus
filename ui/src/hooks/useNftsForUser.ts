@@ -56,7 +56,7 @@ export function useNftsForUser(addresses: string[]) {
         const { data } = await graphApi.post('', {
           query,
           variables: {
-            address: account,
+            address: account.toLowerCase(),
             where: {
               contract_in: addresses.map((addr) => addr.toLowerCase()),
             },
@@ -64,7 +64,7 @@ export function useNftsForUser(addresses: string[]) {
           operationName: 'getNFTsOwnedByAddress',
         });
 
-        data.data.owner.tokens.forEach((token: any) => {
+        data.data?.owner?.tokens.forEach((token: any) => {
           const contractAddr = addresses.find((addr) => addr.toLowerCase() === token.contract.id.toLowerCase())!;
           nfts[contractAddr] = nfts[contractAddr] || [];
           nfts[contractAddr].push(token.tokenID);
