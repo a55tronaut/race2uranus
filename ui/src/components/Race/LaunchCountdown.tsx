@@ -1,9 +1,12 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { CSSTransition } from 'react-transition-group';
 import Countdown from 'react-countdown';
 import { BigNumber } from 'ethers';
 import { Typography } from 'antd';
+
+import { howl } from '../../utils';
+import { SECOND_MILLIS } from '../../constants';
 
 interface IProps {
   show: boolean;
@@ -11,11 +14,30 @@ interface IProps {
 }
 
 function LaunchCountdown({ show, blastOffTimestamp }: IProps) {
+  const [countdownSoundScheduled, setCountdownSoundScheduled] = useState(false);
+  const countdownTimeoutId = useRef<NodeJS.Timeout>();
   const timestampMillis = useMemo(() => {
     if (blastOffTimestamp?.gt(0)) {
       return blastOffTimestamp.toNumber() * 1000;
     }
   }, [blastOffTimestamp]);
+
+  useEffect(() => {
+    const diff = (timestampMillis || 0) - Date.now();
+    if (timestampMillis && diff > 11 * SECOND_MILLIS && !countdownSoundScheduled) {
+      setCountdownSoundScheduled(true);
+      const countdownSound = howl('countdown.mp3');
+      const launchSound = howl('rocket-launch.mp3');
+      countdownTimeoutId.current = setTimeout(() => {
+        countdownSound.play();
+        setTimeout(() => launchSound.play(), 10 * SECOND_MILLIS);
+      }, diff - 11 * SECOND_MILLIS);
+    }
+  }, [countdownSoundScheduled, timestampMillis]);
+
+  useEffect(() => {
+    return () => clearTimeout(countdownTimeoutId.current);
+  }, []);
 
   const renderer = useCallback(
     ({

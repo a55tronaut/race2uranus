@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import create from 'zustand';
 import debounce from 'lodash/debounce';
 
+import { CHAIN_ID } from '../env';
 import { useEthersProvider } from './useEthersProvider';
 
 interface IEthersSignerStoreState {
@@ -25,7 +26,7 @@ export function useEthersSigner(): IEthersSignerHook {
 
   useEffect(() => {
     const signer = provider?.getSigner(account);
-    const newSigner = !!signer?._address ? signer : undefined;
+    const newSigner = !!signer?._address && signer?.provider?._network?.chainId === CHAIN_ID ? signer : undefined;
     const { signer: prevSigner } = useEthersSignerStore.getState();
     if (newSigner !== prevSigner) {
       updateSignerDebounce(newSigner);

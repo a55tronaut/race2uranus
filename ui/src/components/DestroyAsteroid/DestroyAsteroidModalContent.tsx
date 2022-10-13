@@ -1,10 +1,10 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Button, Typography, notification } from 'antd';
 import { ethers } from 'ethers';
 
 import { useRaceContract } from '../../hooks';
-import { extractRpcError, formatNumber } from '../../utils';
+import { extractRpcError, formatNumber, howl } from '../../utils';
 import { blue } from '../../colors';
 import { Race2Uranus } from '../../types';
 import ModalFooter from '../ModalFooter';
@@ -22,6 +22,7 @@ function BoostRocketModalContent({ race, onClose, refresh }: IProps) {
 
   const handleSubmit = useCallback(async () => {
     setLoading(true);
+    howl('asteroid-fire.mp3').play();
 
     try {
       const res = await contract!.functions.finishRace(race!.id);
@@ -36,6 +37,7 @@ function BoostRocketModalContent({ race, onClose, refresh }: IProps) {
           </>
         ),
       });
+      howl('asteroid-success.mp3').play();
 
       onClose();
     } catch (e) {
@@ -43,6 +45,7 @@ function BoostRocketModalContent({ race, onClose, refresh }: IProps) {
       let message = extractRpcError(e);
       if (message.includes('Race already finished')) {
         message = 'Too late! Someone else has already destroyed the asteroid and snatched up the prize!';
+        howl('asteroid-fail.mp3').play();
         onClose();
       }
       notification.error({ message });
@@ -50,6 +53,10 @@ function BoostRocketModalContent({ race, onClose, refresh }: IProps) {
       setLoading(false);
     }
   }, [contract, onClose, race, refresh]);
+
+  useEffect(() => {
+    howl('asteroid-danger.mp3').play();
+  }, []);
 
   return (
     <Container>

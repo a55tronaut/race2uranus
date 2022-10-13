@@ -5,7 +5,7 @@ import { Button, Typography, Select, Input, Form, notification, Alert, Tooltip }
 import { CopyOutlined, TwitterOutlined } from '@ant-design/icons';
 
 import { useNftsForUser, useRaceContract, useEnsureMagicApproval, useSelectedRace, useNftMeta } from '../../hooks';
-import { extractRpcError, formatNumber, getNftConfig } from '../../utils';
+import { extractRpcError, formatNumber, getNftConfig, howl } from '../../utils';
 import { blue } from '../../colors';
 import { Race2Uranus } from '../../types';
 import sorter from '../../sorter';
@@ -115,6 +115,7 @@ function EnterRaceModalContent() {
           </>
         ),
       });
+      howl('enter-race.mp3').play();
 
       setEntered(true);
     } catch (e) {

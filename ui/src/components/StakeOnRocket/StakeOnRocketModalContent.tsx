@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 import { Button, Typography, Input, Form, notification, Alert } from 'antd';
 
 import { useRaceContract, useEnsureMagicApproval, useSelectedRace } from '../../hooks';
-import { formatNumber } from '../../utils';
+import { formatNumber, howl } from '../../utils';
 import { blue } from '../../colors';
 import { Race2Uranus } from '../../types';
 import InfoTooltip from '../InfoTooltip';
@@ -60,6 +60,7 @@ function StakeOnRocketModalContent({ rocket, onClose, refresh }: IProps) {
           </>
         ),
       });
+      howl('stake.mp3').play();
 
       onClose();
     } catch (e) {

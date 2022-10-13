@@ -1,4 +1,5 @@
 import { BigNumber, utils } from 'ethers';
+import { Howl } from 'howler';
 
 import { supportedNfts } from './constants';
 import { NFT_MAPPINGS } from './env';
@@ -127,4 +128,8 @@ export function runAfterRender(fn: Function) {
 
 export function extractRpcError(e: any): string {
   return e?.error?.data?.message?.replace('execution reverted: ', '') || e?.message || 'Error';
+}
+
+export function howl(filename: string): Howl {
+  return new Howl({ src: '/media/' + filename, volume: 0.7, preload: true });
 }

@@ -7,6 +7,7 @@ import moment from 'moment-timezone';
 import { useRaceTimeParams } from '../../hooks';
 import { orange } from '../../colors';
 import { DAY_MILLIS, SECOND_MILLIS } from '../../constants';
+import { howl } from '../../utils';
 
 interface IProps {
   className?: string;
@@ -36,6 +37,7 @@ function LaunchWindow({ className }: IProps) {
         notification.info({
           message: `Launch window missed! Next opportunity ${moment(closestTimestamp).fromNow()}!`,
         });
+        howl('window-missed.mp3').play();
       }
 
       timeoutId = setTimeout(() => updateTimestamp(true), diff + 100);

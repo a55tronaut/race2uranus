@@ -6,10 +6,11 @@ import cn from 'classnames';
 import { useEthers } from '@usedapp/core';
 import { BigNumberish } from 'ethers';
 
-import { FINAL_APPROACH_SECONDS } from '../../constants';
+import { FINAL_APPROACH_SECONDS, SECOND_MILLIS } from '../../constants';
 import { Race2Uranus } from '../../types';
 import { orange } from '../../colors';
 import { useRaceContract } from '../../hooks';
+import { howl } from '../../utils';
 import Layout from '../Layout';
 import Rocket from '../Rocket';
 import NftName from '../NftName';
@@ -45,6 +46,21 @@ function Winner({ show, rocket, raceId }: IProps) {
       setLoaded(true);
     }
   }, [account, contract, raceId, rocket, show]);
+
+  useEffect(() => {
+    const winnerSound = howl('race-win.mp3');
+    const loserSound = howl('race-lose.mp3');
+
+    let timeout = animate ? FINAL_APPROACH_SECONDS * SECOND_MILLIS : 0;
+
+    if (show) {
+      const timeoutId = setTimeout(() => {
+        hasReward ? winnerSound.play() : loserSound.play();
+      }, timeout);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [animate, hasReward, loaded, show]);
 
   return (
     <Container className={cn({ show, animate })}>

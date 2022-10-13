@@ -5,7 +5,7 @@ import { Button, Typography, notification, Alert } from 'antd';
 import { useRaceContract, useEnsureMagicApproval, useSelectedRace } from '../../hooks';
 import { blue } from '../../colors';
 import { Race2Uranus } from '../../types';
-import { extractRpcError } from '../../utils';
+import { extractRpcError, howl } from '../../utils';
 import Rocket from '../Rocket';
 import ModalFooter from '../ModalFooter';
 import MagicAmount from '../MagicAmount';
@@ -43,6 +43,7 @@ function BoostRocketModalContent({ rocket, onClose, refresh }: IProps) {
           </>
         ),
       });
+      howl('boost.mp3').play();
 
       onClose();
     } catch (e) {

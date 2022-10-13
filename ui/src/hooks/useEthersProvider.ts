@@ -3,6 +3,9 @@ import { ethers } from 'ethers';
 import { useEffect } from 'react';
 import create from 'zustand';
 import debounce from 'lodash/debounce';
+import { useReadonlyNetwork } from '@usedapp/core/dist/esm/src/hooks';
+
+import { CHAIN_ID } from '../env';
 
 interface IEthersProviderStoreState {
   provider?: ethers.providers.JsonRpcProvider;
@@ -18,11 +21,16 @@ export const useEthersProviderStore = create<IEthersProviderStoreState>(() => de
 
 export function useEthersProvider(): IEthersProviderHook {
   const { library } = useEthers();
+  const { provider } = useReadonlyNetwork({ chainId: CHAIN_ID }) || ({} as any);
   const storeState = useEthersProviderStore();
 
   useEffect(() => {
-    updateProviderDebounce(library);
-  }, [library]);
+    if (library?._network?.chainId === CHAIN_ID) {
+      updateProviderDebounce(library);
+    } else {
+      updateProviderDebounce(provider);
+    }
+  }, [library, provider]);
 
   return storeState;
 }
